@@ -95,7 +95,7 @@
 					<span class="copyright">© Все права защищены. 2024 <?//<a href="https://themeforest.net/item/cleanmate-cleaning-company-maid-gardening-template/20493947?ref=QuanticaLabs" title="Cleanmate Template" target="_blank">Cleanmate Template</a> by <a href="http://quanticalabs.com" title="QuanticaLabs" target="_blank">QuanticaLabs</a>?></span>
 				</div>
 			</div>
-	</main>
+		</div>
 		<a href="#top" class="scroll-top animated-element template-arrow-vertical-3" title="Scroll to top"></a>
 		<div class="background-overlay"></div>
 		

@@ -5,10 +5,8 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 	//require_once('includes/slider.php');
 ?>
 
-<!-- <div class="theme-page">
-	<div class="clearfix"> -->
-
-	<section>
+<div class="theme-page">
+	<div class="clearfix">
 		<div class="row! container margin-top-89">
 			<div class="row!">
 				<h2 class="box-header">Наши услуги</h2>
@@ -112,7 +110,7 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 				*/?>
 			</div>
 		</div>
-</section>
+
 
 		<?/*<div class="row full-width bg-gray flex-box page-margin-top-section">
 			
@@ -165,10 +163,9 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 <??>
 
 
-		<section class="bg-gray flex-box!  page-margin-top-section">
-			<div class="container padding-top-70 padding-bottom-100">
-				<div class="row justify-content-center">
-				<div class="column column-1-2! col-12 col-md-6">
+		<div class="row full-width container-fluid bg-gray! flex-box padding-top-100">
+			<div class="row container page-margin-top-section padding-bottom-100">
+				<div class="column column-1-2">
 					<h2 class="box-header">О нашей компании</h2>
 					<p class="description align-center">Lorem ipsum dolor sit amet consectetur suspendisse nulla aliquam. Risus rutrum tellus eget ultrices pretium nisi amet facilisis</p>
 					<p class="align-center padding-0 margin-top-27 padding-left-right-35"></p>
@@ -176,12 +173,12 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 						<a class="more" href="?page=about" title="Читать подробнее...">Читать подробнее...</a>
 					</div>
 				</div>
-				<!-- <div class="column column-1-4! col-12 col-md-3">
+				<div class="column column-1-4">
 					<a href="<?=SITE_TEMPLATE_PATH?>/images/samples/480x693/placeholder.jpg" class="prettyPhoto cm-preload" title="Gutter Cleaning">
 						<img src='<?=SITE_TEMPLATE_PATH?>/images/samples/480x693/placeholder.jpg' alt='img'>
 					</a>
-				</div> -->
-				<!-- <div class="column column-1-4! col-12 col-md-3">
+				</div>
+				<div class="column column-1-4">
 					<div class="row">
 						<a href="<?=SITE_TEMPLATE_PATH?>/images/samples/480x320/placeholder.jpg" class="prettyPhoto cm-preload" title="House Cleaning">
 							<img src='<?=SITE_TEMPLATE_PATH?>/images/samples/480x320/placeholder.jpg' alt='img'>
@@ -192,10 +189,9 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 							<img src='<?=SITE_TEMPLATE_PATH?>/images/samples/480x320/placeholder.jpg' alt='img'>
 						</a>
 					</div>
-				</div> -->
 				</div>
 			</div>
-</section>
+		</div>
 
 <??>
 		<?/*
@@ -355,22 +351,20 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 			</div>
 		</div>
 */?>
-<??>
-
-		<section class="row! full-width container-fluid padding-top-60 padding-bottom-60 align-center">
+<?/*
+		<div class="row full-width container-fluid padding-top-59 padding-bottom-60 align-center">
 			<h3><div class="button-label padding-bottom-16" style="clear:both;">Нужна консультация? Перезвоните мне</div> </h3>
 			<div class="clearfix">
 				<a class="more d-inline-block margin-top-15 " href="#" title="Purchase now">Диспетчер</a>
 				<a class="more d-inline-block" style="margin-left:5px" href="#" title="Purchase now">Приемная</a>
 			</div>
 		
-
-			<h2 class="box-header padding-top-60">Новости</h2>
-			<div class="row! container padding-top-30">
+			<h2 class="box-header padding-top-30">Новости</h2>
+			<div class="row container padding-top-30">
 				<div class="row">
 				<div class="column! column-3-4! col col-md-9">
 					<ul class="blog news row small! clearfix">
-							<li class="column! column-1-2! col-12 col-md-6 mt-0">
+							<li class="column! column-1-2! col-6 mt-0">
 								<a href="#<?//?page=post?>" title="How to: deep clean your kitchen" class="post-image">
 									<div class="post-date">
 										<div class="month">авг</div>
@@ -394,7 +388,7 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 									</ul>
 								</div>
 							</li>
-							<li class="column! column-1-2! col-12 col-md-6 mt-0">
+							<li class="column! column-1-2! col-6 mt-0">
 								<a href="#" title="10 ways to save more &amp; waste less" class="post-image">
 									<div class="post-date">
 										<div class="month">июл</div>
@@ -464,14 +458,13 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 			</div>
 		</div>
 	</div>
-</section>
 
 
-<section class="full-width container-fluid! bg-gray flex-box">
-	<div class="container">
+		</div>
+		<div class="row full-width container-fluid bg-gray flex-box">
 			<div class="row">
-				<div class="column! column-1-3! col-12 col-md-6 padding-bottom-95">
-					<div class="row padding-left-right-70 margin-top-90">
+				<div class="column! column-1-3! col col-md-4 padding-bottom-96">
+					<div class="row padding-left-right-70 margin-top-89">
 						<h4>Раскрытие информации</h4>
 						<ul class="list margin-top-20">
 							<li class="template-tick-1">Водоотведение</li>
@@ -483,8 +476,13 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 						</ul>
 					</div>
 				</div>
-				<div class="column! column-1-3! col-12 col-md-6 padding-bottom-100 bg-green">
-					<div class="row padding-left-right-70 margin-top-90">
+				<div class="column! column-1-3! col col-md-4 background-3">
+					<a class="flex-hide" href="?page=project_gutter_cleaning" title="Gutter Cleaning">
+						<img src="<?=SITE_TEMPLATE_PATH?>/images/samples/960x750/placeholder.jpg" alt="">
+					</a>
+				</div>
+				<div class="column! column-1-3! col col-md-4 padding-bottom-100 green">
+					<div class="row padding-left-right-70 margin-top-89">
 						<h2 class="font-weight-300">Остались вопросы?</h2>
 						<!-- <h2>Please call now: <a href="tel:2507257052">mp-zhehk-3@yandex.ru</a></h2> -->
 						<p class="description margin-top-20">Оставьте заявку. Мы её рассмотрим</p>
@@ -495,48 +493,44 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 				</div>
 			</div>
 		</div>
-</section>
 
-<section class="full-width container padding-top-90 padding-bottom-100">
+
+		<div class="row full-width padding-top-89 padding-bottom-100">
 			<div class="row">
 				<h2 class="box-header">Наши специалисты</h2>
 				<p class="description align-center">Lorem ipsum dolor sit amet consectetur suspendisse nulla aliquam. Risus rutrum tellus eget ultrices pretium nisi amet facilisis</p>
-				<div class="team-list item-gray row gx-5 margin-top-65 clearfix">
-					<div class="col-12 col-md-4">
-						<div class="team-box column column-1-3!">
-							<a href="?page=team_karisma_taruda" title="Karisma Taruda" class="image-box">
-								<img alt="Karisma Taruda" src="<?=SITE_TEMPLATE_PATH?>/images/samples/260x260/placeholder.jpg">
-							</a>
-							<h4><a href="?page=team_karisma_taruda" title="Karisma Taruda">Сергей Иваненко</a></h4>
-							<p>Слесарь</p>
-							<ul class="social-icons align-center">
-								<li>
-									<a target="_blank" href="#" class="social-twitter" title="twitter"></a>
-								</li>
-								<li>
-									<a target="_blank" href="#" class="social-facebook" title="google-plus"></a>
-								</li>
-							</ul>
-						</div>
-					</div>
-					<div class="col-12 col-md-4">
-						<div class="team-box column column-1-3!">
-							<a href="?page=team_paige_morgan" title="Paige Morgan" class="image-box">
-								<img alt="Paige Morgan" src="<?=SITE_TEMPLATE_PATH?>/images/samples/260x260/placeholder.jpg">
-							</a>
-							<h4><a href="?page=team_paige_morgan" title="Paige Morgan">Иван Петрович</a></h4>
-							<p>Сантехник</p>
-							<ul class="social-icons align-center">
-								<li>
-									<a target="_blank" href="https://facebook.com/QuanticaLabs" class="social-facebook" title="facebook"></a>
-								</li>
-								<li>
-									<a target="_blank" href="https://twitter.com/QuanticaLabs" class="social-twitter" title="twitter"></a>
-								</li>
-							</ul>
-						</div>
-					</div>
-					<li class="team-box column column-1-3! col-12 col-md-4">
+				<ul class="team-list bg-gray margin-top-65 clearfix">
+					<li class="team-box column column-1-3">
+						<a href="?page=team_karisma_taruda" title="Karisma Taruda" class="image-box">
+							<img alt="Karisma Taruda" src="<?=SITE_TEMPLATE_PATH?>/images/samples/260x260/placeholder.jpg">
+						</a>
+						<h4><a href="?page=team_karisma_taruda" title="Karisma Taruda">Сергей Иваненко</a></h4>
+						<p>Слесарь</p>
+						<ul class="social-icons align-center">
+							<li>
+								<a target="_blank" href="#" class="social-twitter" title="twitter"></a>
+							</li>
+							<li>
+								<a target="_blank" href="#" class="social-facebook" title="google-plus"></a>
+							</li>
+						</ul>
+					</li>
+					<li class="team-box column column-1-3">
+						<a href="?page=team_paige_morgan" title="Paige Morgan" class="image-box">
+							<img alt="Paige Morgan" src="<?=SITE_TEMPLATE_PATH?>/images/samples/260x260/placeholder.jpg">
+						</a>
+						<h4><a href="?page=team_paige_morgan" title="Paige Morgan">Иван Петрович</a></h4>
+						<p>Сантехник</p>
+						<ul class="social-icons align-center">
+							<li>
+								<a target="_blank" href="https://facebook.com/QuanticaLabs" class="social-facebook" title="facebook"></a>
+							</li>
+							<li>
+								<a target="_blank" href="https://twitter.com/QuanticaLabs" class="social-twitter" title="twitter"></a>
+							</li>
+						</ul>
+					</li>
+					<li class="team-box column column-1-3">
 						<a href="?page=team_celevic_parkhill" title="Celevic Parkhill" class="image-box">
 							<img alt="Celevic Parkhill" src="<?=SITE_TEMPLATE_PATH?>/images/samples/260x260/placeholder.jpg">
 						</a>
@@ -551,111 +545,107 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 							</li>
 						</ul>
 					</li>
-				</div>
+				</ul>
 				<div class="align-center margin-top-65 padding-bottom-16">
 					<a class="more" href="#<?//?page=team?>" title="All our technicians">Все наши техники</a>
 				</div>
 			</div>
-</section>
-
-<??>
-		<section class="bg-gray full-width padding-top-90 padding-bottom-100">
-			<div class="row! container">
-				<div class="row">
-					<div class="column! column-1-2! col-12 col-lg-6">
-						<h3>Наши ресурсы</h3>
-						<div class="our-clients-list-container margin-top-40 type-list">
-							<ul class="our-clients-list type-list">
-								<li class="vertical-align">
-									<div class="our-clients-item-container">
-										<div class="vertical-align-cell">
-											<a target="_blank" href="#">
-												<img src="<?=SITE_TEMPLATE_PATH?>/images/logos/centrenerghmao.png" alt="">
-											</a>
-										</div>
+		</div>
+		<div class="row bg-gray! full-width padding-top-89 padding-bottom-100">
+			<div class="row">
+				<div class="column column-1-2">
+					<h3>Наши ресурсы</h3>
+					<div class="our-clients-list-container margin-top-40 type-list">
+						<ul class="our-clients-list type-list">
+							<li class="vertical-align">
+								<div class="our-clients-item-container">
+									<div class="vertical-align-cell">
+										<a target="_blank" href="#">
+											<img src="<?=SITE_TEMPLATE_PATH?>/images/logos/centrenerghmao.png" alt="">
+										</a>
 									</div>
-								</li>
-								<li class="vertical-align">
-									<div class="our-clients-item-container">
-										<div class="vertical-align-cell">
-											<a target="_blank" href="#">
-												<img src="<?=SITE_TEMPLATE_PATH?>/images/logos/admhmrn-2.jpg" alt="">
-											</a>
-										</div>
+								</div>
+							</li>
+							<li class="vertical-align">
+								<div class="our-clients-item-container">
+									<div class="vertical-align-cell">
+										<a target="_blank" href="#">
+											<img src="<?=SITE_TEMPLATE_PATH?>/images/logos/admhmrn-2.jpg" alt="">
+										</a>
 									</div>
-								</li>
-								<li class="vertical-align">
-									<div class="our-clients-item-container">
-										<div class="vertical-align-cell">
-											<a target="_blank" href="#">
-												<img src="<?=SITE_TEMPLATE_PATH?>/images/logos/jkh86.png" alt="">
-											</a>
-										</div>
+								</div>
+							</li>
+							<li class="vertical-align">
+								<div class="our-clients-item-container">
+									<div class="vertical-align-cell">
+										<a target="_blank" href="#">
+											<img src="<?=SITE_TEMPLATE_PATH?>/images/logos/jkh86.png" alt="">
+										</a>
 									</div>
-								</li>
-								<li class="vertical-align">
-									<div class="our-clients-item-container">
-										<div class="vertical-align-cell">
-											<a target="_blank" href="#">
-												<img src="<?=SITE_TEMPLATE_PATH?>/images/logos/admhmrn-2.jpg" alt="">
-											</a>
-										</div>
+								</div>
+							</li>
+							<li class="vertical-align">
+								<div class="our-clients-item-container">
+									<div class="vertical-align-cell">
+										<a target="_blank" href="#">
+											<img src="<?=SITE_TEMPLATE_PATH?>/images/logos/admhmrn-2.jpg" alt="">
+										</a>
 									</div>
-								</li>
-								<li class="vertical-align">
-									<div class="our-clients-item-container">
-										<div class="vertical-align-cell">
-											<a target="_blank" href="#">
-												<img src="<?=SITE_TEMPLATE_PATH?>/images/logos/jkh86.png" alt="">
-											</a>
-										</div>
+								</div>
+							</li>
+							<li class="vertical-align">
+								<div class="our-clients-item-container">
+									<div class="vertical-align-cell">
+										<a target="_blank" href="#">
+											<img src="<?=SITE_TEMPLATE_PATH?>/images/logos/jkh86.png" alt="">
+										</a>
 									</div>
-								</li>
-								<li class="vertical-align">
-									<div class="our-clients-item-container">
-										<div class="vertical-align-cell">
-											<a target="_blank" href="#">
-												<img src="<?=SITE_TEMPLATE_PATH?>/images/logos/centrenerghmao.png" alt="">
-											</a>
-										</div>
+								</div>
+							</li>
+							<li class="vertical-align">
+								<div class="our-clients-item-container">
+									<div class="vertical-align-cell">
+										<a target="_blank" href="#">
+											<img src="<?=SITE_TEMPLATE_PATH?>/images/logos/centrenerghmao.png" alt="">
+										</a>
 									</div>
-								</li>
-							</ul>
-						</div>
+								</div>
+							</li>
+						</ul>
 					</div>
-					<div class="column! column-1-2! col-12 col-lg-6">
-						<h3>Отзывы пользователей</h3>
-						<div class="row testimonials-container type-small margin-top-40">
-							<div class="cm-carousel-pagination"></div>
-							<ul class="testimonials-list testimonials-carousel autoplay-0 pause_on_hover-1">
-								<li>
-									<p class="template-quote">Lorem ipsum dolor sit amet consectetur suspendisse nulla aliquam. Risus rutrum tellus eget ultrices pretium nisi amet facilisis. Augue eu vulputate tortor egestas cursus vivamus. Commodo dictum iaculis eget massa phasellus ultrices as nunc dignissim. Id nulla amet tincidunt urna sed massa the sed massa ultrices amet eget.</p>
-									<div class="author-details-box">
-										<div class="author">Даниил Викторович</div>
-										<!--<div class="author-details">CLEANING TECHNICAN</div>-->
-									</div>
-								</li>
-								<li>
-									<p class="template-quote">Lorem ipsum dolor sit amet consectetur suspendisse nulla aliquam. Risus rutrum tellus eget ultrices pretium nisi amet facilisis. Augue eu vulputate tortor egestas cursus vivamus. Commodo dictum iaculis eget massa phasellus ultrices as nunc dignissim. Id nulla amet tincidunt urna sed massa the sed massa ultrices amet eget.</p>
-									<div class="author-details-box">
-										<div class="author">Петр Семёнович</div>
-										<!--<div class="author-details">CLEANING TECHNICAN</div>-->
-									</div>
-								</li>
-								<li>
-									<p class="template-quote">Lorem ipsum dolor sit amet consectetur suspendisse nulla aliquam. Risus rutrum tellus eget ultrices pretium nisi amet facilisis. Augue eu vulputate tortor egestas cursus vivamus. Commodo dictum iaculis eget massa phasellus ultrices as nunc dignissim. Id nulla amet tincidunt urna sed massa the sed massa ultrices amet eget.</p>
-									<div class="author-details-box">
-										<div class="author">Анна Ивановна</div>
-										<!--<div class="author-details">CLEANING TECHNICAN</div>-->
-									</div>
-								</li>
-							</ul>
-						</div>
+				</div>
+				<div class="column column-1-2">
+					<h3>Отзывы пользователей</h3>
+					<div class="row testimonials-container type-small margin-top-40">
+						<div class="cm-carousel-pagination"></div>
+						<ul class="testimonials-list testimonials-carousel autoplay-0 pause_on_hover-1">
+							<li>
+								<p class="template-quote">Lorem ipsum dolor sit amet consectetur suspendisse nulla aliquam. Risus rutrum tellus eget ultrices pretium nisi amet facilisis. Augue eu vulputate tortor egestas cursus vivamus. Commodo dictum iaculis eget massa phasellus ultrices as nunc dignissim. Id nulla amet tincidunt urna sed massa the sed massa ultrices amet eget.</p>
+								<div class="author-details-box">
+									<div class="author">Даниил Викторович</div>
+									<!--<div class="author-details">CLEANING TECHNICAN</div>-->
+								</div>
+							</li>
+							<li>
+								<p class="template-quote">Lorem ipsum dolor sit amet consectetur suspendisse nulla aliquam. Risus rutrum tellus eget ultrices pretium nisi amet facilisis. Augue eu vulputate tortor egestas cursus vivamus. Commodo dictum iaculis eget massa phasellus ultrices as nunc dignissim. Id nulla amet tincidunt urna sed massa the sed massa ultrices amet eget.</p>
+								<div class="author-details-box">
+									<div class="author">Петр Семёнович</div>
+									<!--<div class="author-details">CLEANING TECHNICAN</div>-->
+								</div>
+							</li>
+							<li>
+								<p class="template-quote">Lorem ipsum dolor sit amet consectetur suspendisse nulla aliquam. Risus rutrum tellus eget ultrices pretium nisi amet facilisis. Augue eu vulputate tortor egestas cursus vivamus. Commodo dictum iaculis eget massa phasellus ultrices as nunc dignissim. Id nulla amet tincidunt urna sed massa the sed massa ultrices amet eget.</p>
+								<div class="author-details-box">
+									<div class="author">Анна Ивановна</div>
+									<!--<div class="author-details">CLEANING TECHNICAN</div>-->
+								</div>
+							</li>
+						</ul>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-</section>
-<??>
+</div>
+*/?>
 <?//require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

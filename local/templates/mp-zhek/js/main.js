@@ -45,77 +45,80 @@ $( document ).ready(function() {
 	};
 	preloader();
 	//slider
-	$('.revolution-slider').show().revolution({
-		dottedOverlay:"none",
-		delay:600000,
-		sliderLayout:"auto",
-		responsiveLevels:[1920,1173,751,463],
-		gridwidth:[1170,750,462,300],
-		gridheight:[500,450,280,320],
-		// gridheight:[700,650,380,420],
-		lazyType:"none",
-		navigation: {
-			keyboardNavigation:"on",
-			onHoverStop:"on",
-			touch:{
-				touchenabled:"on",
-				swipe_treshold : 75,
-				swipe_min_touches : 1,
-				drag_block_vertical:false,
-				swipe_direction:"horizontal"
-            },
-			arrows: {
-				style:"preview1",
-				enable:true,
-				hide_onmobile:true,
-				hide_onleave:true,
-				hide_delay:200,
-				hide_delay_mobile:1500,
-				hide_under:767,
-				hide_over:9999,
-				tmp:'',
-				left : {
-					h_align:"left",
-					v_align:"center",
-					h_offset:50,
-					v_offset:0,
+	if($('.revolution-slider').length>0){
+
+		$('.revolution-slider').show().revolution({
+			dottedOverlay:"none",
+			delay:600000,
+			sliderLayout:"auto",
+			responsiveLevels:[1920,1173,751,463],
+			gridwidth:[1170,750,462,300],
+			gridheight:[500,450,280,320],
+			// gridheight:[700,650,380,420],
+			lazyType:"none",
+			navigation: {
+				keyboardNavigation:"on",
+				onHoverStop:"on",
+				touch:{
+					touchenabled:"on",
+					swipe_treshold : 75,
+					swipe_min_touches : 1,
+					drag_block_vertical:false,
+					swipe_direction:"horizontal"
 				},
-				right : {
-					h_align:"right",
-					v_align:"center",
-					h_offset:50,
-					v_offset:0
+				arrows: {
+					style:"preview1",
+					enable:true,
+					hide_onmobile:true,
+					hide_onleave:true,
+					hide_delay:200,
+					hide_delay_mobile:1500,
+					hide_under:767,
+					hide_over:9999,
+					tmp:'',
+					left : {
+						h_align:"left",
+						v_align:"center",
+						h_offset:50,
+						v_offset:0,
+					},
+					right : {
+						h_align:"right",
+						v_align:"center",
+						h_offset:50,
+						v_offset:0
+					}
+				},
+				bullets: {
+					style:"preview1",
+					enable:true,
+					hide_onmobile:true,
+					hide_onleave:true,
+					hide_delay:200,
+					hide_delay_mobile:1500,
+					hide_under:767,
+					hide_over:9999,
+					direction:"horizontal",
+					h_align:"center",
+					v_align:"bottom",
+					space:16,
+					h_offset:0,
+					v_offset:37,
+					tmp:''
+				},
+				parallax:{
+				type:"off",
+				bgparallax:"off",
+				disable_onmobile:"on"
 				}
 			},
-			bullets: {
-				style:"preview1",
-				enable:true,
-				hide_onmobile:true,
-				hide_onleave:true,
-				hide_delay:200,
-				hide_delay_mobile:1500,
-				hide_under:767,
-				hide_over:9999,
-				direction:"horizontal",
-				h_align:"center",
-				v_align:"bottom",
-				space:16,
-				h_offset:0,
-				v_offset:37,
-				tmp:''
-			},
-			parallax:{
-			   type:"off",
-			   bgparallax:"off",
-			   disable_onmobile:"on"
-			}
-		},
-		shadow:0,
-		spinner:"spinner0",
-		stopAfterLoops:-1,
-		stopAtSlide:-1,
-		disableProgressBar: "on"
-	});
+			shadow:0,
+			spinner:"spinner0",
+			stopAfterLoops:-1,
+			stopAtSlide:-1,
+			disableProgressBar: "on"
+		});
+	}
 	//search form
 	$(".template-search").on("click", function(event){
 		event.preventDefault();
@@ -853,34 +856,38 @@ $( document ).ready(function() {
 	counters();
 	
 	//accordion
-	$(".accordion").accordion({
-		event: 'change',
-		heightStyle: 'content',
-		icons: {"header": "template-plus", "activeHeader": "template-minus"},
-		/*active: false,
-		collapsible: true*/
-		create: function(event, ui){
-			$(window).trigger('resize');
-			$(".horizontal_carousel").trigger('configuration', ['debug', false, true]);
-		}
-	});
-	$(".accordion.wide").on("accordionchange", function(event, ui){
-		$("html, body").animate({scrollTop: $("#"+$(ui.newHeader).attr("id")).offset().top}, 400);
-	});
-	$(".tabs:not('.no-scroll')").on("tabsbeforeactivate", function(event, ui){
-		$("html, body").animate({scrollTop: $("#"+$(ui.newTab).children("a").attr("id")).offset().top}, 400);
-	});
-	$(".tabs").tabs({
-		event: 'change',
-		show: 200,
-		hide: 200,
-		create: function(){
-			$("html, body").scrollTop(0);
-		},
-		activate: function(event, ui){
-			ui.oldPanel.find(".submit-contact-form, [name='submit'], [name='name'], [name='email'], [name='message']").qtip('hide');
-		}
-	});
+	if($('.accordion').length>0){
+		$(".accordion").accordion({
+			event: 'change',
+			heightStyle: 'content',
+			icons: {"header": "template-plus", "activeHeader": "template-minus"},
+			/*active: false,
+			collapsible: true*/
+			create: function(event, ui){
+				$(window).trigger('resize');
+				$(".horizontal_carousel").trigger('configuration', ['debug', false, true]);
+			}
+		});
+		$(".accordion.wide").on("accordionchange", function(event, ui){
+			$("html, body").animate({scrollTop: $("#"+$(ui.newHeader).attr("id")).offset().top}, 400);
+		});
+	}
+	if($('.tabs').length>0){
+		$(".tabs:not('.no-scroll')").on("tabsbeforeactivate", function(event, ui){
+			$("html, body").animate({scrollTop: $("#"+$(ui.newTab).children("a").attr("id")).offset().top}, 400);
+		});
+		$(".tabs").tabs({
+			event: 'change',
+			show: 200,
+			hide: 200,
+			create: function(){
+				$("html, body").scrollTop(0);
+			},
+			activate: function(event, ui){
+				ui.oldPanel.find(".submit-contact-form, [name='submit'], [name='name'], [name='email'], [name='message']").qtip('hide');
+			}
+		});
+	}
 	
 	//browser history
 	$(".tabs .ui-tabs-nav a").on("click", function(){
@@ -1137,8 +1144,8 @@ $( document ).ready(function() {
 			}
 		}
 	}
-	$(window).resize(windowResize);
-	window.addEventListener('orientationchange', windowResize);	
+	// $(window).resize(windowResize);
+	// window.addEventListener('orientationchange', windowResize);	
 	
 	//timeago
 	$("abbr.timeago").timeago();

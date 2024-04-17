@@ -13,32 +13,44 @@ $arSite = $rsSites->Fetch();
 		<!--meta-->
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.2" />
-		<meta name="format-detection" content="telephone=no" />
+		<!-- <meta name="format-detection" content="telephone=no" /> -->
 		<meta name="keywords" content="" />
 		<meta name="description" content="" />
 		<?$APPLICATION->ShowHead(); ?>
 		<!--slider revolution-->
 		<link rel="stylesheet" type="text/css" href="rs-plugin/css/settings.css">
-		<!-- <link rel="stylesheet" type="text/css" href="<?=SITE_TEMPLATE_PATH?>/css/odometer-theme-default.css"> -->
+		<?/*
+		<!--style-->
+		<link rel="stylesheet" type="text/css" href="<?=SITE_TEMPLATE_PATH?>/css/reset.css">
+		<link rel="stylesheet" type="text/css" href="<?=SITE_TEMPLATE_PATH?>/css/superfish.css">
+		<link rel="stylesheet" type="text/css" href="<?=SITE_TEMPLATE_PATH?>/css/prettyPhoto.css">
+		<link rel="stylesheet" type="text/css" href="<?=SITE_TEMPLATE_PATH?>/css/jquery.qtip.css">
+		<link rel="stylesheet" type="text/css" href="<?=SITE_TEMPLATE_PATH?>/css/main.css">
+		<link rel="stylesheet" type="text/css" href="<?=SITE_TEMPLATE_PATH?>/css/animations.css">
+		<link rel="stylesheet" type="text/css" href="<?=SITE_TEMPLATE_PATH?>/css/responsive.css">
+		<link rel="stylesheet" type="text/css" href="<?=SITE_TEMPLATE_PATH?>/css/odometer-theme-default.css">
+		<!--fonts-->
+		<link rel="stylesheet" type="text/css" href="<?=SITE_TEMPLATE_PATH?>/fonts/fonts.css">
 		<!-- <link rel="stylesheet" type="text/css" href="fonts/features/style.css"> -->
-		<!-- <link rel="stylesheet" type="text/css" href="fonts/template/style.css">
-		<link rel="stylesheet" type="text/css" href="fonts/social/style.css"> -->
-
+		<link rel="stylesheet" type="text/css" href="<?=SITE_TEMPLATE_PATH?>/fonts/template/style.css">
+		<link rel="stylesheet" type="text/css" href="<?=SITE_TEMPLATE_PATH?>/fonts/social/style.css">
+*/?>
 		<link rel="shortcut icon" href="<?=SITE_TEMPLATE_PATH?>/images/favicon.ico">
 		<?
 		$arCss = array(
-			//'//cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css',
+			'//cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css',
 			SITE_TEMPLATE_PATH.'/css/reset.css',
-			SITE_TEMPLATE_PATH.'/css/fonts.css',
 			SITE_TEMPLATE_PATH.'/css/superfish.css',
+
 			SITE_TEMPLATE_PATH.'/css/prettyPhoto.css',
 			SITE_TEMPLATE_PATH.'/css/jquery.qtip.css',
+			SITE_TEMPLATE_PATH.'/css/main.css',
 			SITE_TEMPLATE_PATH.'/css/animations.css',
 			SITE_TEMPLATE_PATH.'/css/responsive.css',
-
-			'//cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css',
-
-			//cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css',
+			//fonts
+			SITE_TEMPLATE_PATH.'/fonts/fonts.css',
+			SITE_TEMPLATE_PATH.'/fonts/template/style.css',
+			SITE_TEMPLATE_PATH.'/fonts/social/style.css',
 		);
 
 		foreach ($arCss as $key => $css) {
@@ -49,7 +61,7 @@ $arSite = $rsSites->Fetch();
 			SITE_TEMPLATE_PATH.'/js/jquery-3.3.1.min.js',
 			// SITE_TEMPLATE_PATH.'/js/jquery-1.12.4.min.js',
 			SITE_TEMPLATE_PATH.'/js/jquery-migrate-1.4.1.min.js',
-			//--slider revolution
+			// //--slider revolution
 			SITE_TEMPLATE_PATH.'/lib/jquery.themepunch.tools.min.js',	//rs-plugin
 			SITE_TEMPLATE_PATH.'/lib/jquery.themepunch.revolution.min.js',	//rs-plugin
 			SITE_TEMPLATE_PATH.'/js/jquery.ba-bbq.min.js',
@@ -67,11 +79,9 @@ $arSite = $rsSites->Fetch();
 			SITE_TEMPLATE_PATH.'/js/jquery.prettyPhoto.js',
 			SITE_TEMPLATE_PATH.'/js/jquery.qtip.min.js',
 			SITE_TEMPLATE_PATH.'/js/jquery.blockUI.min.js',
-
-
 			SITE_TEMPLATE_PATH.'/js/main.js',
 
-			'//cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js',
+			// '//cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js',
 
 			// <script type="text/javascript" src="js/odometer.min.js"></script>
 
@@ -87,16 +97,19 @@ $arSite = $rsSites->Fetch();
 		}
 	?>
 	</head>
-	<?$APPLICATION->ShowPanel(); ?>
+	<div class="d-none d-lg-block">
+		<?$APPLICATION->ShowPanel(); ?>
+	</div>
+	
 	<?//$_COOKIE["cm_header_type"] = 'type_1';?>
 	<body class="<?//php echo (isset($_COOKIE['cm_layout']) && $_COOKIE['cm_layout']=="boxed" ? (isset($_COOKIE['cm_layout_style']) && $_COOKIE['cm_layout_style']!="" ? $_COOKIE['cm_layout_style'] . ' ' . $_COOKIE['cm_image_overlay'] : 'image-1 overlay') : ''); echo (isset($_COOKIE['cm_header_top_bar']) && $_COOKIE['cm_header_top_bar']=="yes" ? ' with-topbar' : ''); ?>">
 	
-	<div class="site-container<?//php echo ($_COOKIE['cm_layout']=="boxed" ? ' boxed' : ''); ?>">
+	<main class="site-container<?//php echo ($_COOKIE['cm_layout']=="boxed" ? ' boxed' : ''); ?>">
 		<!--<div class="site-container boxed">-->
 		<?// TopBar start
 			?>
 			<div class="header-top-bar-container clearfix">
-				<div class="header-top-bar">
+				<div class="header-top-bar container">
 					<ul class="contact-details clearfix">
 						<li class="template-location">
 							г. Ханты-Мансийск, ул.Боровая 9
@@ -129,7 +142,7 @@ $arSite = $rsSites->Fetch();
 			?>
 			<div class="header-container sticky<?//php echo (isset($_COOKIE['cm_menu_type']) && $_COOKIE['cm_menu_type']=="no_sticky" ? '' : ' sticky');?>">
 			<!--<div class="header-container sticky">-->
-				<div class="header clearfix">
+				<div class="header container clearfix">
 					<?php
 					/*if(empty($_COOKIE["cm_header_type"]) || $_COOKIE["cm_header_type"]!="type_2")
 					{
@@ -181,6 +194,23 @@ $arSite = $rsSites->Fetch();
 						<?$APPLICATION->IncludeComponent(
 							"bitrix:menu",
 							"top",
+							Array(
+								"ROOT_MENU_TYPE" => "top",
+								"MENU_CACHE_TYPE" => "N",
+								"MENU_CACHE_TIME" => "36000",
+								"MENU_CACHE_USE_GROUPS" => "N",
+								"MENU_CACHE_GET_VARS" => array(),
+								"MAX_LEVEL" => "2",
+								"CHILD_MENU_TYPE" => "left",
+								"USE_EXT" => "Y",
+								"DELAY" => "N",
+								"ALLOW_MULTI_SELECT" => "N",
+								"CACHE_SELECTED_ITEMS" => "N",
+								)
+						);?>
+						<?$APPLICATION->IncludeComponent(
+							"bitrix:menu",
+							"mobile",
 							Array(
 								"ROOT_MENU_TYPE" => "top",
 								"MENU_CACHE_TYPE" => "N",

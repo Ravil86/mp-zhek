@@ -1,0 +1,16 @@
+:root{
+    --color-primary: #56B665;
+
+
+    --bs-body-font-family: "PT Sans", sans-serif;
+    --bs-nav-link-font-size: 0.95em;
+
+    --navbar-active-color: var(--color-primary);
+
+    --nav-link-color: #303030!important;
+    --bs-border-radius-lg: 0.2rem;
+    --bs-border-radius: 0.15rem;
+
+    --bs-dropdown-link-hover-color: var(--color-primary)!important;
+  
+  }
