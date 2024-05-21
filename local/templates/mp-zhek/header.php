@@ -1,10 +1,13 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();?>
 <?
 $GLOBALS["IS_HOME"] = $APPLICATION->GetCurPage(true) === SITE_DIR . "index.php";
+$GLOBALS["PAGE"] = $APPLICATION->GetCurDir(true) != "/";
 use Bitrix\Main\Page\Asset;
 $rsSites = CSite::GetByID(SITE_ID);
 $arSite = $rsSites->Fetch();
 // dump($arSite);
+
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -18,7 +21,7 @@ $arSite = $rsSites->Fetch();
 		<meta name="description" content="" />
 		<?$APPLICATION->ShowHead(); ?>
 		<!--slider revolution-->
-		<link rel="stylesheet" type="text/css" href="rs-plugin/css/settings.css">
+		<!--link rel="stylesheet" type="text/css" href="rs-plugin/css/settings.css"-->
 		<?/*
 		<!--style-->
 		<link rel="stylesheet" type="text/css" href="<?=SITE_TEMPLATE_PATH?>/css/reset.css">
@@ -46,7 +49,11 @@ $arSite = $rsSites->Fetch();
 			SITE_TEMPLATE_PATH.'/css/jquery.qtip.css',
 			SITE_TEMPLATE_PATH.'/css/main.css',
 			SITE_TEMPLATE_PATH.'/css/animations.css',
-			SITE_TEMPLATE_PATH.'/css/responsive.css',
+			SITE_TEMPLATE_PATH.'/css/revicons.css',
+
+			SITE_TEMPLATE_PATH.'/lib/owl.carousel/css/owl.carousel.min.css',
+			SITE_TEMPLATE_PATH.'/lib/owl.carousel/css/owl.theme.default.min.css',
+
 			//fonts
 			SITE_TEMPLATE_PATH.'/fonts/fonts.css',
 			SITE_TEMPLATE_PATH.'/fonts/template/style.css',
@@ -69,7 +76,11 @@ $arSite = $rsSites->Fetch();
 			SITE_TEMPLATE_PATH.'/js/jquery.ui.touch-punch.min.js',
 			SITE_TEMPLATE_PATH.'/js/jquery.isotope.min.js',
 			SITE_TEMPLATE_PATH.'/js/jquery.easing.1.3.min.js',
-			SITE_TEMPLATE_PATH.'/js/jquery.carouFredSel-6.2.1-packed.js',
+
+			SITE_TEMPLATE_PATH.'/js/jquery.carouFredSel-6.2.1-packed.js',		//Старый
+
+			SITE_TEMPLATE_PATH.'/lib/owl.carousel/js/owl.carousel.min.js',
+
 			SITE_TEMPLATE_PATH.'/js/jquery.touchSwipe.min.js',
 			SITE_TEMPLATE_PATH.'/js/jquery.transit.min.js',
 			SITE_TEMPLATE_PATH.'/js/jquery.timeago.js',
@@ -246,3 +257,34 @@ $arSite = $rsSites->Fetch();
 					</div>*/?>
 				</div>
 			</div>
+
+
+	<?if($GLOBALS["PAGE"]):?>
+			<div class="container-fluid bg-gray full-width page-header vertical-align-table!">
+				<div class="container">
+					<div class="page-header-left">
+						<h1><?$APPLICATION->ShowTitle()?></h1>
+					</div>
+					<div class="page-header-right">
+						<div class="bread-crumb-container">
+							<ul class="bread-crumb">
+								<li>
+									<a title="Home" href="?page=home">
+										Home
+									</a>
+								</li>
+								<li class="separator">
+									/
+								</li>
+								<li>
+									About Us
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="clearfix">
+				<div class="container page-margin-top-section padding-bottom-100">
+			
+	<?endif?>

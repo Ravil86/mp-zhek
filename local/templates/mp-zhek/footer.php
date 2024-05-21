@@ -1,33 +1,42 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();?>
+
+<?if($GLOBALS["PAGE"]):?>
+		</div>
+	</div>
+<?endif?>
 			<div class="container-fluid row! bg-dark footer-row full-width! padding-top-30">
-				<div class="row padding-bottom-33">
-					<div class="column column-1-4">
-						<ul class="contact-details-list">
-							<li class="features-phone">
-								<label>Телефон приемной</label>
-								<p><a href="tel:2507257052">+7 (3467) 958-008</a></p>
-							</li>
-						</ul>
-					</div>
-					<div class="column column-2-4">
-						<ul class="contact-details-list">
-							<li class="features-map">
-								<label>628011, Тюменская область, ХМАО-Югра</label>
-								<p>г. Ханты-Мансийск, ул.Боровая 9</p>
-							</li>
-						</ul>
-					</div>
-					<div class="column column-1-4">
-						<ul class="contact-details-list">
-							<li class="features-wallet">
-								<label>Телефон диспетчера</label>
-								<p><a href="tel:2507257052">+7 (3467) 377-077</a></p>
-							</li>
-						</ul>
-					</div>
+				<div class="container">
+					
+						<div class="row padding-bottom-25">
+							<div class="col col-md-3 column column-1-4!">
+								<ul class="contact-details-list">
+									<li class="features-phone">
+										<label>Телефон приемной</label>
+										<p><a href="tel:2507257052">+7 (3467) 958-008</a></p>
+									</li>
+								</ul>
+							</div>
+							<div class="col col-md-5 column column-2-4!">
+								<ul class="contact-details-list">
+									<li class="features-map">
+										<label>628011, Тюменская область, ХМАО-Югра</label>
+										<p>г. Ханты-Мансийск, ул.Боровая 9</p>
+									</li>
+								</ul>
+							</div>
+							<div class="col col-md-3 column column-1-4!">
+								<ul class="contact-details-list">
+									<li class="features-wallet">
+										<label>Телефон диспетчера</label>
+										<p><a href="tel:2507257052">+7 (3467) 377-077</a></p>
+									</li>
+								</ul>
+							</div>
+						</div>
+					
 				</div> 
 			</div>
-			<div class="row! container-fluid bg-dark-gray footer-row full-width! padding-top-61! padding-bottom-36">
+			<div class="row! container-fluid bg-dark-gray footer-row full-width! padding-top-61! padding-bottom-35">
 				<!-- <div class="row row-4-4">
 					<div class="column column-1-4">
 						<h6>ABOUT US</h6>

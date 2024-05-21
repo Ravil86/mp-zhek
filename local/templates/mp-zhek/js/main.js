@@ -53,7 +53,7 @@ $( document ).ready(function() {
 			sliderLayout:"auto",
 			responsiveLevels:[1920,1173,751,463],
 			gridwidth:[1170,750,462,300],
-			gridheight:[500,450,280,320],
+			gridheight:[550,500,380,420],
 			// gridheight:[700,650,380,420],
 			lazyType:"none",
 			navigation: {
@@ -359,7 +359,7 @@ $( document ).ready(function() {
 				duration = elementClasses[i].replace('duration-', '');
 		}
 		self.carouFredSel({
-			/*responsive: true,*/
+			responsive: true,
 			width: "auto",
 			items: {
 				visible: 1
@@ -821,7 +821,7 @@ $( document ).ready(function() {
 			});
 		});
 	};
-	horizontalCarousel();
+	// horizontalCarousel();
 	
 	//counters
 	var counters = function()

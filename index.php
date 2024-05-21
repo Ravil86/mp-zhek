@@ -2,100 +2,89 @@
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 ?>
 <?php
-	//require_once('includes/slider.php');
+	require_once('includes/slider.php');
 ?>
 
 <!-- <div class="theme-page">
 	<div class="clearfix"> -->
 
 	<section>
-		<div class="row! container margin-top-89">
+		<div class="row! container margin-top-90">
 			<div class="row!">
 				<h2 class="box-header">Наши услуги</h2>
 				<p class="description align-center">Предоставление лучших услуг для наших клиентов</p>
-				<?/*
-				<div class="carousel-container margin-top-65 padding-bottom-60 clearfix">
-					<ul class="services-list services-icons horizontal-carousel gray clearfix">
-						<li class="column column-1-3">
-							<a href="?page=service_house_cleaning" title="House Cleaning">
-								<span class="service-icon features-armchair"></span>
-							</a>
-							<h4><a href="?page=service_house_cleaning" title="House Cleaning">Услуга 1</a></h4>
-							<p>Lorem ipsum dolor sit consectetur. Ut tellus suspendisse nulla aliquam. Risus rutrum eget ultrices.</p>
-							<div class="align-center margin-top-42 padding-bottom-16">
-								<a class="more" href="#<?//?page=service_house_cleaning?>" title="Читать подробнее...">Читать подробнее...</a>
-							</div>
-						</li>
-						<li class="column column-1-3">
-							<a href="?page=service_post_renovation" title="Post Renovation">
-								<span class="service-icon features-paint"></span>
-							</a>
-							<h4><a href="?page=service_post_renovation" title="Post Renovation">Услуга 2</a></h4>
-							<p>Lorem ipsum dolor sit consectetur. Ut tellus suspendisse nulla aliquam. Risus rutrum eget ultrices.</p>
-							<div class="align-center margin-top-42 padding-bottom-16">
-								<a class="more" href="#<?//?page=service_post_renovation?>" title="Читать подробнее...">Читать подробнее...</a>
-							</div>
-						</li>
-						<li class="column column-1-3">
-							<a href="?page=service_green_spaces_maintenance" title="Green Spaces Maintenance">
-								<span class="service-icon features-flower"></span>
-							</a>
-							<h4><a href="?page=service_green_spaces_maintenance" title="Green Spaces Maintenance">Услуга 3</a></h4>
-							<p>Lorem ipsum dolor sit consectetur. Ut tellus suspendisse nulla aliquam. Risus rutrum eget ultrices.</p>
-							<div class="align-center margin-top-42 padding-bottom-16">
-								<a class="more" href="#<?//?page=service_green_spaces_maintenance?>" title="Читать подробнее...">Читать подробнее...</a>
-							</div>
-						</li>
-						<li class="column column-1-3">
-							<a href="?page=service_move_in_out" title="Move In Out Service">
-								<span class="service-icon features-home-3"></span>
-							</a>
-							<h4><a href="?page=service_move_in_out" title="Move In Out Service">Услуга 4</a></h4>
-							<p>Lorem ipsum dolor sit consectetur. Ut tellus suspendisse nulla aliquam. Risus rutrum eget ultrices.</p>
-							<div class="align-center margin-top-42 padding-bottom-16">
-								<a class="more" href="#<?//?page=service_move_in_out?>" title="Читать подробнее...">Читать подробнее...</a>
-							</div>
-						</li>
-						<li class="column column-1-3">
-							<a href="?page=service_commercial_cleaning" title="Commercial Cleaning">
-								<span class="service-icon features-office-2"></span>
-							</a>
-							<h4><a href="?page=service_commercial_cleaning" title="Commercial Cleaning">Услуга 5</a></h4>
-							<p>Lorem ipsum dolor sit consectetur. Ut tellus suspendisse nulla aliquam. Risus rutrum eget ultrices.</p>
-							<div class="align-center margin-top-42 padding-bottom-16">
-								<a class="more" href="#<?//?page=service_commercial_cleaning?>" title="Читать подробнее...">Читать подробнее...</a>
-							</div>
-						</li>
-						<li class="column column-1-3">
-							<a href="?page=service_window_cleaning" title="Window Cleaning">
-								<span class="service-icon features-spray-bottle"></span>
-							</a>
-							<h4><a href="?page=service_window_cleaning" title="Window Cleaning">Услуга 6</a></h4>
-							<p>Lorem ipsum dolor sit consectetur. Ut tellus suspendisse nulla aliquam. Risus rutrum eget ultrices.</p>
-							<div class="align-center margin-top-42 padding-bottom-16">
-								<a class="more" href="#<?//?page=service_window_cleaning?>" title="Читать подробнее...">Читать подробнее...</a>
-							</div>
-						</li>
-						<li class="column column-1-3">
-							<a href="?page=service_house_cleaning" title="House Cleaning">
-								<span class="service-icon features-armchair"></span>
-							</a>
-							<h4><a href="?page=service_house_cleaning" title="House Cleaning">Услуга 7</a></h4>
-							<p>Lorem ipsum dolor sit consectetur. Ut tellus suspendisse nulla aliquam. Risus rutrum eget ultrices.</p>
-							<div class="align-center margin-top-42 padding-bottom-16">
-								<a class="more" href="#<?//?page=service_house_cleaning?>" title="Читать подробнее...">Читать подробнее...</a>
-							</div>
-						</li>
-						<li class="column column-1-3">
-							<a href="?page=service_post_renovation" title="Post Renovation">
-								<span class="service-icon features-paint"></span>
-							</a>
-							<h4><a href="?page=service_post_renovation" title="Post Renovation">Услуга 8</a></h4>
-							<p>Lorem ipsum dolor sit consectetur. Ut tellus suspendisse nulla aliquam. Risus rutrum eget ultrices.</p>
-							<div class="align-center margin-top-42 padding-bottom-16">
-								<a class="more" href="#<?//?page=service_post_renovation?>" title="Читать подробнее...">Читать подробнее...</a>
-							</div>
-						</li>
+					<?$APPLICATION->IncludeComponent(
+						"bitrix:news.list", 
+						"carusel", 
+						array(
+							"DISPLAY_DATE" => "N",
+							"DISPLAY_NAME" => "Y",
+							"DISPLAY_PICTURE" => "N",
+							"DISPLAY_PREVIEW_TEXT" => "Y",
+							"AJAX_MODE" => "N",
+							"IBLOCK_TYPE" => "info",
+							"IBLOCK_ID" => "2",
+							"NEWS_COUNT" => "20",
+							"SORT_BY1" => "SORT",
+							"SORT_ORDER1" => "ASC",
+							"SORT_BY2" => "ID",
+							"SORT_ORDER2" => "ASC",
+							"FILTER_NAME" => "",
+							"FIELD_CODE" => array(
+								0 => "ID",
+								1 => "",
+							),
+							"PROPERTY_CODE" => array(
+								0 => "",
+								1 => "DESCRIPTION",
+								2 => "",
+							),
+							"CHECK_DATES" => "Y",
+							"DETAIL_URL" => "",
+							"PREVIEW_TRUNCATE_LEN" => "",
+							"ACTIVE_DATE_FORMAT" => "d.m.Y",
+							"SET_TITLE" => "N",
+							"SET_BROWSER_TITLE" => "N",
+							"SET_META_KEYWORDS" => "N",
+							"SET_META_DESCRIPTION" => "N",
+							"SET_LAST_MODIFIED" => "N",
+							"INCLUDE_IBLOCK_INTO_CHAIN" => "N",
+							"ADD_SECTIONS_CHAIN" => "N",
+							"HIDE_LINK_WHEN_NO_DETAIL" => "N",
+							"PARENT_SECTION" => "",
+							"PARENT_SECTION_CODE" => "",
+							"INCLUDE_SUBSECTIONS" => "N",
+							"CACHE_TYPE" => "A",
+							"CACHE_TIME" => "36000",
+							"CACHE_FILTER" => "N",
+							"CACHE_GROUPS" => "N",
+							"DISPLAY_TOP_PAGER" => "N",
+							"DISPLAY_BOTTOM_PAGER" => "N",
+							"PAGER_TITLE" => "Услуги",
+							"PAGER_SHOW_ALWAYS" => "N",
+							"PAGER_TEMPLATE" => "",
+							"PAGER_DESC_NUMBERING" => "N",
+							"PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
+							"PAGER_SHOW_ALL" => "N",
+							"PAGER_BASE_LINK_ENABLE" => "N",
+							"SET_STATUS_404" => "N",
+							"SHOW_404" => "N",
+							"MESSAGE_404" => "",
+							"PAGER_BASE_LINK" => "",
+							"PAGER_PARAMS_NAME" => "arrPager",
+							"AJAX_OPTION_JUMP" => "N",
+							"AJAX_OPTION_STYLE" => "Y",
+							"AJAX_OPTION_HISTORY" => "N",
+							"AJAX_OPTION_ADDITIONAL" => "",
+							"COMPONENT_TEMPLATE" => "carusel",
+							"STRICT_SECTION_CHECK" => "N",
+							"FILE_404" => ""
+						),
+						false,
+						['HIDE_ICONS'=> true]
+					);?>
+				<??>
+				
 						<!-- <li class="column column-1-3">
 							<a href="?page=service_green_spaces_maintenance" title="Green Spaces Maintenance">
 								<span class="service-icon features-flower"></span>
@@ -106,10 +95,6 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 								<a class="more" href="#<?//?page=service_green_spaces_maintenance?>" title="Читать подробнее...">Читать подробнее...</a>
 							</div>
 						</li> -->
-					</ul>
-					<div class="cm-carousel-pagination"></div>
-				</div>
-				*/?>
 			</div>
 		</div>
 </section>
@@ -368,8 +353,10 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 			<h2 class="box-header padding-top-60">Новости</h2>
 			<div class="row! container padding-top-30">
 				<div class="row">
-				<div class="column! column-3-4! col col-md-9">
-					<ul class="blog news row small! clearfix">
+				<div class="column! column-3-4! col col-md-8">
+
+					<?require_once('includes/news_main.php');?>
+					<?/*<ul class="blog news row small! clearfix">
 							<li class="column! column-1-2! col-12 col-md-6 mt-0">
 								<a href="#<?//?page=post?>" title="How to: deep clean your kitchen" class="post-image">
 									<div class="post-date">
@@ -418,14 +405,15 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 									</ul>
 								</div>
 							</li>
-						</ul>
+						</ul>*/?>
 			</div>
 			
-			<div class="column! column-1-4! col col-md-3 cm-smart-column">
-				<div class="cm-smart-column-wrapper" style="position: static; bottom: auto; top: auto; width: auto;">
+			<div class="column! column-1-4! col col-md-4 cm-smart-column">
+				<div class="cm-smart-column-wrapper!" style="position: static!; bottom: auto!; top: auto!; width: auto!;">
 					
+					<?require_once('includes/news_small.php');?>
 					<!-- <h6 class="box-header page-margin-top">LATEST POSTS</h6> -->
-					<ul class="blog small d-flex flex-column margin-top-30! clearfix">
+					<?/*<ul class="blog small d-flex flex-column margin-top-30! clearfix">
 						<li>
 							<a href="#" title="How to: deep clean your kitchen" class="post-image">
 								<img src="<?=SITE_TEMPLATE_PATH?>/images/samples/90x90/placeholder.jpg" alt="" style="display: block;">
@@ -459,7 +447,7 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 								</ul>
 							</div>
 						</li>
-					</ul>
+					</ul>*/?>
 				</div>
 			</div>
 		</div>
@@ -623,26 +611,26 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 							</ul>
 						</div>
 					</div>
-					<div class="column! column-1-2! col-12 col-lg-6">
+					<div class="column! column-1-2 col-12 col-lg-6">
 						<h3>Отзывы пользователей</h3>
-						<div class="row testimonials-container type-small margin-top-40">
+						<div class="row! d-flex testimonials-container type-small margin-top-40">
 							<div class="cm-carousel-pagination"></div>
 							<ul class="testimonials-list testimonials-carousel autoplay-0 pause_on_hover-1">
-								<li>
+								<li class="col-12">
 									<p class="template-quote">Lorem ipsum dolor sit amet consectetur suspendisse nulla aliquam. Risus rutrum tellus eget ultrices pretium nisi amet facilisis. Augue eu vulputate tortor egestas cursus vivamus. Commodo dictum iaculis eget massa phasellus ultrices as nunc dignissim. Id nulla amet tincidunt urna sed massa the sed massa ultrices amet eget.</p>
 									<div class="author-details-box">
 										<div class="author">Даниил Викторович</div>
 										<!--<div class="author-details">CLEANING TECHNICAN</div>-->
 									</div>
 								</li>
-								<li>
+								<li class="col-12">
 									<p class="template-quote">Lorem ipsum dolor sit amet consectetur suspendisse nulla aliquam. Risus rutrum tellus eget ultrices pretium nisi amet facilisis. Augue eu vulputate tortor egestas cursus vivamus. Commodo dictum iaculis eget massa phasellus ultrices as nunc dignissim. Id nulla amet tincidunt urna sed massa the sed massa ultrices amet eget.</p>
 									<div class="author-details-box">
 										<div class="author">Петр Семёнович</div>
 										<!--<div class="author-details">CLEANING TECHNICAN</div>-->
 									</div>
 								</li>
-								<li>
+								<li class="col-12">
 									<p class="template-quote">Lorem ipsum dolor sit amet consectetur suspendisse nulla aliquam. Risus rutrum tellus eget ultrices pretium nisi amet facilisis. Augue eu vulputate tortor egestas cursus vivamus. Commodo dictum iaculis eget massa phasellus ultrices as nunc dignissim. Id nulla amet tincidunt urna sed massa the sed massa ultrices amet eget.</p>
 									<div class="author-details-box">
 										<div class="author">Анна Ивановна</div>
@@ -658,4 +646,4 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 	</div>
 </section>
 <??>
-<?//require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
+<?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

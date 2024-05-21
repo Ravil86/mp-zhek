@@ -1,22 +1,15 @@
 <?
 $aMenuLinks = Array(
 	Array(
-		"О нас", 
-		"/about/", 
+		"Услуги", 
+		"/services/", 
 		Array(), 
 		Array(), 
 		"" 
 	),
 	Array(
-		"Учебный центр", 
-		"/uchebnyy-center/", 
-		Array(), 
-		Array(), 
-		"" 
-	),
-	Array(
-		"Деятельность", 
-		"/activity/", 
+		"Инструкции", 
+		"/instruktsii/", 
 		Array(), 
 		Array(), 
 		"" 
@@ -29,7 +22,21 @@ $aMenuLinks = Array(
 		"" 
 	),
 	Array(
-		"Контакты", 
+		"О нас", 
+		"/about/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Раскрытие информации", 
+		"/raskrytie-informatsii/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Наши должники", 
 		"/contacts/", 
 		Array(), 
 		Array(), 
