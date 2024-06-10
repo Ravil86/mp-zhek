@@ -68,6 +68,7 @@
 		"COMPOSITE_FRAME_MODE" => "A",
 		"COMPOSITE_FRAME_TYPE" => "AUTO"
 	),
-	false
-);
-			?>
+	false,
+	['HIDE_ICONS'=> true]
+	);
+?>

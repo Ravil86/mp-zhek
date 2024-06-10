@@ -20,7 +20,7 @@
 	visibility:		inherit; /* fixes IE7 'sticky bug' */
 }
 .sf-menu li {
-	float:			left;
+	/* float:			left; */
 	position:		relative;
 }
 .sf-menu a {
@@ -54,7 +54,7 @@ ul.sf-menu li li li.sfHover ul {
 
 /*** DEMO SKIN ***/
 .sf-menu {
-	float:			left;
+	/* float:			left; */
 	margin-bottom:	1em;
 }
 .sf-menu a {

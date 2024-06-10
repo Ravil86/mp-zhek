@@ -29,7 +29,7 @@ $this->setFrameMode(true);
 				
 				<div class="tp-caption container"
 					id="<?=$this->GetEditAreaId($arItem['ID']);?>"
-					data-frames='[{"delay":1500,"speed":1500,"from":"y:-40;o:0;","ease":"easeInOutExpo"},{"delay":"wait","speed":500,"to":"o:0;","ease":"easeInOutExpo"}]'
+					data-frames='[{"delay":500,"speed":500,"from":"y:-40;o:0;","ease":"easeInOutExpo"},{"delay":"wait","speed":500,"to":"o:0;","ease":"easeInOutExpo"}]'
 					data-x="center"
 					data-y="<?=$arItem['PROPERTIES']['LINK']['VALUE']?"['100', '80', '60', '40']":"['125', '100', '70', '50']"?>"
 					>
@@ -64,7 +64,7 @@ $this->setFrameMode(true);
 				</div> -->
 				<!-- LAYER 04 -->
 				<div class="tp-caption"
-					data-frames='[{"delay":1500,"speed":1500,"from":"y:40;o:0;","ease":"easeInOutExpo"},{"delay":"wait","speed":500,"to":"o:0;","ease":"easeInOutExpo"}]'
+					data-frames='[{"delay":1000,"speed":1000,"from":"y:40;o:0;","ease":"easeInOutExpo"},{"delay":"wait","speed":500,"to":"o:0;","ease":"easeInOutExpo"}]'
 					data-x="center"
 					data-y="['386', '418', '300', '340']"
 					>					

@@ -1,14 +1,17 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();?>
 
 <?if($GLOBALS["PAGE"]):?>
-		</div>
+		<?if(!defined('NOT_MENU')):?>
+				</div>
+						</div>
+		<?endif?>
 	</div>
 <?endif?>
 			<div class="container-fluid row! bg-dark footer-row full-width! padding-top-30">
 				<div class="container">
 					
 						<div class="row padding-bottom-25">
-							<div class="col col-md-3 column column-1-4!">
+							<div class="col-12 col-md-3 column">
 								<ul class="contact-details-list">
 									<li class="features-phone">
 										<label>Телефон приемной</label>
@@ -16,7 +19,7 @@
 									</li>
 								</ul>
 							</div>
-							<div class="col col-md-5 column column-2-4!">
+							<div class="col-12 col-md-5 column">
 								<ul class="contact-details-list">
 									<li class="features-map">
 										<label>628011, Тюменская область, ХМАО-Югра</label>
@@ -24,9 +27,10 @@
 									</li>
 								</ul>
 							</div>
-							<div class="col col-md-3 column column-1-4!">
+							<div class="col-12 col-md-3 column">
 								<ul class="contact-details-list">
-									<li class="features-wallet">
+									<li class="features-phone">
+									<!-- <li class="features-wallet"> -->
 										<label>Телефон диспетчера</label>
 										<p><a href="tel:2507257052">+7 (3467) 377-077</a></p>
 									</li>
@@ -36,7 +40,7 @@
 					
 				</div> 
 			</div>
-			<div class="row! container-fluid bg-dark-gray footer-row full-width! padding-top-61! padding-bottom-35">
+			<div class="row! container-fluid bg-dark-gray footer-row full-width! padding-top-61! padding-bottom-25">
 				<!-- <div class="row row-4-4">
 					<div class="column column-1-4">
 						<h6>ABOUT US</h6>
@@ -100,7 +104,7 @@
 						</li>
 					</ul> -->
 				</div>
-				<div class="row! align-center padding-top-30">
+				<div class="row! align-center pt-3 padding-top-30!">
 					<span class="copyright">© Все права защищены. 2024 <?//<a href="https://themeforest.net/item/cleanmate-cleaning-company-maid-gardening-template/20493947?ref=QuanticaLabs" title="Cleanmate Template" target="_blank">Cleanmate Template</a> by <a href="http://quanticalabs.com" title="QuanticaLabs" target="_blank">QuanticaLabs</a>?></span>
 				</div>
 			</div>
@@ -115,5 +119,10 @@
 		<?php
 		//require_once("style_selector/style_selector.php");
 		?>
+		<script>
+			Fancybox.bind("[data-fancybox]", {
+			// Your custom options
+			});
+		</script>
 	</body>
 </html>

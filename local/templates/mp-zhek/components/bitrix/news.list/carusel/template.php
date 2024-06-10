@@ -22,7 +22,8 @@ $this->setFrameMode(true);
 			$this->AddEditAction($arItem['ID'], $arItem['EDIT_LINK'], CIBlock::GetArrayByID($arItem["IBLOCK_ID"], "ELEMENT_EDIT"));
 			$this->AddDeleteAction($arItem['ID'], $arItem['DELETE_LINK'], CIBlock::GetArrayByID($arItem["IBLOCK_ID"], "ELEMENT_DELETE"), array("CONFIRM" => GetMessage('CT_BNL_ELEMENT_DELETE_CONFIRM')));
 			?>
-			<li class="d-flex flex-column justify-content-between h-100 service-item" id="<?=$this->GetEditAreaId($arItem['ID']);?>">
+			<li class="h-100 service-item">
+				<div class="d-flex flex-column justify-content-between h-100" id="<?=$this->GetEditAreaId($arItem['ID']);?>">
 						<?if($arParams["DISPLAY_PICTURE"]!="N" && is_array($arItem["PREVIEW_PICTURE"])):?>
 							<?if(!$arParams["HIDE_LINK_WHEN_NO_DETAIL"] || ($arItem["DETAIL_TEXT"] && $arResult["USER_HAVE_ACCESS"])):?>
 								<a href="<?=$arItem["DETAIL_PAGE_URL"]?>" title="<?=$arItem["NAME"]?>"><img
@@ -53,9 +54,9 @@ $this->setFrameMode(true);
 						<?endif?>
 						<?if($arParams["DISPLAY_NAME"]!="N" && $arItem["NAME"]):?>
 							<?if(!$arParams["HIDE_LINK_WHEN_NO_DETAIL"] || ($arItem["DETAIL_TEXT"] && $arResult["USER_HAVE_ACCESS"])):?>
-								<h4><a href="<?echo $arItem["DETAIL_PAGE_URL"]?>"><?=$arItem["NAME"]?></a></h4>
+								<h4 class="pt-1"><a href="<?echo $arItem["DETAIL_PAGE_URL"]?>"><?=$arItem["NAME"]?></a></h4>
 							<?else:?>
-								<h4><?echo $arItem["NAME"]?></h4>
+								<h4 class="pt-1"><?echo $arItem["NAME"]?></h4>
 							<?endif;?>
 						<?endif;?>
 						<?if($arParams["DISPLAY_PREVIEW_TEXT"]!="N" && $arItem["PREVIEW_TEXT"]):?>
@@ -82,7 +83,7 @@ $this->setFrameMode(true);
 						<div class="align-center margin-top-42 padding-bottom-16">
 							<a class="more" href="<?=$arItem["DETAIL_PAGE_URL"]?>" title="Читать подробнее...">Читать подробнее...</a>
 						</div>
-				
+				</div>
 			</li>
 		<?endforeach;?>
 	</ul>

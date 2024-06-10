@@ -23,10 +23,17 @@ body {
 	color: black;
 	background: white;
 }
-ol, ul {
-	list-style: none;
+ul {
 	padding: 0;
 	margin: 0;
+	list-style: none;
+}
+ol {
+	padding: 0 0 0 1rem;
+	margin: 0;
+}
+ol li{
+	padding-bottom: .7em;
 }
 /* tables still need 'cellspacing="0"' in the markup */
 table {

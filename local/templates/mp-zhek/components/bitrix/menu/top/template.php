@@ -2,7 +2,7 @@
 
 <?if (!empty($arResult)):?>
 <nav>
-    <ul class="sf-menu">
+    <ul class="sf-menu nav justify-content-center">
     <?
     $previousLevel = 0;
     foreach($arResult as $arItem):?>

@@ -22,8 +22,11 @@
                                 <ul class="rd-menu rd-navbar-dropdown">
                         <?else:*/?>
                             <li class="nav-item navbar-submenu<?if ($arItem["SELECTED"]):?> active selected<?endif?>">
-                                <a class="nav-link<?if ($arItem["SELECTED"]):?> active selected<?endif?>" href="<?=$arItem["LINK"]?>" ><?=$arItem["TEXT"]?></a>
-                                <a href="#" class="template-arrow-menu"></a>
+                                <a class="nav-link <?if ($arItem["SELECTED"]):?> active selected<?endif?>" href="#<?//=$arItem["LINK"]?>" ><?=$arItem["TEXT"]?>
+                                </a>
+                                <span class="template-arrow-menu"></span>
+                                <?/*<a class="nav-link<?if ($arItem["SELECTED"]):?> active selected<?endif?>" href="<?=$arItem["LINK"]?>" ><?=$arItem["TEXT"]?></a>
+                                <a href="#" class="template-arrow-menu"></a>*/?>
                                 <ul class="submenu">
                         <?//endif?>
                     <?else:?>
@@ -37,7 +40,7 @@
                     <?if ($arItem["PERMISSION"] > "D"):?>
 
                         <?if ($arItem["DEPTH_LEVEL"] == 1):?>
-                            <li class="nav-item <?if ($arItem["SELECTED"]):?> active selected<?endif?>">
+                            <li class="nav-item<?if ($arItem["SELECTED"]):?> active selected<?endif?>">
                                 <a class="nav-link<?if ($arItem["SELECTED"]):?> active selected<?endif?>" href="<?=$arItem["LINK"]?>" <?=$arItem["PARAMS"]['TARGET']?' target="'.$arItem["PARAMS"]['TARGET'].'"':''?>>
                                 <?=$arItem["TEXT"]?></a>
                             </li>

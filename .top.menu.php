@@ -8,15 +8,15 @@ $aMenuLinks = Array(
 		"" 
 	),
 	Array(
-		"Инструкции", 
-		"/instruktsii/", 
+		"Абонентам", 
+		"/abonentam/", 
 		Array(), 
 		Array(), 
 		"" 
 	),
 	Array(
 		"Документы", 
-		"/documents/", 
+		"/dokumenty/", 
 		Array(), 
 		Array(), 
 		"" 
@@ -31,13 +31,6 @@ $aMenuLinks = Array(
 	Array(
 		"Раскрытие информации", 
 		"/raskrytie-informatsii/", 
-		Array(), 
-		Array(), 
-		"" 
-	),
-	Array(
-		"Наши должники", 
-		"/contacts/", 
 		Array(), 
 		Array(), 
 		"" 

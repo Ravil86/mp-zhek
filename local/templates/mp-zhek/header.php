@@ -12,7 +12,8 @@ $arSite = $rsSites->Fetch();
 <!DOCTYPE html>
 <html>
 	<head>
-		<title><?=$arSite['SITE_NAME']?></title>
+		<title><?$APPLICATION->ShowTitle()?><?=($GLOBALS["PAGE"]?' / ':'')?><?=$arSite['SITE_NAME']?></title>
+		<!-- <title><?=$arSite['SITE_NAME']?></title> -->
 		<!--meta-->
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.2" />
@@ -38,10 +39,15 @@ $arSite = $rsSites->Fetch();
 		<link rel="stylesheet" type="text/css" href="<?=SITE_TEMPLATE_PATH?>/fonts/template/style.css">
 		<link rel="stylesheet" type="text/css" href="<?=SITE_TEMPLATE_PATH?>/fonts/social/style.css">
 */?>
-		<link rel="shortcut icon" href="<?=SITE_TEMPLATE_PATH?>/images/favicon.ico">
+		<link rel="icon" type="image/png" sizes="32x32" href="<?=SITE_TEMPLATE_PATH?>/images/favicon/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="<?=SITE_TEMPLATE_PATH?>/images/favicon/favicon-16x16.png">
+		<link rel="apple-touch-icon" href="<?=SITE_TEMPLATE_PATH?>/images/favicon/apple-touch-icon.png"/>
+
+		<!--link rel="shortcut icon" href="<?//=SITE_TEMPLATE_PATH?>/images/favicon.ico"-->
 		<?
 		$arCss = array(
-			'//cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css',
+			//cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css',
+			SITE_TEMPLATE_PATH.'/lib/bootstrap/css/bootstrap.min.css',
 			SITE_TEMPLATE_PATH.'/css/reset.css',
 			SITE_TEMPLATE_PATH.'/css/superfish.css',
 
@@ -58,6 +64,9 @@ $arSite = $rsSites->Fetch();
 			SITE_TEMPLATE_PATH.'/fonts/fonts.css',
 			SITE_TEMPLATE_PATH.'/fonts/template/style.css',
 			SITE_TEMPLATE_PATH.'/fonts/social/style.css',
+			SITE_TEMPLATE_PATH.'/fonts/features/style.css',
+
+			SITE_TEMPLATE_PATH.'/lib/fancybox/fancybox.css',
 		);
 
 		foreach ($arCss as $key => $css) {
@@ -92,13 +101,14 @@ $arSite = $rsSites->Fetch();
 			SITE_TEMPLATE_PATH.'/js/jquery.blockUI.min.js',
 			SITE_TEMPLATE_PATH.'/js/main.js',
 
-			// '//cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js',
+			//cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js',
+			SITE_TEMPLATE_PATH.'/lib/bootstrap/js/bootstrap.min.js',
 
 			// <script type="text/javascript" src="js/odometer.min.js"></script>
 
 			//<script type="text/javascript" src="//cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> -->
 
-			//SITE_TEMPLATE_PATH.'/js/jquery.fancybox.min.js',
+			SITE_TEMPLATE_PATH.'/lib/fancybox/fancybox.umd.js',
 			//SITE_TEMPLATE_PATH.'/js/masonry.pkgd.min.js',
 			//SITE_TEMPLATE_PATH.'/js/imagesloaded.pkgd.min.js',
     	);
@@ -129,7 +139,7 @@ $arSite = $rsSites->Fetch();
 							<a href="tel:+73465648644">+7 (3465) 648 644</a>
 						</li>
 						<li class="template-clock">
-							Рабочее время: пн -сат (с 8:00 до 18:00)
+							Рабочее время: Пн—пт (с 8:00 до 17:00)
 						</li>
 					</ul>
 					<ul class="social-icons">
@@ -151,57 +161,36 @@ $arSite = $rsSites->Fetch();
 			<?php
 			// TopBar end
 			?>
-			<div class="header-container sticky<?//php echo (isset($_COOKIE['cm_menu_type']) && $_COOKIE['cm_menu_type']=="no_sticky" ? '' : ' sticky');?>">
-			<!--<div class="header-container sticky">-->
+
+		<header>
+			<div class="header-container sticky navbar">
 				<div class="header container clearfix">
-					<?php
-					/*if(empty($_COOKIE["cm_header_type"]) || $_COOKIE["cm_header_type"]!="type_2")
-					{
-					?>
-					<div class="menu-container first-menu clearfix">
-						<?php
-						//require_once('menu_1.php');
-						?>
-					</div>
-					<?php
-					}*/
-					?>
-					<div class="logo">
+					
+					<div class="logo d-flex justify-content-around justify-content-lg-start col col-md-12 col-lg-5 col-xl-6 pe-3">
 						<h1>
 							<a href="/" title="">
-								<img src="<?=SITE_TEMPLATE_PATH?>/images/logo.png" <?/*srcset="<?=SITE_TEMPLATE_PATH?>/images/logo_retina.png 2x"*/?> class="<?= (/*empty($_GET["page"]) || $_GET["page"]=="home" || $_GET["page"]=="about_2" || */$_GET["page"]=="service_calculator" || $_GET["page"]=="services_2" || $_GET["page"]=="cleaning_checklist" || $_GET["page"]=="contact_3" ? 'secondary-logo' : 'primary-logo'); ?>" alt="logo">
+								<img src="<?=SITE_TEMPLATE_PATH?>/images/logo.svg" <?/*srcset="<?=SITE_TEMPLATE_PATH?>/images/logo_retina.png 2x"*/?> class="<?= (/*empty($_GET["page"]) || $_GET["page"]=="home" || $_GET["page"]=="about_2" || */$_GET["page"]=="service_calculator" || $_GET["page"]=="services_2" || $_GET["page"]=="cleaning_checklist" || $_GET["page"]=="contact_3" ? 'secondary-logo' : 'primary-logo'); ?>" alt="logo">
 								<?/*<img src="<?=SITE_TEMPLATE_PATH?>/images/logo_transparent.png" srcset="<?=SITE_TEMPLATE_PATH?>/images/logo_transparent_retina.png 2x" class="<?php echo (empty($_GET["page"]) || $_GET["page"]=="home" || $_GET["page"]=="about_2" || $_GET["page"]=="service_calculator" || $_GET["page"]=="services_2" || $_GET["page"]=="cleaning_checklist" || $_GET["page"]=="contact_3" ? 'primary-logo' : 'secondary-logo'); ?>" alt="logo">*/?>
 								<div>Муниципальное предприятие «ЖЭК-3»
-									<span class="logo-text">Ханты-Мансийского района</span>
+									<span class="logo-text d-none d-xl-block">Ханты-Мансийского района</span>
 								</div>
 							</a>
 						</h1>
-						<?php
-						/*if(empty($_COOKIE["cm_header_type"]) || $_COOKIE["cm_header_type"]!="type_2")
-						{
-						?>
-						<div class="logo-clone">
-							<h1>
-								<a href="?page=home" title="">
-									<img src="<?=SITE_TEMPLATE_PATH?>/images/logo.png" class="<?= ($_GET["page"]=="service_calculator" || $_GET["page"]=="services_2" || $_GET["page"]=="cleaning_checklist" || $_GET["page"]=="contact_3" ? 'secondary-logo' : 'primary-logo'); ?>" alt="logo">
-								
-									<div>Муниципальное предприятие «ЖЭК-3»
-									<span class="logo-text">Ханты-Мансийского района</span>
-								</div>
-								</a>
-							</h1>
+					</div><!--logo-->
+					<?/*
+					<a href="#" class="mobile-menu-switch align-items-center">
+						<div>
+							<!--<span class="line"></span>
+							<span class="line"></span>
+							<span class="line"></span> -->
+							<!-- <span class="line"></span> -->
 						</div>
-						<?php
-						}*/
-						?>
-					</div>
-					<a href="#" class="mobile-menu-switch">
-						<span class="line"></span>
-						<span class="line"></span>
-						<span class="line"></span>
-						<span class="line"></span>
 					</a>
-					<div class="menu-container clearfix<?//php echo (empty($_COOKIE["cm_header_type"]) || $_COOKIE["cm_header_type"]!="type_2" ? ' second-menu' : ''); ?>">
+					*/?>
+					<button class="navbar-toggler border-0 mobile-menu-switch" type="button">
+						<span class="navbar-toggler-icon"></span>
+					</button>
+					<div class="menu-container d-flex justify-content-center justify-content-lg-end col col-md-12 col-lg-7 col-xl-6 clearfix">
 						<?$APPLICATION->IncludeComponent(
 							"bitrix:menu",
 							"top",
@@ -215,7 +204,7 @@ $arSite = $rsSites->Fetch();
 								"CHILD_MENU_TYPE" => "left",
 								"USE_EXT" => "Y",
 								"DELAY" => "N",
-								"ALLOW_MULTI_SELECT" => "N",
+								"ALLOW_MULTI_SELECT" => "Y",
 								"CACHE_SELECTED_ITEMS" => "N",
 								)
 						);?>
@@ -232,17 +221,11 @@ $arSite = $rsSites->Fetch();
 								"CHILD_MENU_TYPE" => "left",
 								"USE_EXT" => "Y",
 								"DELAY" => "N",
-								"ALLOW_MULTI_SELECT" => "N",
+								"ALLOW_MULTI_SELECT" => "Y",
 								"CACHE_SELECTED_ITEMS" => "N",
 								)
 							);?>
-						<?php
-						/*if(empty($_COOKIE["cm_header_type"]) || $_COOKIE["cm_header_type"]!="type_2")
-							require_once('menu_2.php');
-						else
-							require_once('menu.php');*/
-						?>
-					</div>
+					</div><!--menu-container-->
 					<?/*<div class="header-icons-container hide-on-mobiles">
 						<a href="#" class="template-cart"><span class="cart-items-number">2<span class="cart-items-number-arrow"></span></span></a>
 						<a class="template-search" href="#" title="Search"></a>
@@ -255,36 +238,74 @@ $arSite = $rsSites->Fetch();
 							<input type="hidden" name="page" value="search">
 						</form>
 					</div>*/?>
-				</div>
-			</div>
+				</div><!--.header.container-->
+			</div><!--.header-container-->
+	</header>
 
 
 	<?if($GLOBALS["PAGE"]):?>
-			<div class="container-fluid bg-gray full-width page-header vertical-align-table!">
+			<div class="container-fluid! bg-gray full-width! page-header vertical-align-table!">
 				<div class="container">
-					<div class="page-header-left">
-						<h1><?$APPLICATION->ShowTitle()?></h1>
-					</div>
-					<div class="page-header-right">
-						<div class="bread-crumb-container">
-							<ul class="bread-crumb">
-								<li>
-									<a title="Home" href="?page=home">
-										Home
-									</a>
-								</li>
-								<li class="separator">
-									/
-								</li>
-								<li>
-									About Us
-								</li>
-							</ul>
+					<div class="row">
+						<div class="page-header-left col-12 col-md-6">
+							<h1><?$APPLICATION->ShowTitle()?></h1>
+						</div>
+						<div class="page-header-right col-12 col-md-6">
+							<div class="bread-crumb-container">
+							<?$APPLICATION->IncludeComponent(
+										"bitrix:breadcrumb",
+										"",
+										array(),
+										false
+								);?>
+							</div>
+
+							<?/*?><div class="bread-crumb-container">
+								<ul class="bread-crumb">
+									<li>
+										<a title="Home" href="?page=home">
+											Home
+										</a>
+									</li>
+									<li class="separator">
+										/
+									</li>
+									<li>
+										About Us
+									</li>
+								</ul>
+							</div>
+						<?*/?>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div class="clearfix">
+			<?if(!defined('NOT_CONTAINER')):?>
 				<div class="container page-margin-top-section padding-bottom-100">
-			
+					<?if(!defined('NOT_MENU')):?>
+						<div class="row">
+							<div class="col-3"><?$APPLICATION->IncludeComponent(
+	"bitrix:menu", 
+	"left", 
+	array(
+		"ALLOW_MULTI_SELECT" => "N",
+		"CHILD_MENU_TYPE" => "left",
+		"COMPOSITE_FRAME_MODE" => "A",
+		"COMPOSITE_FRAME_TYPE" => "AUTO",
+		"DELAY" => "N",
+		"MAX_LEVEL" => "1",
+		"MENU_CACHE_GET_VARS" => array(
+		),
+		"MENU_CACHE_TIME" => "36000",
+		"MENU_CACHE_TYPE" => "N",
+		"MENU_CACHE_USE_GROUPS" => "N",
+		"ROOT_MENU_TYPE" => "left",
+		"USE_EXT" => "N",
+		"COMPONENT_TEMPLATE" => "left"
+	),
+	false
+);?></div>
+							<div class="col-9">
+					<?endif?>
+			<?endif?>
 	<?endif?>

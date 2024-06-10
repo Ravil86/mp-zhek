@@ -9,9 +9,9 @@ $aMenuLinks = Array(
 	),
 	Array(
 		"Закупки", 
-		"#", 
+		"https://zakupki.gov.ru/epz/order/extendedsearch/results.html?searchString=8618005341", 
 		Array(), 
-		Array(), 
+		Array("TARGET"=>'_blank'), 
 		"" 
 	),
 	Array(
@@ -24,6 +24,13 @@ $aMenuLinks = Array(
 	Array(
 		"Вакансии", 
 		"vakansii/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Контакты", 
+		"contacts/", 
 		Array(), 
 		Array(), 
 		"" 

@@ -22,10 +22,10 @@ $this->setFrameMode(true);
 			$this->AddDeleteAction($arItem['ID'], $arItem['DELETE_LINK'], CIBlock::GetArrayByID($arItem["IBLOCK_ID"], "ELEMENT_DELETE"), array("CONFIRM" => GetMessage('CT_BNL_ELEMENT_DELETE_CONFIRM')));
 			// dump($i);
 
-			if($i<2)
-				continue;
+			// if($i<2)
+			// 	continue;
 			?>
-			<li class="" id="<?=$this->GetEditAreaId($arItem['ID']);?>">
+			<li class="<?=($i<2)?'d-md-none':''?>" id="<?=$this->GetEditAreaId($arItem['ID']);?>">
 					<div class="row">
 						<div class="col-4">
 							<?if($arParams["DISPLAY_PICTURE"]!="N"):?>
