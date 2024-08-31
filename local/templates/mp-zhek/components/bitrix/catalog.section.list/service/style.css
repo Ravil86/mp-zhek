@@ -1,6 +1,7 @@
 .service-list-item {
 	display: flex;
 	flex-direction: column;
+	position: relative;
 }
 
 .service-list-item-title {
@@ -43,8 +44,16 @@
 	transition: 250ms linear all;
 }
 
-.service-list-item-img:hover {
+.service-list-item:hover .service-list-tile-img-container::before
+{
+	/* position: absolute;
+	content: '';
+	background-color: var(--theme-color-primary); */
+}
+
+.service-list-item-img:hover{
 	border-color: var(--theme-color-primary);
+	color: var(--theme-color-primary);
 }
 
 /* region Line */

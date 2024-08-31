@@ -22,8 +22,8 @@ $this->setFrameMode(true);
 			$this->AddDeleteAction($arItem['ID'], $arItem['DELETE_LINK'], CIBlock::GetArrayByID($arItem["IBLOCK_ID"], "ELEMENT_DELETE"), array("CONFIRM" => GetMessage('CT_BNL_ELEMENT_DELETE_CONFIRM')));
 			?>
 
-			<li class="col-12">
-				<p class="template-quote" id="<?=$this->GetEditAreaId($arItem['ID']);?>"><?=$arItem["NAME"]?></p>
+			<li class="col-12" id="<?=$this->GetEditAreaId($arItem['ID']);?>">
+				<p class="template-quote"><?=$arItem["NAME"]?></p>
 					<div class="author-details-box">
 						<div class="author"><?=$arItem["PREVIEW_TEXT"]//TruncateText($arItem["PREVIEW_TEXT"], 100);?></div>
 						<!--<div class="author-details">CLEANING TECHNICAN</div>-->

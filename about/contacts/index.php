@@ -5,10 +5,10 @@ $APPLICATION->SetTitle("Конакты");
 ?>
 <div class="container-fluid row! gray! full-width!">
 		<div class="row">
-			<div class="col col-6">
+			<div class="col-12 col-md-6 order-2 order-md-1">
 				<iframe src="https://yandex.ru/map-widget/v1/?um=mymaps%3Ak2AaaDuDiiz5N4zv4iWqWFYQqAuEYCef&amp;source=constructor" width="100%" height="500" frameborder="0"></iframe>
 			</div>
-			<div class="col col-6 padding-bottom-70 page-margin-top-section">
+			<div class="col-12 col-md-6 order-1 order-md-2 padding-bottom-70 page-margin-top-section">
 				<div class="padding-left-right-100">
 					<ul class="row features-list page-margin-top! padding-top-30! clearfix">
 						<li class="col col-7">

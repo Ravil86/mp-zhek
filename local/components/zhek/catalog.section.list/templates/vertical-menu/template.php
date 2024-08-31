@@ -71,7 +71,7 @@ $emptyImagePath = $this->getFolder().'/images/tile-empty.png';
 				$code = $section['ID'].'-'.(strpos($section['CODE'], '-') ? substr($section['CODE'], 0, strpos($section['CODE'], '-')) : $section['CODE']);
 				?>
 				<li class="sections-list-menu-item nav-item" id="<?=$this->getEditAreaId($section['ID'])?>">
-				
+					<?if(!$section['UF_LINK']):?>
 					<?/*<button class="nav-link w-100 text-start" id="pills-<?=$code?>-tab" 
 						data-bs-toggle="pill" 
 						data-bs-target="#pills-<?=$code?>" 
@@ -91,7 +91,13 @@ $emptyImagePath = $this->getFolder().'/images/tile-empty.png';
 					 <?=$section['NAME']?>
 					 <span class="template-arrow-horizontal-3"></span>
 					</a>
-
+					<?else:?>
+						<a class="nav-link" id="<?=$code?>"
+							href="<?=$section['UF_LINK']?>">
+							<?=$section['NAME']?>
+							<span class="template-arrow-horizontal-3"></span>
+					</a>
+					<?endif?>
 					<?/*<a href="<?=$section['SECTION_PAGE_URL']?>" class="sections-list-menu-item-link">
 						<span class="sections-list-menu-item-text"><?=$section['NAME'] ." <i>".$section['ELEMENT_CNT']. "</i>";?></span>
 						<span class="template-arrow-horizontal-3"></span>

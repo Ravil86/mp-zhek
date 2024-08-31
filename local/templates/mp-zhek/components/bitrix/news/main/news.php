@@ -31,7 +31,7 @@ $this->setFrameMode(true);
 	);?>
 <?endif?>
 
-<?if($arParams["USE_FILTER"]=="Y"):?>
+<?/*if($arParams["USE_FILTER"]=="Y"):?>
 <?$APPLICATION->IncludeComponent(
 	"bitrix:catalog.filter",
 	"flat",
@@ -49,11 +49,11 @@ $this->setFrameMode(true);
 	$component
 );
 ?>
-<?endif?>
+<?endif*/?>
 
 <?$APPLICATION->IncludeComponent(
 	"bitrix:news.list",
-	"flat",
+	"small-image",
 	Array(
 		"IBLOCK_TYPE" => $arParams["IBLOCK_TYPE"],
 		"IBLOCK_ID" => $arParams["IBLOCK_ID"],

@@ -1,3 +1,4 @@
+<? if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die(); ?>
 <!-- Slider Revolution -->
 <?$APPLICATION->IncludeComponent(
 	"bitrix:news.list", 
@@ -28,7 +29,7 @@
 		"CHECK_DATES" => "Y",
 		"DETAIL_URL" => "",
 		"PREVIEW_TRUNCATE_LEN" => "",
-		"ACTIVE_DATE_FORMAT" => "d.m.Y",
+		"ACTIVE_DATE_FORMAT" => "d F Y",
 		"SET_TITLE" => "N",
 		"SET_BROWSER_TITLE" => "N",
 		"SET_META_KEYWORDS" => "N",
@@ -62,13 +63,15 @@
 		"AJAX_OPTION_STYLE" => "Y",
 		"AJAX_OPTION_HISTORY" => "N",
 		"AJAX_OPTION_ADDITIONAL" => "",
-		"COMPONENT_TEMPLATE" => "news",
+		"COMPONENT_TEMPLATE" => "news-big",
 		"STRICT_SECTION_CHECK" => "N",
 		"FILE_404" => "",
 		"COMPOSITE_FRAME_MODE" => "A",
 		"COMPOSITE_FRAME_TYPE" => "AUTO"
 	),
 	false,
-	['HIDE_ICONS'=> false]
-	);
+	array(
+		"HIDE_ICONS" => false
+	)
+);
 ?>

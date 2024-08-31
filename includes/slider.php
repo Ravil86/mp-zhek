@@ -1,4 +1,5 @@
 <!-- Slider Revolution -->
+<div class="d-none d-md-block">
 <?$APPLICATION->IncludeComponent(
 						"bitrix:news.list", 
 						"slider", 
@@ -70,6 +71,7 @@
 						['HIDE_ICONS'=> true]
 					);
 			?>
+</div>
 <?/*
 <div class="revolution-slider-container">
 	<div class="revolution-slider" data-version="5.4.5" style="display: none;">

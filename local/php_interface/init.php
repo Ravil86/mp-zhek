@@ -109,7 +109,7 @@ function OnBeforeIBlockElementDeleteHandler($ID)
     // Получаем данные об удаляемом элементе
     $rsElement = CIBlockElement::GetByID($ID);
     $arElement = $rsElement->Fetch();
-    if ($arElement["IBLOCK_ID"] == 2 || $arElement["IBLOCK_ID"] == 4)
+    if ($arElement["IBLOCK_ID"] == 2 || $arElement["IBLOCK_ID"] == 4 || $arElement["IBLOCK_ID"] == 8)
     {
         global $APPLICATION;
         $APPLICATION->ThrowException("Вы не можете удалить этот элемент инфоблока");

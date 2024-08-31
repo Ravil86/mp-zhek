@@ -25,7 +25,7 @@ $this->setFrameMode(true);
 			// if($i<2)
 			// 	continue;
 			?>
-			<li class="<?=($i<2)?'d-md-none':''?>" id="<?=$this->GetEditAreaId($arItem['ID']);?>">
+			<li class="<?=($i<2)?'d-md-none':''?><?=($i==2)?'pt-lg-0 mt-lg-0 border-top-0':''?>" id="<?=$this->GetEditAreaId($arItem['ID']);?>">
 					<div class="row">
 						<div class="col-4">
 							<?if($arParams["DISPLAY_PICTURE"]!="N"):?>
@@ -60,8 +60,8 @@ $this->setFrameMode(true);
 							<?endif;?>
 
 							<?if($arParams["DISPLAY_DATE"]!="N" && $arItem["DISPLAY_ACTIVE_FROM"]):?>
-								<ul class="post-details">
-									<li class="date"><?=$arItem["DISPLAY_ACTIVE_FROM"]?></li>
+								<ul class="post-details mt-0">
+									<li class="date"><span class="template-clock pe-1"></span><?=$arItem["DISPLAY_ACTIVE_FROM"]?></li>
 								</ul>
 							<?endif?>
 						</div>

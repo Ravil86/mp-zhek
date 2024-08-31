@@ -1192,6 +1192,8 @@ $( document ).ready(function() {
 	});
 	
 	//fancybox
+
+	//prettyPhoto
 	$(".prettyPhoto").prettyPhoto({
 		show_title: false,
 		slideshow: 3000,

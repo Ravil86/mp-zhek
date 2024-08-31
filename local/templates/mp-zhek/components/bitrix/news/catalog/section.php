@@ -94,7 +94,7 @@ $this->setFrameMode(true);
 			"CACHE_TIME" => $arParams["CACHE_TIME"],
 			"CACHE_GROUPS" => $arParams["CACHE_GROUPS"],
 			"COUNT_ELEMENTS" => 'N',
-			"TOP_DEPTH" => 3,
+			"TOP_DEPTH" => 4,
 			"SECTION_URL" => $arResult["FOLDER"].$arResult["URL_TEMPLATES"]["section"],
 			"VIEW_MODE" => $arParams["SECTIONS_VIEW_MODE"],
 			"SHOW_PARENT_NAME" => 'Y',

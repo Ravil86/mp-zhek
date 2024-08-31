@@ -30,7 +30,12 @@ $this->setFrameMode(true);
 				<div class="d-flex flex-column justify-content-between">
 						<?if($arParams["DISPLAY_PICTURE"]!="N" && is_array($arItem["PREVIEW_PICTURE"])):?>
 							<?if(!$arParams["HIDE_LINK_WHEN_NO_DETAIL"] || ($arItem["DETAIL_TEXT"] && $arResult["USER_HAVE_ACCESS"])):?>
-								<a href="<?=$detail//$arItem["DETAIL_PAGE_URL"]?>" title="<?=$arItem["NAME"]?>" target="_blank"><img
+								<?if($detail):?>
+									<a href="<?=$detail?>" title="<?=$arItem["NAME"]?>" data-fancybox="pamyatki_mobile">
+								<?else:?>
+									<a href="<?=$arItem["DETAIL_PAGE_URL"]?>" title="<?=$arItem["NAME"]?>" target="_blank">
+								<?endif;?>
+									<img
 										class="preview_picture"
 										src="<?=$preview["src"]?>"
 										alt="<?=$arItem["PREVIEW_PICTURE"]["ALT"]?>"
@@ -100,7 +105,7 @@ $this->setFrameMode(true);
 		$(".projects-list").owlCarousel({
 			loop:true,
 			margin:10,
-			autoHeight:true,
+			//autoHeight:true,
 			// responsiveClass:true,
 			responsive:{
 				0:{

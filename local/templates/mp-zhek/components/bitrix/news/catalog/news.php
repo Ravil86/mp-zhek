@@ -62,7 +62,7 @@ $APPLICATION->IncludeComponent(
 endif;
 $APPLICATION->IncludeComponent(
 	"bitrix:catalog.section.list", 
-	"bootstrap_v4", 
+	"service", 
 	array(
 		"ADDITIONAL_COUNT_ELEMENTS_FILTER" => "",
 		"ADD_SECTIONS_CHAIN" => "Y",

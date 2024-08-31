@@ -26,11 +26,12 @@ $this->setFrameMode(true);
 								<?if(!$arParams["HIDE_LINK_WHEN_NO_DETAIL"] || ($arItem["DETAIL_TEXT"] && $arResult["USER_HAVE_ACCESS"])):?>
 									<a class="post-image" href="<?=$arItem["DETAIL_PAGE_URL"]?>" title="<?=$arItem["NAME"]?>">
 								<?endif;?>
-								
+									<?/*
 									<div class="post-date">
 										<div class="month"><?=FormatDate("M", MakeTimeStamp($arItem['ACTIVE_FROM']))?></div>
 										<h4><?=ConvertDateTime($arItem['ACTIVE_FROM'], "DD", "ru")?></h4>
 									</div>
+									*/?>
 									<?if(is_array($arItem["PREVIEW_PICTURE"])):?>
 										<?$preview = CFile::ResizeImageGet($arItem["PREVIEW_PICTURE"]["ID"], array('width'=>480, 'height'=>320), BX_RESIZE_IMAGE_EXACT, true);?>
 										<img
@@ -60,7 +61,7 @@ $this->setFrameMode(true);
 						<?if($arParams["DISPLAY_DATE"]!="N" && $arItem["DISPLAY_ACTIVE_FROM"]):?>
 							<div class="post-content-details-container clearfix">
 								<ul class="post-content-details">
-									<li><?=$arItem["DISPLAY_ACTIVE_FROM"]?></li>
+									<li class="template-clock"><?=$arItem["DISPLAY_ACTIVE_FROM"]?></li>
 									<?/*<li>in <a href="?page=category&amp;cat=house_cleaning" title="House Cleaning">House Cleaning</a></li> -->
 									<li>by <a href="?page=team_paige_morgan" title="Paige Morgan">Paige Morgan</a></li>*/?>
 								</ul>

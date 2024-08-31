@@ -1,0 +1,15 @@
+div.news-detail
+{
+	word-wrap: break-word;
+	line-height: 1.5;
+}
+div.news-detail img.detail_picture
+{
+	float:left;
+	margin:0 15px 15px 0;
+	max-width: 350px;
+}
+.news-date-time
+{
+	color:#486DAA;
+}

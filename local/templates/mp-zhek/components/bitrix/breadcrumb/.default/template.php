@@ -42,8 +42,9 @@ for($index = 0; $index < $itemSize; $index++)
 	else
 	{
 		$strReturn .= $arrow.'
-			<li class="breadcrumb-item-end">
-				'.$title.'
+			<li class="breadcrumb-item-end" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+				<span itemprop="name">'.$title.'</span>
+				<meta itemprop="position" content="'.($index + 1).'" />
 			</li>';
 		/*$strReturn .= '
 			<li class="breadcrumb-item-end">

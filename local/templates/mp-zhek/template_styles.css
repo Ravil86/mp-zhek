@@ -275,7 +275,7 @@
 	}
 	.page-margin-top-section
 	{
-		margin-top: 70px;
+		margin-top: 50px;
 	}
 	.page-padding-top
 	{
@@ -283,7 +283,7 @@
 	}
 	.page-padding-top-section
 	{
-		padding-top: 70px;
+		padding-top: 50px;
 	}
 	/* --- map --- */
 	.contact-map-details
@@ -511,7 +511,7 @@
 	/* --- features --- */
 	.features-list li
 	{
-		margin-top: 35px;
+		/* margin-top: 35px; */
 	}
 	/* --- timeline --- */
 	.timeline-content
@@ -1462,6 +1462,11 @@
 	{
 		clear: both;
 	}
+
+	.tp-caption{
+		padding-left: 20px;
+		padding-right: 20px;
+	}
 }
 @media screen and (max-width: 575.98px)
 {	
@@ -1942,6 +1947,14 @@
 	}
 }
 
+@media (min-width: 992px){
+	.our-clients-list li img {
+		filter: gray;
+		-webkit-filter: grayscale(1);
+		filter: grayscale(1);
+	}
+}
+
 .page-content li.template-arrow-horizontal-2::before {
 	margin-left: -10px;
 	color: #56B665;
@@ -1981,3 +1994,32 @@ padding-top: 0;
 .table td {
 padding: .6rem 1rem;
 }
+
+.page-content{
+min-height: 350px;
+}
+
+.special .revolution-slider-container{
+display: none;
+}
+
+/* scrollbar */
+body::-webkit-scrollbar {
+	width: 10px;
+	/* background-color: #f9f9fd; */
+  }
+  
+body::-webkit-scrollbar-thumb {
+	border-radius: 10px;
+	background: linear-gradient(180deg, #56B665, #1c6627);
+	/* max-height: 50%; height: 50%; */
+	/* background-color: #18aaaa; */
+  }
+  
+body::-webkit-scrollbar-track {
+	-webkit-box-shadow: 5px 5px 5px -5px rgba(34, 60, 80, 0.2) inset;
+	/* -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.2); */
+	border-radius: 10px;
+	background-color: #f9f9fd;
+	/* max-height: 50%; height: 50%; */
+  }

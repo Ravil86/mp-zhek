@@ -36,7 +36,7 @@ $emptyImagePath = $this->getFolder().'/images/tile-empty.png';
 				'CONFIRM' => Loc::getMessage('CT_BCSL_ELEMENT_DELETE_CONFIRM'),
 			];
 			?>
-			<li class="sections-list-menu-item nav-item">
+			<li class="sections-list-menu-item nav-item first-item">
 				<button class="nav-link sections-list-menu-item-link active" id="pills-home-tab" 
 						data-bs-toggle="pill" 
 						data-bs-target="#pills-home" 
