@@ -28,7 +28,9 @@
                 <ul class="contact-details-list">
                     <li class="features-map">
                         <label>628011, Тюменская область, ХМАО-Югра</label>
-                        <p>г. Ханты-Мансийск, ул.Боровая 9</p>
+                        <div class="p">
+                            <?$APPLICATION->IncludeFile(SITE_DIR."includes/inc_adress.php", Array(), Array("MODE" => "html","NAME" => '«Адрес»'));?>
+                        </div>
                     </li>
                 </ul>
             </div>

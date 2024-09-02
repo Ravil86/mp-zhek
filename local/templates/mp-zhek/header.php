@@ -140,25 +140,20 @@ $arSite = $rsSites->Fetch();
 			?>
         <div class="header-top-bar-container clearfix">
             <div class="header-top-bar container">
-                <?
-				$APPLICATION->IncludeFile(SITE_DIR."includes/inc_head.php", Array(), Array(
-					"MODE"      => "html",                                           // будет редактировать в веб-редакторе
-					"NAME"      => '«Шапку»',      // текст всплывающей подсказки на иконке
-				));
-				?>
-                <?/*
-					<ul class="contact-details clearfix">
-						<li class="template-location">
-							г. Ханты-Мансийск, ул.Боровая 9
-						</li>
-						<li class="template-mobile">
-							<a href="tel:+73465648644">+7 (3465) 648 644</a>
-						</li>
-						<li class="template-clock">
-							Рабочее время: Пн—пт (с 8:00 до 17:00)
-						</li>
-					</ul>
-					*/?>
+
+
+                <ul class="contact-details clearfix">
+                    <li class="template-location">
+                        <?$APPLICATION->IncludeFile(SITE_DIR."includes/inc_adress.php", Array(), Array("MODE" => "html","NAME" => '«Адрес»'));?>
+                    </li>
+                    <li class="template-mobile">
+                        <?$APPLICATION->IncludeFile(SITE_DIR."includes/inc_phone_head.php", Array(), Array("MODE" => "html","NAME" => '«Телефон»'));?>
+                    </li>
+                    <li class="template-clock">
+                        <?$APPLICATION->IncludeFile(SITE_DIR."includes/inc_work_time.php", Array(), Array("MODE" => "html","NAME" => '«Рабочее время»'));?>
+                    </li>
+                </ul>
+
                 <ul class="contact-details float-end d-none d-lg-block">
                     <li id="specialButton" class="lh-1"><i class="template-display me-2 fs-6"></i><button
                             class="btn p-0" title="Версия для слабовидщих">Версия для слабовидщих</button></li>
