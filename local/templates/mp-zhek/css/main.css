@@ -1229,8 +1229,8 @@ span.cart-items-number-arrow {
 }
 
 .sf-menu li {
-	border: none;
-	overflow: hidden;
+	/* border: none;
+	overflow: hidden; */
 }
 
 .sf-menu li,
@@ -1285,7 +1285,8 @@ body .header-container .menu-container .sf-menu>li:first-child>a {
 }
 
 .sf-menu li:hover,
-.sf-menu li.sfHover {
+.sf-menu li.sfHover,
+.sf-menu li a:focus-visible {
 	overflow: visible;
 }
 

@@ -185,9 +185,7 @@ $arSite = $rsSites->Fetch();
         <header>
             <div class="header-container sticky navbar">
                 <div class="header container clearfix">
-
-                    <div
-                        class="logo d-flex justify-content-around justify-content-lg-start col col-md-12 col-lg-5 col-xl-6 pe-3">
+                    <div class="logo d-flex justify-content-around justify-content-lg-start col col-md-12 col-lg pe-3">
                         <h1>
                             <a href="/" title="">
                                 <img src="<?=SITE_TEMPLATE_PATH?>/images/logo.svg"
@@ -219,7 +217,7 @@ $arSite = $rsSites->Fetch();
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div
-                        class="menu-container d-flex justify-content-center justify-content-lg-end col col-md-12 col-lg-7 col-xl-6 clearfix">
+                        class="menu-container d-flex justify-content-center justify-content-lg-end col col-md-12 col-lg-auto clearfix">
                         <?$APPLICATION->IncludeComponent(
 							"bitrix:menu",
 							"top",
