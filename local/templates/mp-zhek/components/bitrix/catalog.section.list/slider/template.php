@@ -112,7 +112,7 @@ $(document).ready(function() {
         loop: false,
         margin: 10,
         autoHeight: true,
-        autoplay: false,
+        autoplay: true,
         autoplayTimeout: 3000,
         autoplayHoverPause: true,
         nav: false,

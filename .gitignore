@@ -1,6 +1,8 @@
 /bitrix/
 /upload/
 
+includes/inc_*.php
+
 # dynamically generated files
 sitemap*
 yandex_*
