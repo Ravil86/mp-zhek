@@ -141,7 +141,7 @@ $arSite = $rsSites->Fetch();
         <div class="header-top-bar-container clearfix">
             <div class="header-top-bar container">
                 <?
-				$APPLICATION->IncludeFile("include/inc_head.php", Array(), Array(
+				$APPLICATION->IncludeFile(SITE_DIR."includes/inc_head.php", Array(), Array(
 					"MODE"      => "html",                                           // будет редактировать в веб-редакторе
 					"NAME"      => '«Шапку»',      // текст всплывающей подсказки на иконке
 				));

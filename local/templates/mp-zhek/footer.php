@@ -16,7 +16,7 @@
                     <li class="features-phone">
                         <label>Телефон приемной</label>
                         <?
-				$APPLICATION->IncludeFile("include/inc_phone_1.php", Array(), Array(
+				$APPLICATION->IncludeFile(SITE_DIR."includes/inc_phone_1.php", Array(), Array(
 					"MODE"      => "html",                                           // будет редактировать в веб-редакторе
 					"NAME"      => '«Телефон приемной»',      // текст всплывающей подсказки на иконке
 				));
@@ -37,7 +37,7 @@
                     <li class="features-phone">
                         <!-- <li class="features-wallet"> -->
                         <label>Телефон диспетчера</label>
-                        <?$APPLICATION->IncludeFile("include/inc_phone_2.php", Array(), Array(
+                        <?$APPLICATION->IncludeFile(SITE_DIR."includes/inc_phone_2.php", Array(), Array(
 								"MODE"      => "html",                                           // будет редактировать в веб-редакторе
 								"NAME"      => '«Телефон приемной»',      // текст всплывающей подсказки на иконке
 							));
