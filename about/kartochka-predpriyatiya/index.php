@@ -1,145 +1,76 @@
 <?
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetTitle("Карточка предприятия");
-?><table class="table table-bordered">
-<tbody>
-<tr>
-	<td>
-		 Полное наименование
-	</td>
-	<td>
-		 Муниципальное предприятие «ЖЭК-3» Ханты — Мансийского района
-	</td>
-</tr>
-<tr>
-	<td>
-		 Сокращенное наименование
-	</td>
-	<td>
-		 МП «ЖЭК-3»
-	</td>
-</tr>
-<tr>
-	<td>
-		 Адрес регистрации
-	</td>
-	<td>
-		 628516, Тюменская область, ХМАО-Югра, Ханты-Мансийский район, п. Сибирский, ул. Комарова, 22
-	</td>
-</tr>
-<tr>
-	<td>
-		 Адрес фактического местонахождения
-	</td>
-	<td>
-		 628011, Тюменская область, ХМАО-Югра, г. Ханты-Мансийск, ул.Боровая, 9
-	</td>
-</tr>
-<tr>
-	<td>
-		 ОГРН
-	</td>
-	<td>
-		 1028600513545
-	</td>
-</tr>
-<tr>
-	<td>
-		 Дата присвоения ОГРН
-	</td>
-	<td>
-		 12.03.2002 г.
-	</td>
-</tr>
-<tr>
-	<td>
-		 ИНН/КПП
-	</td>
-	<td>
-		 8618005341/861801001
-	</td>
-</tr>
-<tr>
-	<td>
-		 ОКФС
-	</td>
-	<td>
-		 14
-	</td>
-</tr>
-<tr>
-	<td>
-		 ОКОПФ
-	</td>
-	<td>
-		 65243
-	</td>
-</tr>
-<tr>
-	<td>
-		 ОКВЭД
-	</td>
-	<td>
-		 35.30.3
-	</td>
-</tr>
-<tr>
-	<td>
-		 ОКПО
-	</td>
-	<td>
-		 31440495
-	</td>
-</tr>
-<tr>
-	<td>
-		 Электронный адрес
-	</td>
-	<td>
- <a href="mailto:mp-zhek-3@yandex.ru">mp-zhek-3@yandex.ru</a>
-	</td>
-</tr>
-<tr>
-	<td>
-		 Банковские реквизиты
-	</td>
-	<td>
-		 Банк ВТБ, Филиал «Центральный» Банка ВТБ в г.Москва<br>
-		 БИК 044525411<br>
-		 расчетный счет 40702810320150000157<br>
-		 корр.счет 30101810145250000411
-	</td>
-</tr>
-<tr>
-	<td>
-		 Основной вид деятельности
-	</td>
-	<td>
-		 Распределение пара и горячей воды (тепловой энергии) котельными
-	</td>
-</tr>
-<tr>
-	<td>
-		 Телефон, факс
-	</td>
-	<td>
-		 Приемная тел./факс 8(3467) 958-008
-	</td>
-</tr>
-<tr>
-	<td>
-		 Директор
-	</td>
-	<td>
-		 Щербаков Сергей Владимирович
-	</td>
-</tr>
-<tr>
-	<td>
-		 Главный бухгалтер
-	</td>
-	<td>
-	</td>
-</tr>
-</tbody>
-</table><?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
+?><?$APPLICATION->IncludeComponent(
+	"bitrix:news.list", 
+	"table-row", 
+	array(
+		"ACTIVE_DATE_FORMAT" => "d.m.Y",
+		"ADD_SECTIONS_CHAIN" => "N",
+		"AJAX_MODE" => "N",
+		"AJAX_OPTION_ADDITIONAL" => "",
+		"AJAX_OPTION_HISTORY" => "N",
+		"AJAX_OPTION_JUMP" => "N",
+		"AJAX_OPTION_STYLE" => "Y",
+		"CACHE_FILTER" => "N",
+		"CACHE_GROUPS" => "N",
+		"CACHE_TIME" => "36000000",
+		"CACHE_TYPE" => "A",
+		"CHECK_DATES" => "Y",
+		"COMPOSITE_FRAME_MODE" => "A",
+		"COMPOSITE_FRAME_TYPE" => "AUTO",
+		"DETAIL_URL" => "",
+		"DISPLAY_BOTTOM_PAGER" => "N",
+		"DISPLAY_DATE" => "N",
+		"DISPLAY_NAME" => "Y",
+		"DISPLAY_PICTURE" => "N",
+		"DISPLAY_PREVIEW_TEXT" => "Y",
+		"DISPLAY_TOP_PAGER" => "N",
+		"FIELD_CODE" => array(
+			0 => "",
+			1 => "",
+		),
+		"FILTER_NAME" => "",
+		"HIDE_LINK_WHEN_NO_DETAIL" => "Y",
+		"IBLOCK_ID" => "14",
+		"IBLOCK_TYPE" => "info",
+		"INCLUDE_IBLOCK_INTO_CHAIN" => "N",
+		"INCLUDE_SUBSECTIONS" => "N",
+		"MESSAGE_404" => "",
+		"NEWS_COUNT" => "20",
+		"PAGER_BASE_LINK_ENABLE" => "N",
+		"PAGER_DESC_NUMBERING" => "N",
+		"PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
+		"PAGER_SHOW_ALL" => "N",
+		"PAGER_SHOW_ALWAYS" => "N",
+		"PAGER_TEMPLATE" => ".default",
+		"PAGER_TITLE" => "Новости",
+		"PARENT_SECTION" => "",
+		"PARENT_SECTION_CODE" => "",
+		"PREVIEW_TRUNCATE_LEN" => "",
+		"PROPERTY_CODE" => array(
+			0 => "",
+			1 => "",
+		),
+		"SET_BROWSER_TITLE" => "N",
+		"SET_LAST_MODIFIED" => "N",
+		"SET_META_DESCRIPTION" => "N",
+		"SET_META_KEYWORDS" => "N",
+		"SET_STATUS_404" => "N",
+		"SET_TITLE" => "N",
+		"SHOW_404" => "N",
+		"SORT_BY1" => "SORT",
+		"SORT_BY2" => "ID",
+		"SORT_ORDER1" => "ASC",
+		"SORT_ORDER2" => "ASC",
+		"STRICT_SECTION_CHECK" => "N",
+		"COMPONENT_TEMPLATE" => "table-row",
+		"TEMPLATE_THEME" => "blue",
+		"MEDIA_PROPERTY" => "",
+		"SLIDER_PROPERTY" => "",
+		"SEARCH_PAGE" => "/search/",
+		"USE_RATING" => "N",
+		"USE_SHARE" => "N"
+	),
+	false
+);?><br><?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
