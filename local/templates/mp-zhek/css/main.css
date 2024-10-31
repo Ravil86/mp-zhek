@@ -2258,7 +2258,8 @@ ol.features-list li p {
 }
 
 .features-list li p {
-	padding-top: 27px;
+	padding-top: 0;
+	/* padding-top: 27px; */
 	padding-bottom: 0;
 }
 
