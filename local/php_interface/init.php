@@ -1,6 +1,8 @@
 <?
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 
+include_once 'hl.wrapper.php';
+
 function dump($var, $type = 0)
 {
 	global $USER;
@@ -46,7 +48,7 @@ function getFileArray($fileId, $onlyPath=false){
 	}
 // dump($original);
 	$res = file_exists($_SERVER["DOCUMENT_ROOT"].$filePath);
-	
+
 	if(!$res)
 		return ['ERROR' => 'Файл не найден'];
 
@@ -58,7 +60,7 @@ function getFileArray($fileId, $onlyPath=false){
 				$origName = $matches[0] ? $matches[1] : $origName;
 			}
 		$fileFormatName = $fileDescription? str_replace($chars, ' ', $fileDescription) : ($origName ? $origName : '');
-		
+
 		$fileFormat=substr($filename, strrpos($filename, '.') + 1);
 
 		$fileSize = CFile::FormatSize($filesize, 0);
@@ -88,7 +90,7 @@ function getFileArray($fileId, $onlyPath=false){
 			'png' => 'img',
 			'jpen' => 'img',
 			'ppt' => 'ppt',
-			
+
 		];
 
 		return [

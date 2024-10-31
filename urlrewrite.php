@@ -1,6 +1,6 @@
 <?php
 $arUrlRewrite=array (
-  10 => 
+  1 => 
   array (
     'CONDITION' => '#^/raskrytie-informatsii/#',
     'RULE' => '',
@@ -8,7 +8,7 @@ $arUrlRewrite=array (
     'PATH' => '/raskrytie-informatsii/index.php',
     'SORT' => 100,
   ),
-  9 => 
+  3 => 
   array (
     'CONDITION' => '#^/services/#',
     'RULE' => '',
@@ -16,7 +16,7 @@ $arUrlRewrite=array (
     'PATH' => '/services/index.php',
     'SORT' => 100,
   ),
-  12 => 
+  4 => 
   array (
     'CONDITION' => '#^/shelter/#',
     'RULE' => '',
@@ -24,7 +24,15 @@ $arUrlRewrite=array (
     'PATH' => '/shelter/index.php',
     'SORT' => 100,
   ),
-  0 => 
+  5 => 
+  array (
+    'CONDITION' => '#^/meter/#',
+    'RULE' => '',
+    'ID' => 'zhek:meter',
+    'PATH' => '/meter/index.php',
+    'SORT' => 100,
+  ),
+  6 => 
   array (
     'CONDITION' => '#^/rest/#',
     'RULE' => '',
@@ -32,7 +40,7 @@ $arUrlRewrite=array (
     'PATH' => '/bitrix/services/rest/index.php',
     'SORT' => 100,
   ),
-  11 => 
+  7 => 
   array (
     'CONDITION' => '#^/news/#',
     'RULE' => '',
