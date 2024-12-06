@@ -155,8 +155,7 @@ $arSite = $rsSites->Fetch();
                 </ul>
 
                 <ul class="contact-details float-end d-none d-lg-block">
-                    <li id="specialButton" class="lh-1"><i class="template-display me-2 fs-6"></i><button
-                            class="btn p-0" title="Версия для слабовидщих">Версия для слабовидщих</button></li>
+                    <li id="specialButton" class="lh-1"><i class="template-display me-2 fs-6"></i><button class="btn p-0" title="Версия для слабовидщих">Версия для слабовидщих</button></li>
                     <li class="d-none d-xl-block"><a href="https://old.mp-zhek-3.ru" target="_blank">Прежняя версия
                             сайта</a></li>
                 </ul>
@@ -164,8 +163,7 @@ $arSite = $rsSites->Fetch();
                     <li class="show-on-mobiles">
                         <a class="template-search" href="#" title="Search"></a>
                         <form class="search">
-                            <input type="text" name="s" placeholder="Type and hit enter..."
-                                value="Type and hit enter..." class="search-input hint">
+                            <input type="text" name="s" placeholder="Type and hit enter..." value="Type and hit enter..." class="search-input hint">
                             <fieldset class="search-submit-container">
                                 <span class="template-search"></span>
                                 <input type="submit" class="search-submit" value="">
@@ -188,8 +186,7 @@ $arSite = $rsSites->Fetch();
                     <div class="logo d-flex justify-content-around justify-content-lg-start col col-md-12 col-lg pe-3">
                         <h1>
                             <a href="/" title="">
-                                <img src="<?=SITE_TEMPLATE_PATH?>/images/logo.svg"
-                                    <?/*srcset="<?=SITE_TEMPLATE_PATH?>/images/logo_retina.png 2x" */?>
+                                <img src="<?=SITE_TEMPLATE_PATH?>/images/logo.svg" <?/*srcset="<?=SITE_TEMPLATE_PATH?>/images/logo_retina.png 2x" */?>
                                 class="<?= (/*empty($_GET["page"]) || $_GET["page"]=="home" || $_GET["page"]=="about_2" || */$_GET["page"]=="service_calculator" || $_GET["page"]=="services_2" || $_GET["page"]=="cleaning_checklist" || $_GET["page"]=="contact_3" ? 'secondary-logo' : 'primary-logo'); ?>"
                                 alt="logo">
                                 <?/*<img src="<?=SITE_TEMPLATE_PATH?>/images/logo_transparent.png"
@@ -216,8 +213,7 @@ $arSite = $rsSites->Fetch();
                     <button class="navbar-toggler border-0 mobile-menu-switch" type="button">
                         <span class="navbar-toggler-icon"></span>
                     </button>
-                    <div
-                        class="menu-container d-flex justify-content-center justify-content-lg-end col col-md-12 col-lg-auto clearfix">
+                    <div class="menu-container d-flex justify-content-center justify-content-lg-end col col-md-12 col-lg-auto clearfix">
                         <?$APPLICATION->IncludeComponent(
 							"bitrix:menu",
 							"top",
@@ -317,7 +313,7 @@ $arSite = $rsSites->Fetch();
         <div class="container page-content page-margin-top-section padding-bottom-100">
             <?if(!defined('NOT_MENU') && !defined('ERROR_404')):?>
             <div class="row">
-                <div class="col-12 col-md-3 mb-4">
+                <div class="col-12 col-md-<?=!defined('LK')?'3':'2'?> mb-4">
                     <?$APPLICATION->IncludeComponent(
 								"bitrix:menu",
 								"left",
@@ -340,7 +336,7 @@ $arSite = $rsSites->Fetch();
 								false
 							);?>
                 </div>
-                <div class="col-12 col-md-9">
+                <div class="col-12 col-md-<?=!defined('LK')?'9':'10'?>">
                     <?endif?>
                     <?endif?>
                     <?endif?>

@@ -1,47 +1,71 @@
 <?php
-$arUrlRewrite=array (
-  1 => 
-  array (
+$arUrlRewrite = array(
+  1 =>
+  array(
     'CONDITION' => '#^/raskrytie-informatsii/#',
     'RULE' => '',
     'ID' => 'bitrix:news',
     'PATH' => '/raskrytie-informatsii/index.php',
     'SORT' => 100,
   ),
-  3 => 
-  array (
+  3 =>
+  array(
     'CONDITION' => '#^/services/#',
     'RULE' => '',
     'ID' => 'bitrix:news',
     'PATH' => '/services/index.php',
     'SORT' => 100,
   ),
-  4 => 
-  array (
+  4 =>
+  array(
     'CONDITION' => '#^/shelter/#',
     'RULE' => '',
     'ID' => 'bitrix:catalog',
     'PATH' => '/shelter/index.php',
     'SORT' => 100,
   ),
-  5 => 
-  array (
+  // 10 =>
+  // array(
+  //   'CONDITION' => '#^/cabinet/#',
+  //   'RULE' => '',
+  //   'ID' => 'zhek:meter',
+  //   'PATH' => '/cabinet/index.php',
+  //   'SORT' => 100,
+  // ),
+  5 =>
+  array(
+    'CONDITION' => '#^/cabinet/objects/#',
+    'RULE' => '',
+    'ID' => 'zhek:meter',
+    'PATH' => '/cabinet/objects/index.php',
+    'SORT' => 100,
+  ),
+  9 =>
+  array(
+    'CONDITION' => '#^/cabinet/counters/#',
+    'RULE' => '',
+    'ID' => 'zhek:meter',
+    'PATH' => '/cabinet/counters/index.php',
+    'SORT' => 100,
+  ),
+  8 =>
+  array(
     'CONDITION' => '#^/meter/#',
     'RULE' => '',
     'ID' => 'zhek:meter',
     'PATH' => '/meter/index.php',
     'SORT' => 100,
   ),
-  6 => 
-  array (
+  6 =>
+  array(
     'CONDITION' => '#^/rest/#',
     'RULE' => '',
     'ID' => NULL,
     'PATH' => '/bitrix/services/rest/index.php',
     'SORT' => 100,
   ),
-  7 => 
-  array (
+  7 =>
+  array(
     'CONDITION' => '#^/news/#',
     'RULE' => '',
     'ID' => 'bitrix:news',

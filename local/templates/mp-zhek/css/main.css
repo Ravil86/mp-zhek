@@ -124,13 +124,13 @@ pre {
 	height: auto;
 }
 
-input,
+input:not(.form-check-input),
 textarea {
 	font-family: "PT Sans", sans-serif;
 	border: 1px solid #EBEBEB;
 	font-size: 14px;
 	line-height: 24px;
-	padding: 12px 15px;
+	/* padding: 12px 15px; */
 	color: #303030;
 	margin: 0;
 }
@@ -5337,11 +5337,11 @@ textarea {
 }
 
 input[type='checkbox'] {
-	-webkit-appearance: checkbox;
+	/* -webkit-appearance: checkbox; */
 }
 
 input[type='radio'] {
-	-webkit-appearance: radio;
+	/* -webkit-appearance: radio; */
 }
 
 :focus {

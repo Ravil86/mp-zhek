@@ -14,8 +14,8 @@ class CUserDocumentsModerator extends CBitrixComponent
 {
 
 	protected static $_HL_Reference = "ReferenceCustomer"; // HL общий реестр
-	protected static $_HL_Objects = "ReestObjects"; // HL общий реестр
-    protected static $_HL_Company = "NameCompany"; // HL категории курсов
+	protected static $_HL_Objects = "Objects"; // HL общий реестр
+    protected static $_HL_Company = "Company"; // HL категории курсов
 
 
 	/*public function onPrepareComponentParams($arParams) {
@@ -277,7 +277,7 @@ class CUserDocumentsModerator extends CBitrixComponent
 
 			$getCompany = $this->getCompany();
 
-			// dump($getCompany);
+			dump($getCompany);
 
 			$itemList = $this->getListDocs();
 
