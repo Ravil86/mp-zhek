@@ -12,33 +12,35 @@ if ($arResult['ACCESS']): ?>
     $uri->addParams(array("arhive" => "Y"));
     $arhiveUrl = $uri->getUri();
 
-    // dump($arResult['DETAIL']);
+    //dump($arResult['DETAIL']);
     ?>
-    <div id='moderation' class="content">
-        <div class="row align-items-center pb-3 mb-2">
-            <div class="col-5 mb-1 h4">
-                <h3><?= $arResult['DETAIL']['NAME'] ?></h3>
-                <? //=TruncateText($arResult['DETAIL']['USERNAME'], 50)
-                ?>
-            </div>
-            <div class="col-7 mb-4! card d-flex! flex-row justify-content-between align-items-center px-3 py-2">
-                <div class="d-flex flex-column align-items-center">
-                    <div class="col-12 h6 my-0 text-uppercase text-blue">ИНН: <?= $arResult['DETAIL']['INN'] ?></div>
-                    <div class="col-12 h6 my-0 text-secondary">Адрес: <?= $arResult['DETAIL']['ADRES'] ?></div>
-                    <?/*
-                    <div class="col-12 small fst-italic text-muted">
-                        <small>Дата изменения: <?= $arResult['DETAIL']['DATE_UPDATE'] ?></small>
-            </div>
-            */ ?>
-                </div>
-                <div class="text-end! text-center col-3! badge! small px-4 py-2 rounded-pill text-bg-light! text-bg-<?= $arResult['DETAIL']['STATUS']['VALUE'] ?> lh-sm">
-                    <i class="small"><?= $arResult['DETAIL']['STATUS']['TEXT'] ?></i>
-                </div>
-            </div>
+
+    <div class="row align-items-center@ pb-3 mb-2">
+        <div class="col-5 mb-1 h4">
+            <h3><?= $arResult['DETAIL']['NAME'] ?></h3>
+            <? //=TruncateText($arResult['DETAIL']['USERNAME'], 50)
+            ?>
         </div>
+        <div class="col-7 flex-row! justify-content-between! align-items-center! px-3 py-2">
+
+            <div class="card">
+                <div class="list-group list-group-flush lh-sm">
+                    <div class="list-group-item py-2">
+                        <div class="text-secondary">ИНН:</div> <?= $arResult['DETAIL']['INN'] ?>
+                    </div>
+                    <div class="list-group-item py-2">
+                        <div class="text-secondary">Адрес:</div> <?= $arResult['DETAIL']['ADRES'] ?>
+                    </div>
+                </div>
+            </div>
 
 
-        <!-- <div class="doc_status row g-2" data-user="<?= $arResult['DETAIL']['USER_ID'] ?>">
+
+        </div>
+    </div>
+
+
+    <!-- <div class="doc_status row g-2" data-user="<?= $arResult['DETAIL']['USER_ID'] ?>">
         <?/*foreach ($arResult['DETAIL']['DOCS'] as $key => $docVal) :?>
         <?if($key=='DOC_CHANGE_NAME' && !$docVal['STATUS'])
 						continue;
@@ -47,10 +49,10 @@ if ($arResult['ACCESS']): ?>
         <?endforeach;*/ ?>
     </div> -->
 
-    <? else: ?>
-        <font class="errortext">Ошибка доступа</font>
-    <? endif; ?>
-    <?/*
+<? else: ?>
+    <font class="errortext">Ошибка доступа</font>
+<? endif; ?>
+<?/*
     function templateItems($docVal, $useCheck, $admin = false)
     {
         $Format = ToLower(substr($docVal['FILE_NAME'], strrpos($docVal['FILE_NAME'], '.') + 1));
@@ -107,11 +109,11 @@ if ($arResult['ACCESS']): ?>
 */
 
 
-    //   $url = $templateFolder . '/ajax.php';
-    ?>
-    <script>
-        /* var url = <? //= json_encode($url) 
-                        ?>;
+//   $url = $templateFolder . '/ajax.php';
+?>
+<script>
+    /* var url = <? //= json_encode($url)
+                    ?>;
     //var idIblock = <? //=$arResult['ID_STATUS']
                         ?>;
     function refresh() {
@@ -229,4 +231,4 @@ if ($arResult['ACCESS']): ?>
             document.getElementById(id).checked = check;
         }
     }*/
-    </script>
+</script>

@@ -9,6 +9,7 @@ if ($arResult['ACCESS']): ?>
 
     <div class="d-flex">
         <div class="col">
+            <h2 class="h4"><?= $arResult['DETAIL']['OBJECT']['NAME'] ?></h2>
             <?
             /*$APPLICATION->IncludeComponent('bitrix:main.ui.filter', '', [
             'FILTER_ID' => $arResult['GRID_DETAIL'],

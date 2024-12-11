@@ -1,9 +1,9 @@
 <? define("NEED_AUTH", true);
-define('LK',true);
+define('LK', true);
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 $APPLICATION->SetTitle("Кабинет");
 ?>
-<h3>Объекты предприятия</h3>
+<!-- <h3>Объекты предприятия</h3> -->
 <? $APPLICATION->IncludeComponent(
 	"zhek:cabinet.objects",
 	".default",

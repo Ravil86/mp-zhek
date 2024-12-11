@@ -17,6 +17,73 @@ class LKClass
     protected static $_HL_Counters = "Counters"; // HL ПРиборы учёта
     protected static $_HL_Service = "Service"; // HL типы услуг
 
+    protected static $_HL_Meter = "Meter"; // HL типы услуг
+
+    public static function meters($objectID, $last = false)
+    {
+        $classHL = \HLWrap::init(self::$_HL_Meter);
+
+        // $filter = [];
+        $filter = ['UF_OBJECT' => $objectID];
+        if ($last)
+            $filter[">=" . "UF_DATE"] = new DateTime(date('01.m.Y') . " 00:00:00");
+        else
+            $filter['<=' . 'UF_DATE'] = new DateTime(date('01.m.Y') . " 00:00:00");
+
+        // dump($filter);
+
+        $rsHLoad = $classHL::getList([
+            'select' => ['*'],
+            'filter' => $filter,
+            'order' => ['UF_DATE' => 'DESC']
+        ]);
+
+        $result = [];
+        while ($value = $rsHLoad->fetch()) {
+            $meter = [
+                'ID' => $value['ID'],
+                'DATE' => $value['UF_DATE'],
+                'METER' => $value['UF_METER'],
+                'COUNTER' => $value['UF_COUNTER'],
+                'OBJECT' => $value['UF_OBJECT'],
+                // 'SERVICE' => $value['UF_SERVICE'],
+            ];
+            $result[$value['ID']] = $meter;
+        }
+        return $result;
+    }
+
+    public static function saveMeter($objectID, $counter, $meter)
+    {
+
+        $classHL = \HLWrap::init(self::$_HL_Meter);
+
+        $value = [
+            'UF_METER' => $meter,
+            'UF_DATE' => date('d.m.Y H:i:s'),
+            'UF_OBJECT' => $objectID,
+            'UF_COUNTER' => $counter,
+        ];
+
+        $filter = [
+            'UF_OBJECT' => $objectID,
+            ">=" . "UF_DATE"  => new DateTime(date('01.m.Y') . " 00:00:00"),
+            'UF_COUNTER' => $counter,
+        ];
+        // dump($filter);
+
+        $rsHLoad = $classHL::getList([
+            'select' => ['*'],
+            'filter' => $filter,
+            'order' => ['UF_DATE' => 'DESC']
+        ]);
+        if ($arMeter = $rsHLoad->Fetch()) {
+            $classHL::update($arMeter["ID"], $value);
+        } else {
+            $classHL::add($value);
+        }
+    }
+
     public static function myCompany()
     {
         $result = null;
@@ -58,7 +125,7 @@ class LKClass
             $arFields = [
                 'ID' => $company['ID'],
                 'NAME' => $company['UF_NAME'],
-                'ADRES' => $company['UF_ADDRRES'],
+                'ADRES' => $company['UF_ADDRESS'],
                 'INN' => $company['UF_INN']
             ];
             if ($orgID)

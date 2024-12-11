@@ -66,8 +66,12 @@ class LKObjects extends CBitrixComponent
 
 		if ($this->arResult['VARIABLES']) {
 
+			$objectID = $this->arResult['VARIABLES']['DETAIL_ID'];
+
 			$this->arResult['DETAIL']['GRID'] =  'object_detail';
 			$arResult['DETAIL']['GRID'] = $this->arResult['DETAIL']['GRID'];
+
+			$this->arResult['DETAIL']['OBJECT'] = $arObjects[$objectID];
 
 			$countersObject = LKClass::getCounters($this->arResult['VARIABLES']['DETAIL_ID']);
 
@@ -111,6 +115,8 @@ class LKObjects extends CBitrixComponent
 					'data' => $item
 				];
 			}
+
+
 
 			// $this->arResult['DETAIL'] = $arItems[$this->arResult['VARIABLES']['DETAIL_ID']];
 

@@ -3,63 +3,248 @@
 use Bitrix\Main\Application,
     Bitrix\Main\Web\Uri;
 
-    \Bitrix\Main\UI\Extension::load("ui.buttons");
+\Bitrix\Main\UI\Extension::load("ui.buttons");
 
-    if ($arResult['ACCESS']):
+if ($arResult['ACCESS']):
 ?>
-
-<div class="d-flex">
-    <div class="col">
-    </div>
-    <div class="col-auto">
-        <a class="ui-btn ui-btn-no-caps" href="<?= $arResult['FOLDER'] ?>">вернуться назад</a>
-    </div>
-</div>
-<div class="row align-items-end mt-2 px-1 gx-2 gy-3">
-    <div class="py-2 small col-3">Примечание</div>
-    <div class="py-2 small col">Участвует в расчете услуг</div>
-    <div class="py-2 small col">Показания на начало месяца</div>
-    <div class="py-2 small col">Разность за текущий месяц</div>
-    <div class="py-2 small col">Конечные показания</div>
-    <div class="py-2 col-3 text-center bg-info-subtle">
-        <div class="fs-5 mt-2">Ввод показаний</div>
-        <div class="row gx-2 mt-3">
-            <div class="col small">Нулевой расход</div>
-            <div class="col small">Текущие показания</div>
-            <div class="col small">Разность</div>
+    <hr>
+    <div class="d-flex">
+        <div class="col">
+            <h3 class="h4"><?= $arResult['DETAIL']['OBJECT']['NAME'] ?></h3>
+        </div>
+        <div class="col-auto">
+            <a class="ui-btn ui-btn-sm ui-btn-no-caps" href="<?= $arResult['FOLDER'] ?>">вернуться назад</a>
         </div>
     </div>
-</div>
-<div class="container row!">
-    <? foreach ($arResult['DETAIL'] as $key => $item): ?>
-    <?//dump($item);?>
-
-    <div class="row card mb-2">
-        <div class="card-body ps-2 pe-1 py-0">
-            <div class="row gx-2 align-items-center">
-                <div class="col-3 py-3"><?=$item['NAME']?></div>
-                <div class="col py-3"><?=$item['SERVICE']?></div>
-                <div class="col py-3">2.0000</div>
-                <div class="col py-3">8.0000</div>
-                <div class="col py-3">10.0000</div>
-                <div class="col-3 bg-info-subtle">
-                    <div class="d-flex align-items-center py-2">
-                        <div class="col-3 d-flex justify-content-center">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
-                            </div>
-                        </div>
-                        <input type="text" class="form-control" aria-label="Dollar amount (with dot and two decimal places)">
-                        <span class="col-3 d-flex justify-content-center">0.00</span>
-                    </div>
-
-                </div>
+    <div class="row align-items-end mt-2 px-1 gx-2 gy-3">
+        <div class="py-2 small col-3">Примечание</div>
+        <div class="py-2 small col">Участвует в расчете услуг</div>
+        <div class="py-2 small col">Показания на начало месяца</div>
+        <div class="py-2 small col">Разность за текущий месяц</div>
+        <div class="py-2 small col">Конечные показания</div>
+        <div class="py-2 col-3 text-center bg-info-subtle rounded-top">
+            <div class="fs-5 mt-1">Ввод показаний</div>
+            <div class="row gx-2 mt-3">
+                <div class="col small">Нулевой расход</div>
+                <div class="col small">Текущие показания</div>
+                <div class="col small">Разность</div>
             </div>
         </div>
     </div>
-    <? endforeach; ?>
-</div>
-<?
+    <div class="container row!">
+        <?
+        // $lastMeter = 0;
+        // $prevMeter = 0;
+
+        ?>
+        <? // dump($arResult['DETAIL'])
+        ?>
+        <form id="objectMeter">
+            <input type="hidden" name="OBJECT" value="<?= $arResult['DETAIL']['OBJECT']['ID'] ?>">
+            <? foreach ($arResult['DETAIL']['LIST'] as $key => $item): ?>
+                <?
+                $raznost = 0;
+                //dump($item);
+                //dump($arResult['DETAIL']['LAST_METERS'][$item['ID']]);
+
+                $lastMeter = $arResult['DETAIL']['LAST_METERS'][$item['ID']];
+                $prevMeter = $arResult['DETAIL']['PREV_METERS'][$item['ID']];
+
+                if ($lastMeter && $prevMeter)
+                    $raznost = $lastMeter - $prevMeter;
+
+                $raznostFormat = number_format($raznost, 4, '.', '');
+
+                $lastMeterFormat = number_format($lastMeter, 4, '.', '');
+                $prevMeterFormat = number_format($prevMeter, 4, '.', '');
+                ?>
+                <div class="row card">
+                    <div class="card-body ps-2 pe-1 py-0">
+                        <div class="row gx-2 align-items-stretch">
+                            <div class="col-3 py-3 d-flex align-items-center"><?= $item['ID'] ?> - <?= $item['NAME'] ?></div>
+                            <div class="col py-3 d-flex align-items-center"><?= $item['SERVICE'] ?></div>
+                            <div class="col py-3 d-flex align-items-center"><?= $prevMeterFormat ?></div>
+                            <div class="col py-3 d-flex align-items-center"><?= $raznostFormat ?></div>
+                            <div class="col py-3 d-flex align-items-center"><?= $lastMeter ? $lastMeterFormat : $prevMeterFormat ?></div>
+                            <div class="col-3 bg-info-subtle">
+                                <div class="d-flex align-items-center py-2">
+                                    <div class="col-3 d-flex justify-content-center">
+                                        <div class="form-check form-switch">
+                                            <input
+                                                class="form-check-input null-meter"
+                                                type="checkbox"
+                                                role="button"
+                                                data-switch-id="<?= $item['ID'] ?>"
+                                                <?= $lastMeter ? 'disabled' : '' ?>
+                                                title="Оставить показания без изменений">
+                                        </div>
+                                    </div>
+                                    <input
+                                        id="inputMeter<?= $item['ID'] ?>"
+                                        type="text"
+                                        name="METER[<?= $item['ID'] ?>]"
+                                        class="meter form-control"
+                                        onkeyup="validate(this)"
+                                        onclick="moveCaretToStart(this)"
+                                        min=" <?= $lastMeter ?:  $prevMeter ?>"
+                                        <?= $lastMeter ? 'disabled' : '' ?>
+                                        value="<?= $lastMeter ?:  $prevMeter ?>">
+                                    <span class="col-3 d-flex justify-content-center">0.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-3"></div>
+                    <div class="col"></div>
+                    <div class="col"></div>
+                    <div class="col"></div>
+                    <div class="col"></div>
+                    <div class="col-3 px-0 py-1 bg-info-subtle"></div>
+                </div>
+            <? endforeach; ?>
+            <div class="row">
+                <div class="col-6 mx-auto text-center">
+                    <div id="mess" class="alert d-none" role="alert"></div>
+                </div>
+                <div class="col-3 text-center bg-info-subtle rounded-bottom pb-2">
+                    <button type="button" class="ui-btn ui-btn-lg ui-btn-primary-dark" onclick="sendData()">Внести показания</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script>
+        function sendData() {
+
+            const form = document.getElementById("objectMeter");
+            // console.log('form', form);
+            let form_data = new FormData(form);
+            // console.log(form_data);
+
+            var message = $('#mess');
+
+
+            // sendMeter
+            BX.ajax.runComponentAction("zhek:cabinet.counters", 'sendMeter', {
+                    mode: "class",
+                    data: form_data,
+                }).then(function(response) {
+                    // console.log('message', message);
+
+                    if (response.status === 'success') {
+
+                        message.removeClass('d-none')
+                            .removeClass('alert-danger')
+                            .addClass('alert-success')
+                            .html('Изменения успешно сохранены');
+                        setTimeout(function() {
+                            location.reload();
+                        }, 5000);
+                    } else {
+                        message
+                            .removeClass('d-none')
+                            .removeClass('alert-success')
+                            .addClass('alert-danger')
+                            .html('<span class="text-danger">Произошла ошибка на сервере! Пожалуйста, попробуйте позже.</span>');
+                    }
+                })
+                .catch((response) => {
+                    // console.log('response_error', response);
+
+                    message.removeClass('d-none')
+                        .removeClass('alert-success')
+                        .addClass('alert-danger');
+
+                    // msgOk.html('').hide();
+                    $.each(response.errors, function() {
+                        message.html(this.message + '<br>');
+                    });
+                });
+
+        }
+
+        function validate(element) {
+
+            var value = element.value;
+            // replace everything that's not a number or comma or decimal
+            value = value.replace(/[^0-9,.]/g, "");
+            // replace commas with decimal
+            value = value.replace(/,/, ".");
+            // set element value to new value
+            element.value = value;
+
+
+            // var dotted = value.indexOf('.');
+            // console.log('dotted', dotted)
+            // console.log('substring', value.substring(dotted, dotted + 1))
+
+            // console.log('substring 1', value.substring(dotted, value.lenght))
+
+        }
+
+
+        $('.meter').keypress(function(event) {
+            // console.log(event.which);
+
+
+
+            if (event.which == 46) {
+
+                var value = $(this).val()
+                // console.log('this.val', value)
+
+                var dotted = value.indexOf('.');
+
+                // console.log('value', value)
+                // console.log('dotted', dotted)
+                // console.log('substring', value.substring(dotted, dotted + 1))
+
+                // var value = $(this).val()
+
+                // console.log('replace', value.replace($(this).val().substring(dotted, dotted + 1), '_'))
+
+                //value.slice(dotted, dotted + 1)
+
+
+
+                // console.log('dote', value.indexOf('.'))
+
+            }
+
+            // console.log('which', event.which)
+
+            //  console.log('dote', $(this).val().indexOf('.'))
+
+            // if (((event.which != 46 || (event.which == 46 && $(this).val() == '')) ||
+            //         $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
+            //     event.preventDefault();
+            // }
+        }).on('paste', function(event) {
+            event.preventDefault();
+        });
+
+
+        $('.null-meter').change(function() {
+            console.log($(this).data('switch-id'));
+
+            let switchID = $(this).data('switch-id'),
+                inputID = $('#inputMeter' + switchID)
+
+            if ($(this).is(':checked')) {
+                inputID.prop('disabled', true)
+            } else {
+                inputID.prop('disabled', false)
+            }
+        });
+
+        function moveCaretToStart(inputObject) {
+            inputObject.setSelectionRange(0, 0)
+        }
+        // $(".meter").mask("9.9?99");
+    </script>
+    <?
 
     // $request = Application::getInstance()->getContext()->getRequest();
     // $uriString = $request->getRequestUri();
@@ -94,7 +279,7 @@ use Bitrix\Main\Application,
 </div>
 */ ?>
 <? else: ?>
-<font class="errortext">Ошибка доступа</font>
+    <font class="errortext">Ошибка доступа</font>
 <? endif; ?>
 <?
 /*function templateItems($docVal, $useCheck, $admin = false){
@@ -150,128 +335,4 @@ use Bitrix\Main\Application,
 	$result .= '</div>';
 	return $result;
 }*/
-
-
-
-$url = $templateFolder . '/ajax.php';
 ?>
-<script>
-/* var url = <?= json_encode($url) ?>;
-    //var idIblock = <? //=$arResult['ID_STATUS']
-                        ?>;
-    function refresh() {
-        $('#moderation').load(document.URL + ' #moderation');
-    }
-    $(document).ready(function() {
-        $('#moderation').on('click', '.btn_yes', function(e) {
-
-            var id = $(this).data('id');
-            var userid = $(this).closest('.doc_status').data('user');
-
-            //console.log(id)
-
-            if (id > 0) {
-
-                $.ajax({
-                    type: "POST",
-                    url: url,
-                    data: "ID=" + id + "&USER=" + userid + "&STATUS=" + 2,
-                    success: function(data) {
-                        console.log(data)
-                        refresh();
-                    }
-                });
-            }
-            e.preventDefault();
-
-        });
-        $('#moderation').on('click', '.btn_no', function(e) {
-            var id = $(this).data('id');
-            var userid = $(this).closest('.doc_status').data('user');
-            if (id > 0) {
-                idDenied = id;
-                userDenied = userid;
-            }
-            e.preventDefault();
-
-        });
-        $('#moderation').on('click', '.btn_load', function(e) {
-            var id = $(this).data('id');
-            var userid = $(this).closest('.doc_status').data('user');
-            if (id > 0) {
-                $.ajax({
-                    type: "POST",
-                    url: url,
-                    data: "ID=" + id + "&USER=" + userid + "&STATUS=" + 1,
-                    success: function(data) {
-                        console.log(data)
-                        refresh();
-                    }
-                });
-            }
-            e.preventDefault();
-
-        });
-        $(".btn_send").on('click', function(e) {
-            let COMENTS = $("#reason").val();
-            console.log(idDenied)
-            console.log(userDenied)
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: "ID=" + idDenied + "&USER=" + userDenied + "&STATUS=" + 3 + "&COMENTS=" + COMENTS,
-                success: function(data) {
-                    console.log(data)
-                    refresh();
-                }
-            });
-            $("#reason").val('');
-            e.preventDefault();
-
-        });
-
-        $('#moderation').on('click', '.open_popup', function() {
-            $('.popup_moderator').css({
-                'top': $(window).scrollTop() - 65
-            }).addClass('active_popup_moderator');
-            $('.bg_popup').fadeIn();
-            $('.bg_popup').click(function() {
-                $('.popup_moderator').removeClass('active_popup_moderator');
-                $('.bg_popup').fadeOut();
-                $("#reason").val('');
-            });
-            $('.btn_send').click(function() {
-                $('.popup_moderator').removeClass('active_popup_moderator');
-                $('.bg_popup').fadeOut();
-            });
-
-            $(window).scroll(function() {
-                $('.popup_moderator').css({
-                    'top': $(window).scrollTop() - 65
-                });
-            }).scroll();
-        });
-
-
-        $('#moderation').on('change', '.checkbox', function(e) {
-            checkAll();
-            $.each($("input[name='checkboxN']"), function() {
-                if (this.checked) {
-                    document.getElementById('divCheckbox').style.display = 'block';
-                    return false;
-                } else {
-                    document.getElementById('divCheckbox').style.display = 'none';
-
-                }
-            });
-            e.preventDefault();
-        });
-
-    });
-
-    function changeCheckBox(idCheckbox, check) {
-        for (let id of idCheckbox) {
-            document.getElementById(id).checked = check;
-        }
-    }*/
-</script>
