@@ -6,6 +6,7 @@ use Bitrix\Main\Data\Cache;
 use Bitrix\Main\Context,
 	Bitrix\Main\Type\DateTime,
 	Bitrix\Main\Loader,
+	Bitrix\Iblock\Component\Tools,
 	Bitrix\Iblock,
 	Bitrix\Main\Application,
 	Bitrix\Main\Web\Uri;

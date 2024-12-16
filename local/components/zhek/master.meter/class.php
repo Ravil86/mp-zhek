@@ -5,6 +5,7 @@ use Uriit\Contest\Helper;
 use Bitrix\Main\Data\Cache;
 use Bitrix\Main\Context,
 	Bitrix\Main\Type\DateTime,
+	Bitrix\Iblock\Component\Tools,
 	Bitrix\Main\Loader,
 	Bitrix\Iblock,
 	Bitrix\Main\Application,
@@ -275,7 +276,7 @@ class CUserDocumentsModerator extends CBitrixComponent
 
 		$getCompany = $this->getCompany();
 
-		dump($getCompany);
+		// dump($getCompany);
 
 		$itemList = $this->getListDocs();
 
@@ -312,67 +313,37 @@ class CUserDocumentsModerator extends CBitrixComponent
 		//return $this->arResult['ITEMS'];
 	}
 
-	private function stringToColorCode($str)
-	{
-		$code = dechex(crc32($str));
-		$code = substr($code, 0, 6);
-		return $code;
-	}
-
-	private function contrast_color($hex)
-	{
-		$hex = trim($hex, ' #');
-
-		$size = strlen($hex);
-		if ($size == 3) {
-			$parts = str_split($hex, 1);
-			$hex = '';
-			foreach ($parts as $row) {
-				$hex .= $row . $row;
-			}
-		}
-
-		$dec = hexdec($hex);
-		$rgb = array(
-			0xFF & ($dec >> 0x10),
-			0xFF & ($dec >> 0x8),
-			0xFF & $dec
-		);
-
-		$contrast = (round($rgb[0] * 299) + round($rgb[1] * 587) + round($rgb[2] * 114)) / 1000;
-		return ($contrast >= 133) ? 'dark' : 'white';
-	}
 
 	/* Получаем ID инфоблока по коду
 	*
 	* @return int
 	*/
-	private function getIblockIdByCode(string $code)
-	{
-		if (\CModule::IncludeModule("iblock")) {
+	// private function getIblockIdByCode(string $code)
+	// {
+	// 	if (\CModule::IncludeModule("iblock")) {
 
-			$iblock = \Bitrix\Iblock\IblockTable::getList(array(
-				'order' => array('SORT' => 'asc'),
-				'select' => array('*'),
-				'filter' => array('ACTIVE' => 'Y', 'CODE' => $code),
-				"cache" => ["ttl" => 3600]
-			))->fetch();
+	// 		$iblock = \Bitrix\Iblock\IblockTable::getList(array(
+	// 			'order' => array('SORT' => 'asc'),
+	// 			'select' => array('*'),
+	// 			'filter' => array('ACTIVE' => 'Y', 'CODE' => $code),
+	// 			"cache" => ["ttl" => 3600]
+	// 		))->fetch();
 
-			return $iblock['ID'];
-		} else {
-			return false;
-		}
-	}
+	// 		return $iblock['ID'];
+	// 	} else {
+	// 		return false;
+	// 	}
+	// }
 
 
-	private function getIblockId()
-	{
-		$arParams = $this->arParams;
+	// private function getIblockId()
+	// {
+	// 	$arParams = $this->arParams;
 
-		$this->arResult['ID_DOCUMENTS'] = self::getIblockIdByCode($arParams['IBLOCK_CODES']['REQUEST']);
+	// 	$this->arResult['ID_DOCUMENTS'] = self::getIblockIdByCode($arParams['IBLOCK_CODES']['REQUEST']);
 
-		return $this->arResult['ID_DOCUMENTS'];
-	}
+	// 	return $this->arResult['ID_DOCUMENTS'];
+	// }
 
 	/**
 	 * Проверка доступа
@@ -407,8 +378,8 @@ class CUserDocumentsModerator extends CBitrixComponent
 	}
 
 	/*
-ИБ
-*/
+	ИБ
+	*/
 	private function getElementList(array $arFilter, array $selectFields, array $arOrder, array $arNavParams)
 	{
 		if (\CModule::IncludeModule("iblock")) {
@@ -588,7 +559,7 @@ class CUserDocumentsModerator extends CBitrixComponent
 
 			$sendEmail = false;
 
-			if ($arRequest['checked'] && check_bitrix_sessid()) {
+			/*if ($arRequest['checked'] && check_bitrix_sessid()) {
 
 				$typeStatus = 'Документы приняты';
 
@@ -625,10 +596,10 @@ class CUserDocumentsModerator extends CBitrixComponent
 				// 	self::sendMail($typeStatus, $arRequest['note']);
 
 				global $APPLICATION;
-				LocalRedirect($APPLICATION->GetCurDir());
+				LocalRedirect($APPLICATION->GetCurDir());*/
 				//LocalRedirect($this->arParams['SEF_FOLDER']);
 
-			}
+			//}
 		}
 	}
 
@@ -750,4 +721,5 @@ class CUserDocumentsModerator extends CBitrixComponent
 		];
 		return $componentPage;
 	}
+
 }

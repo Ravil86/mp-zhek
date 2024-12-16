@@ -7,6 +7,7 @@ use Bitrix\Main\Context,
 	Bitrix\Main\Type\DateTime,
 	Bitrix\Main\Loader,
 	Bitrix\Iblock,
+	Bitrix\Iblock\Component\Tools,
 	Bitrix\Main\Application,
 	Bitrix\Main\Web\Uri;
 
