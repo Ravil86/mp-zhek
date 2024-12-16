@@ -69,20 +69,17 @@ class LKObjects extends CBitrixComponent
 			$arObjects[$value['ORG']][] = $value;
 		}
 
-		// dump($arObjects);
-
 		if ($this->arResult['VARIABLES']) {
 
-			/*$objectID = $this->arResult['VARIABLES']['DETAIL_ID'];
+			$orgID = $this->arResult['VARIABLES']['DETAIL_ID'];
+
+			$this->arResult['DETAIL']['ORG'] =  $arItems[$orgID];
 
 			$this->arResult['DETAIL']['GRID'] =  $this->arResult['GRID_ID'] . '_detail';
 			$arResult['DETAIL']['GRID'] = $this->arResult['DETAIL']['GRID'];
 
-			$this->arResult['DETAIL']['OBJECT'] = $arObjects[$objectID];
-
-			$countersObject = LKClass::getCounters($this->arResult['VARIABLES']['DETAIL_ID']);
-
-			// dump($countersObject);
+			$objectList = $arObjects[$orgID];
+			// dump($objectList);
 
 			$grid_options = new CGridOptions($this->arResult['DETAIL']['GRID']);
 			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
@@ -96,32 +93,42 @@ class LKObjects extends CBitrixComponent
 				// ['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => '130'],
 			];
 
-			foreach ($countersObject as $key => &$item) {
+			foreach ($objectList as $key => &$item) {
 
-				$types = [];
+				$objectID = $item['ID'];
 
-				foreach ($item['TYPE'] as $value) {
-					$typeItem = $serviceList[$value];
-					// dump($typeItem);
-					$types[] = '<img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/>';
+				$countersObject = LKClass::getCounters($objectID);
+				// dump($countersObject);
+				// $types = [];
+
+				// foreach ($item['TYPE'] as $value) {
+				// 	$typeItem = $serviceList[$value];
+				// 	// dump($typeItem);
+				// 	$types[] = '<img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/>';
+				// }
+
+				// $item['SERVICE'] = implode(' ', $types);
+
+				foreach ($countersObject as $key => $value) {
+					$item['ROWS'][$key] = ['data' => $value];
 				}
 
-				$item['SERVICE'] = implode(' ', $types);
-				// dump($serviceList[$item['TYPE']]);
+				// $item['ROWS'] = $countersObject;
 
-				// $item['TYPE'] = $serviceList[$item['TYPE']]['NAME'];
+				// $item['ROWS'][$objectID] = [
+				// 	'data' => $countersObject
+				// ];
 
-				// $serviceList
+				// $this->arResult['ITEMS'][$objectID]['ROWS'][] = [
+				// 	'data' => $item
+				// ];
 
-				// $status = '<a class="d-flex!" href="' . $item["ID"] . '/">';
-				// $status .= '<div class="btn btn-primary px-3 py-1 text-center opacity-75"><small>Инфо</small></div>';
-				// $status .= '</a>';
-				// $item["DETAIL"] = $status;
+				// $this->arResult['DETAIL']
+			}
 
-				$this->arResult['DETAIL']['ROWS'][] = [
-					'data' => $item
-				];
-			}*/
+			$this->arResult['ITEMS'] = $objectList;
+
+
 
 			// $this->arResult['DETAIL'] = $arItems[$this->arResult['VARIABLES']['DETAIL_ID']];
 
@@ -195,10 +202,9 @@ class LKObjects extends CBitrixComponent
 				$arSort['sort']['DATE_CREATE'] = $arSort['sort']['TIMESTAMP_X'];
 			*/
 
-			$countObjects = 0;
 			foreach ($arItems as $key => &$item) {
+				$countObjects = 0;
 
-				// dump($item);
 				if ($arObjects[$item['ID']])
 					$countObjects = count($arObjects[$item['ID']]);
 

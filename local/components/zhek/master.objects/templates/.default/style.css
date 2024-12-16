@@ -1,5 +1,9 @@
-.tabs_inner {
-	/* background-color: aliceblue; */
+/*
+#MAIN
+*/
+.main-grid-settings-window-list .main-grid-settings-window-list-item-checkbox{
+	-webkit-appearance: checkbox;
+	margin: 0 7px;
 }
 
 .doc_title {

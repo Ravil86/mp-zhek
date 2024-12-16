@@ -9,10 +9,10 @@ $APPLICATION->IncludeComponent(
 	"zhek:master.objects",
 	".default",
 	[
-		'SEF_FOLDER' => '/admin/objects/',
+		'SEF_FOLDER' => '/master/objects/',
 		'SEF_URL_TEMPLATES' => [
 			'list' => '',
-			'detail' => '#OBJECT_ID#/',
+			'detail' => '#DETAIL_ID#/',
 		],
 		'SEF_MODE' => 'Y',
 		'GROUP_CODES' => [
