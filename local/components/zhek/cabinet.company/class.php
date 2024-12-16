@@ -348,7 +348,7 @@ class CabinetCompany extends CBitrixComponent
 
 			if ($arRequest['checked'] && check_bitrix_sessid()) {
 
-				$typeStatus = 'Документы приняты';
+				/*$typeStatus = 'Документы приняты';
 
 				if ($arRequest['verification'] == 'Y') {
 					$arLoadProductArray = array(
@@ -383,7 +383,7 @@ class CabinetCompany extends CBitrixComponent
 					self::sendMail($typeStatus, $arRequest['note']);
 
 				global $APPLICATION;
-				LocalRedirect($APPLICATION->GetCurDir());
+				LocalRedirect($APPLICATION->GetCurDir());*/
 				//LocalRedirect($this->arParams['SEF_FOLDER']);
 
 			}
@@ -448,7 +448,7 @@ class CabinetCompany extends CBitrixComponent
 		);
 
 		$this->arResult = [
-			'FOLDER'        => $SEF_FOLDER,
+			'FOLDER'        => $this->arParams["SEF_FOLDER"],
 			'URL_TEMPLATES' => $arUrlTemplates,
 			'VARIABLES'     => $arVariables,
 			'ALIASES'       => $arVariableAliases,

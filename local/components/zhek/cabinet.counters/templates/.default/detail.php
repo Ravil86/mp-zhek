@@ -3,7 +3,7 @@
 use Bitrix\Main\Application,
     Bitrix\Main\Web\Uri;
 
-\Bitrix\Main\UI\Extension::load("ui.buttons");
+\Bitrix\Main\UI\Extension::load("ui.forms");
 
 if ($arResult['ACCESS']):
 ?>
@@ -61,7 +61,8 @@ if ($arResult['ACCESS']):
                 <div class="row card">
                     <div class="card-body ps-2 pe-1 py-0">
                         <div class="row gx-2 align-items-stretch">
-                            <div class="col-3 py-3 d-flex align-items-center"><?= $item['ID'] ?> - <?= $item['NAME'] ?></div>
+                            <div class="col-3 py-3 d-flex align-items-center"><? //= $item['ID']
+                                                                                ?> <?= $item['NAME'] ?></div>
                             <div class="col py-3 d-flex align-items-center"><?= $item['SERVICE'] ?></div>
                             <div class="col py-3 d-flex align-items-center"><?= $prevMeterFormat ?></div>
                             <div class="col py-3 d-flex align-items-center"><?= $raznostFormat ?></div>

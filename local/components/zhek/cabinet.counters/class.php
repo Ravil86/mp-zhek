@@ -156,10 +156,10 @@ class LKCounters extends CBitrixComponent implements Controllerable
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 70],
 				['id' => 'NAME', 'name' => 'Наименование объекта', /*'sort' => 'NAME', */ 'default' => true, 'width' => 250],
 				['id' => 'ADDRESS', 'name' => 'Адрес объекта', /*'sort' => 'ADDRESS', */ 'default' => true, 'width' => 300],
-				['id' => 'DOGOVOR', 'name' => 'Договор',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => true, 'width' => '150'],
+				['id' => 'DOGOVOR', 'name' => 'Договор',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => true, 'width' => 250],
 
 				// ['id' => 'STATUS', 'name' => 'Статус', 'sort' => '', 'default' => true, 'width' => '200'],
-				['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => '130'],
+				['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => 130],
 			];
 
 			// $filterOption = new Bitrix\Main\UI\Filter\Options($this->arResult["GRID_ID"]);
@@ -205,9 +205,7 @@ class LKCounters extends CBitrixComponent implements Controllerable
 
 				// $item['COMPANY'] = $item['COMPANY']['NAME'];
 
-				$status = '<a class="d-flex!" href="' . $item["ID"] . '/">';
-				$status .= '<div class="btn btn-primary px-3 py-1 text-center opacity-75"><small>Внести</small></div>';
-				$status .= '</a>';
+				$status = '<a class="ui-btn ui-btn-primary-dark" href="' . $item["ID"] . '/">Внести</a>';
 				$item["DETAIL"] = $status;
 
 				$this->arResult['GRID']['ROWS'][] = [

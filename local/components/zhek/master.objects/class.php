@@ -26,15 +26,13 @@ class LKObjects extends CBitrixComponent
 	public function executeComponent()
 	{
 
-		if ($this->arParams["SEF_MODE"] === "Y") {
+		if ($this->arParams["SEF_MODE"] == "Y") {
 			$componentPage = $this->sefMode();
 		}
-		// если отключен режим поддержки ЧПУ, вызываем метод noSefMode()
 		if ($this->arParams["SEF_MODE"] != "Y") {
 			$componentPage = $this->noSefMode();
 		}
 
-		// отдаем 404 статус если не найден шаблон
 		if (!$componentPage) {
 			Tools::process404(
 				$this->arParams["MESSAGE_404"],
@@ -54,23 +52,27 @@ class LKObjects extends CBitrixComponent
 	{
 
 		$this->arResult['ACCESS'] = $this->checkAccess();
+		$arItems = [];
 
 		$this->arResult['GRID_ID'] = str_replace('.', '_', str_replace(':', '_', $this->GetName()));
 		$arResult['GRID_ID'] = $this->arResult['GRID_ID'];
 
-		$arItems = [];
-
 		$serviceList = LKClass::getService();
 
-		$myCompany = LKClass::myCompany();
+		// $myCompany = LKClass::myCompany();
+		$arItems = LKClass::getCompany();
 
+		// if ($myCompany)
+		$getObjects = LKClass::getObjects();
+		foreach ($getObjects as $key => $value) {
+			$arObjects[$value['ORG']][] = $value;
+		}
 
-		if ($myCompany)
-			$arObjects = LKClass::getObjects($myCompany['ID']);
+		// dump($arObjects);
 
 		if ($this->arResult['VARIABLES']) {
 
-			$objectID = $this->arResult['VARIABLES']['DETAIL_ID'];
+			/*$objectID = $this->arResult['VARIABLES']['DETAIL_ID'];
 
 			$this->arResult['DETAIL']['GRID'] =  $this->arResult['GRID_ID'] . '_detail';
 			$arResult['DETAIL']['GRID'] = $this->arResult['DETAIL']['GRID'];
@@ -118,11 +120,12 @@ class LKObjects extends CBitrixComponent
 				$this->arResult['DETAIL']['ROWS'][] = [
 					'data' => $item
 				];
-			}
+			}*/
 
 			// $this->arResult['DETAIL'] = $arItems[$this->arResult['VARIABLES']['DETAIL_ID']];
 
 		} else {
+
 
 			//инициализируем объект с настройками пользователя для нашего грида
 			$grid_options = new CGridOptions($this->arResult["GRID_ID"]);
@@ -146,12 +149,10 @@ class LKObjects extends CBitrixComponent
 			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
 			$this->arResult['GRID']['COLUMNS'] = [
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 70],
-				['id' => 'NAME', 'name' => 'Наименование объекта', /*'sort' => 'NAME', */ 'default' => true, 'width' => 250],
-				['id' => 'ADDRESS', 'name' => 'Адрес объекта', /*'sort' => 'ADDRESS', */ 'default' => true, 'width' => 300],
-				['id' => 'DOGOVOR', 'name' => 'Договор',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => true, 'width' => '150'],
-
-				// ['id' => 'STATUS', 'name' => 'Статус', 'sort' => '', 'default' => true, 'width' => '200'],
-				['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => '130'],
+				['id' => 'NAME', 'name' => 'Организация', /*'sort' => 'NAME', */ 'default' => true],
+				['id' => 'ADRES', 'name' => 'Адрес организации', /*'sort' => 'ADDRESS', */ 'default' => true, 'width' => 300],
+				['id' => 'INN', 'name' => 'ИНН',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => true, 'width' => 200],
+				['id' => 'DETAIL', 'name' => '', 'default' => true,],
 			];
 
 			// $filterOption = new Bitrix\Main\UI\Filter\Options($this->arResult["GRID_ID"]);
@@ -193,14 +194,27 @@ class LKObjects extends CBitrixComponent
 				$arSort['sort']['DATE_CREATE'] = $arSort['sort']['TIMESTAMP_X'];
 			*/
 
-
-
-			// $arItems = $this->getDocs(false, $arSort['sort'], $nav_params, $userFilter);
-
-			// dump($arItems);
-			foreach ($arObjects as $key => &$item) {
+			$countObjects = 0;
+			foreach ($arItems as $key => &$item) {
 
 				// dump($item);
+				if ($arObjects[$item['ID']])
+					$countObjects = count($arObjects[$item['ID']]);
+
+				// $item['COMPANY'] = $item['COMPANY']['NAME'];
+
+				$status = '<a class="d-flex!" href="' . $item["ID"] . '/">';
+				$status .= '<div class="ui-btn ui-btn-secondary px-3 py-1 text-center opacity-75">Объектов <i class="ui-btn-counter ms-2">' . $countObjects . '</i></div>';
+				$status .= '</a>';
+				$item["DETAIL"] = $status;
+
+				$this->arResult['GRID']['ROWS'][] = [
+					'data' => $item
+				];
+			}
+
+
+			/*foreach ($arObjects as $key => &$item) {
 
 				// $item['COMPANY'] = $item['COMPANY']['NAME'];
 
@@ -212,7 +226,7 @@ class LKObjects extends CBitrixComponent
 				$this->arResult['GRID']['ROWS'][] = [
 					'data' => $item
 				];
-			}
+			}*/
 
 			// $this->arResult['LIST'] = $arItems['ITEMS'];
 
@@ -463,13 +477,13 @@ class LKObjects extends CBitrixComponent
 	 *
 	 * @return string
 	 */
-	private function getElementName($arElements, $id)
-	{
-		foreach ($arElements as $value) {
-			if ($value['ID'] == $id)
-				return $value['NAME'];
-		}
-	}
+	// private function getElementName($arElements, $id)
+	// {
+	// 	foreach ($arElements as $value) {
+	// 		if ($value['ID'] == $id)
+	// 			return $value['NAME'];
+	// 	}
+	// }
 
 	public function getRequest()
 	{
@@ -501,7 +515,7 @@ class LKObjects extends CBitrixComponent
 
 			if ($arRequest['checked'] && check_bitrix_sessid()) {
 
-				$typeStatus = 'Документы приняты';
+				/*$typeStatus = 'Документы приняты';
 
 				if ($arRequest['verification'] == 'Y') {
 					$arLoadProductArray = array(
@@ -532,11 +546,11 @@ class LKObjects extends CBitrixComponent
 					$sendEmail = true;
 				}
 
-				if ($sendEmail)
-					self::sendMail($typeStatus, $arRequest['note']);
+				// if ($sendEmail)
+				// 	self::sendMail($typeStatus, $arRequest['note']);
 
 				global $APPLICATION;
-				LocalRedirect($APPLICATION->GetCurDir());
+				LocalRedirect($APPLICATION->GetCurDir());*/
 				//LocalRedirect($this->arParams['SEF_FOLDER']);
 
 			}
@@ -593,11 +607,12 @@ class LKObjects extends CBitrixComponent
 			'VARIABLES'     => $arVariables,
 			'ALIASES'       => $arVariableAliases,
 		];
+
 		return $componentPage;
 	}
 
 	// метод обработки режима без ЧПУ
-	protected function noSefMode()
+	/*protected function noSefMode()
 	{
 		if (empty($this->arParams["VARIABLE_ALIASES"]["CATALOG_URL"])) {
 			$dbResult = CIBlock::GetByID($this->arParams["IBLOCK_ID"])->GetNext();
@@ -647,5 +662,5 @@ class LKObjects extends CBitrixComponent
 			"ALIASES" => $arVariableAliases
 		];
 		return $componentPage;
-	}
+	}*/
 }

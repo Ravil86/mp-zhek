@@ -1,5 +1,5 @@
 <?php
-if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
 use Uriit\Contest\Helper;
 use Bitrix\Main\Data\Cache;
@@ -15,7 +15,7 @@ class CUserDocumentsModerator extends CBitrixComponent
 
 	protected static $_HL_Reference = "ReferenceCustomer"; // HL общий реестр
 	protected static $_HL_Objects = "Objects"; // HL общий реестр
-    protected static $_HL_Company = "Company"; // HL категории курсов
+	protected static $_HL_Company = "Company"; // HL категории курсов
 
 
 	/*public function onPrepareComponentParams($arParams) {
@@ -40,33 +40,33 @@ class CUserDocumentsModerator extends CBitrixComponent
 		return $arParams;
 	}
 
-	public function executeComponent() {
+	public function executeComponent()
+	{
 
 		if ($this->arParams["SEF_MODE"] === "Y") {
-            $componentPage = $this->sefMode();
-        }
-        // если отключен режим поддержки ЧПУ, вызываем метод noSefMode()
-        if ($this->arParams["SEF_MODE"] != "Y") {
-            $componentPage = $this->noSefMode();
-        }
+			$componentPage = $this->sefMode();
+		}
+		// если отключен режим поддержки ЧПУ, вызываем метод noSefMode()
+		if ($this->arParams["SEF_MODE"] != "Y") {
+			$componentPage = $this->noSefMode();
+		}
 
 		// отдаем 404 статус если не найден шаблон
-        if (!$componentPage) {
-            Tools::process404(
-                $this->arParams["MESSAGE_404"],
-                ($this->arParams["SET_STATUS_404"] === "Y"),
-                ($this->arParams["SET_STATUS_404"] === "Y"),
-                ($this->arParams["SHOW_404"] === "Y"),
-                $this->arParams["FILE_404"]
-            );
-        }
+		if (!$componentPage) {
+			Tools::process404(
+				$this->arParams["MESSAGE_404"],
+				($this->arParams["SET_STATUS_404"] === "Y"),
+				($this->arParams["SET_STATUS_404"] === "Y"),
+				($this->arParams["SHOW_404"] === "Y"),
+				$this->arParams["FILE_404"]
+			);
+		}
 
 		$this->run();
 
 		$this->prepareComponentResult();
 
 		$this->includeComponentTemplate($componentPage);
-
 	}
 
 	private function run()
@@ -78,15 +78,14 @@ class CUserDocumentsModerator extends CBitrixComponent
 
 		// dump();
 
-		if($this->arResult['VARIABLES']){
+		if ($this->arResult['VARIABLES']) {
 
-			 $this->arResult['DETAIL'] = $this->getDocs()[$this->arResult['VARIABLES']['DETAIL_ID']];
+			$this->arResult['DETAIL'] = $this->getDocs()[$this->arResult['VARIABLES']['DETAIL_ID']];
 
 			// $this->arResult['DETAIL'] = $this->getAllDocs($arVariables['DETAIL_ID']);
 			// $this->arResult['DOCSLIST'] = $this->getAllDocs($this->arResult['DETAIL']['ID'], ['DATE_CREATE'	=> 'DESC'], [], false, $this->arResult['DETAIL']['USER_ID'])['ITEMS'];
 
-		}
-		else{
+		} else {
 
 			$this->arResult['GRID_ID'] = 'grid_meter';
 
@@ -96,7 +95,7 @@ class CUserDocumentsModerator extends CBitrixComponent
 			$grid_options = new CGridOptions($this->arResult["GRID_ID"]);
 
 			//размер страницы в постраничке (передаем умолчания)
-			$nav_params = $grid_options->GetNavParams(array("nPageSize"=>10));
+			$nav_params = $grid_options->GetNavParams(array("nPageSize" => 10));
 			// $nav_params = $grid_options->GetNavParams();
 
 			$nav = new Bitrix\Main\UI\PageNavigation($this->arResult["GRID_ID"]);
@@ -111,9 +110,9 @@ class CUserDocumentsModerator extends CBitrixComponent
 
 
 			//какую сортировку сохранил пользователь (передаем то, что по умолчанию)
-			$arSort = $grid_options->GetSorting(array("sort"=>array("timestamp_x"=>"desc"), "vars"=>array("by"=>"by", "order"=>"order")));
+			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
 			$this->arResult['GRID']['COLUMNS'] = [
-				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true,'width' => '70'],
+				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => '70'],
 				['id' => 'DATE', 'name' => 'Дата', 'sort' => 'TIMESTAMP_X', 'default' => true, 'width' => '150'],
 				['id' => 'NUMBER', 'name' => '№', 'sort' => 'NUMBER', 'default' => true, 'width' => '130'],
 				['id' => 'COMPANY', 'name' => 'Наименование организации', 'sort' => 'COMPANY', 'default' => true, 'width' => '300'],
@@ -126,37 +125,36 @@ class CUserDocumentsModerator extends CBitrixComponent
 
 			$useFilter = false;
 
-			if(isset($filterData["DATE_MODIFY_from"])){
+			if (isset($filterData["DATE_MODIFY_from"])) {
 				$userFilter["DATE_MODIFY_FROM"] = $filterData["DATE_MODIFY_from"];
 				$userFilter["DATE_MODIFY_TO"] = $filterData["DATE_MODIFY_to"];
 			}
 
-			if(isset($filterData["FIND"])){
-				if(isset($filterData["NAME"]))
-					$userFilter["NAME"] = "%".$filterData["NAME"]."%";
+			if (isset($filterData["FIND"])) {
+				if (isset($filterData["NAME"]))
+					$userFilter["NAME"] = "%" . $filterData["NAME"] . "%";
 				else
-					$userFilter["NAME"] = "%".$filterData["FIND"]."%";
+					$userFilter["NAME"] = "%" . $filterData["FIND"] . "%";
 			}
-			if(isset($filterData["DATE_CREATE_from"])){
+			if (isset($filterData["DATE_CREATE_from"])) {
 				$userFilter[">=DATE_CREATE"] = $filterData["DATE_CREATE_from"];
 			}
-			if(isset($filterData["DATE_CREATE_to"])){
+			if (isset($filterData["DATE_CREATE_to"])) {
 				$userFilter["<=DATE_CREATE"] = $filterData["DATE_CREATE_to"];
-
 			}
-			if(isset($filterData["COURSE"])){
+			if (isset($filterData["COURSE"])) {
 				$userFilter["PROPERTY_COURSE"] = $filterData["COURSE"];
 			}
-			if(isset($filterData["COURSE"]))
+			if (isset($filterData["COURSE"]))
 				$userFilter["PROPERTY_COURSE"] = $filterData["COURSE"];
 
-			if(isset($filterData["MO"]))
+			if (isset($filterData["MO"]))
 				$userFilter["PROPERTY_MO"] = $filterData["MO"];
 
-			if(!$nav_params['nPageSize'])
+			if (!$nav_params['nPageSize'])
 				$nav_params['nPageSize'] = 500;
 
-			if($arSort['sort']['TIMESTAMP_X'])
+			if ($arSort['sort']['TIMESTAMP_X'])
 				$arSort['sort']['DATE_CREATE'] = $arSort['sort']['TIMESTAMP_X'];
 
 			$arItems = $this->getDocs(false, $arSort['sort'], $nav_params, $userFilter);
@@ -164,12 +162,12 @@ class CUserDocumentsModerator extends CBitrixComponent
 			// dump($arItems);
 			foreach ($arItems as $key => &$item) {
 
-			// dump($item);
+				// dump($item);
 
 				$item['COMPANY'] = $item['COMPANY']['NAME'];
 
-				$status = '<a class="d-flex!" href="'.$item["ID"].'/">';
-				$status .= '<div class="btn btn-primary px-3 py-1 text-center opacity-75"><small>'.$item['STATUS'].'</small></div>';
+				$status = '<a class="d-flex!" href="' . $item["ID"] . '/">';
+				$status .= '<div class="btn btn-primary px-3 py-1 text-center opacity-75"><small>' . $item['STATUS'] . '</small></div>';
 				$status .= '</a>';
 				$item["STATUS"] = $status;
 
@@ -188,8 +186,8 @@ class CUserDocumentsModerator extends CBitrixComponent
 			// }
 
 			$this->arResult['GRID']["FILTER"] = [
-				['id' => 'DATE_CREATE', 'name' => 'Дата', 'type' => 'date','default' => true],
-				['id' => 'NAME', 'name' => 'ФИО', 'type' => 'text','default' => true],
+				['id' => 'DATE_CREATE', 'name' => 'Дата', 'type' => 'date', 'default' => true],
+				['id' => 'NAME', 'name' => 'ФИО', 'type' => 'text', 'default' => true],
 				// ['id' => 'MO', 'name' => 'Муниципалитет', 'type' => 'list', 'items' => $arCity, 'params' => ['multiple' => 'N'], 'default' => true],
 				// ['id' => 'COURSE', 'name' => 'Курс', 'type' => 'list', 'items' => $this->courses, 'params' => ['multiple' => 'Y'], 'default' => true],
 			];
@@ -264,57 +262,58 @@ class CUserDocumentsModerator extends CBitrixComponent
 	}
 
 	/**
-     * Получаем все документы пользователей
+	 * Получаем все документы пользователей
 	 *
 	 * @param string $group - группа модератора для которой находить участников
-     */
-	private function getDocs($detailID = null, $arSort = [], $arNav = [], $userFilter = [], $userDetail = null  )
-		{
-			global $USER;
-			$arParams = $this->arParams;
+	 */
+	private function getDocs($detailID = null, $arSort = [], $arNav = [], $userFilter = [], $userDetail = null)
+	{
+		global $USER;
+		$arParams = $this->arParams;
 
-			$filter = [];
+		$filter = [];
 
-			$getCompany = $this->getCompany();
+		$getCompany = $this->getCompany();
 
-			dump($getCompany);
+		dump($getCompany);
 
-			$itemList = $this->getListDocs();
+		$itemList = $this->getListDocs();
 
-			foreach ($itemList as $key => &$value) {
-				$value['COMPANY'] = $getCompany[$value['COMPANY']];
-			}
-// dump($itemList);
-			return $itemList;
+		foreach ($itemList as $key => &$value) {
+			$value['COMPANY'] = $getCompany[$value['COMPANY']];
+		}
+		// dump($itemList);
+		return $itemList;
 
-			// $filter['IBLOCK_ID'] = $this->getIblockId;
+		// $filter['IBLOCK_ID'] = $this->getIblockId;
 
-				// foreach ($getUsersDocs as $key => $value) {
-				// 	$result['ITEMS'][$arData['ID']] = $arData;
-				// }
+		// foreach ($getUsersDocs as $key => $value) {
+		// 	$result['ITEMS'][$arData['ID']] = $arData;
+		// }
 
 
 
-			// foreach ($result['ITEMS'] as $k => &$item) {
+		// foreach ($result['ITEMS'] as $k => &$item) {
 
-			// 	$userID = $item['USER_ID'];
-			// 	$userDocStat = $getDocsStatus[$userID];
+		// 	$userID = $item['USER_ID'];
+		// 	$userDocStat = $getDocsStatus[$userID];
 
-			// 	$item['USER'] = $arUserFields[$userID];
-			// 	$item['USERNAME'] = $arUserFields[$userID]['LAST_NAME'].' '.$arUserFields[$userID]['NAME'].' '.$arUserFields[$userID]['SECOND_NAME'];
-			// 	$item['SNILS'] = $arUserFields[$userID]['UF_SNILS'];
-			// 	$item['FOTO'] = CFile::GetPath($arUserFields[$userID]['PERSONAL_PHOTO']);
-			// }
+		// 	$item['USER'] = $arUserFields[$userID];
+		// 	$item['USERNAME'] = $arUserFields[$userID]['LAST_NAME'].' '.$arUserFields[$userID]['NAME'].' '.$arUserFields[$userID]['SECOND_NAME'];
+		// 	$item['SNILS'] = $arUserFields[$userID]['UF_SNILS'];
+		// 	$item['FOTO'] = CFile::GetPath($arUserFields[$userID]['PERSONAL_PHOTO']);
+		// }
 
-			// if($detailID && !$userDetail)
-			// 	return array_shift($result['ITEMS']);
-			// else
-			// 	return $result;
+		// if($detailID && !$userDetail)
+		// 	return array_shift($result['ITEMS']);
+		// else
+		// 	return $result;
 
-			//return $this->arResult['ITEMS'];
+		//return $this->arResult['ITEMS'];
 	}
 
-	private function stringToColorCode($str) {
+	private function stringToColorCode($str)
+	{
 		$code = dechex(crc32($str));
 		$code = substr($code, 0, 6);
 		return $code;
@@ -348,25 +347,26 @@ class CUserDocumentsModerator extends CBitrixComponent
 	*
 	* @return int
 	*/
-   private function getIblockIdByCode(string $code)
-   {
-	   if (\CModule::IncludeModule("iblock")) {
+	private function getIblockIdByCode(string $code)
+	{
+		if (\CModule::IncludeModule("iblock")) {
 
-		$iblock = \Bitrix\Iblock\IblockTable::getList(array(
-			'order' => array('SORT' => 'asc'),
-			'select' => array('*'),
-			'filter' => array('ACTIVE' => 'Y', 'CODE' => $code),
-			"cache" => ["ttl" => 3600]))->fetch();
+			$iblock = \Bitrix\Iblock\IblockTable::getList(array(
+				'order' => array('SORT' => 'asc'),
+				'select' => array('*'),
+				'filter' => array('ACTIVE' => 'Y', 'CODE' => $code),
+				"cache" => ["ttl" => 3600]
+			))->fetch();
 
-		   return $iblock['ID'];
-	   } else {
-		   return false;
-	   }
-   }
+			return $iblock['ID'];
+		} else {
+			return false;
+		}
+	}
 
 
 	private function getIblockId()
-    {
+	{
 		$arParams = $this->arParams;
 
 		$this->arResult['ID_DOCUMENTS'] = self::getIblockIdByCode($arParams['IBLOCK_CODES']['REQUEST']);
@@ -375,64 +375,59 @@ class CUserDocumentsModerator extends CBitrixComponent
 	}
 
 	/**
-     * Проверка доступа
+	 * Проверка доступа
 	 *
 	 * @return bool
-     */
-    private function checkAccess()
-    {
+	 */
+	private function checkAccess()
+	{
 		global $USER;
 		$arParams = $this->arParams;
-        if ($USER->IsAuthorized())
-		{
+		if ($USER->IsAuthorized()) {
 			$rsGroups = \CUser::GetUserGroupEx($USER->GetID());
-			while ($arGroup = $rsGroups->GetNext())
-			{
-				if ($arGroup['GROUP_ID'] == 1 || $arGroup['STRING_ID'] === $arParams['GROUP_CODES']['ADMINISTRATOR'])
-				{
+			while ($arGroup = $rsGroups->GetNext()) {
+				if ($arGroup['GROUP_ID'] == 1 || $arGroup['STRING_ID'] === $arParams['GROUP_CODES']['ADMINISTRATOR']) {
 					$this->arResult['ADMIN'] = true;
 					return true;
 				}
-				if ($arGroup['STRING_ID'] === $arParams['GROUP_CODES']['MODERATOR'])
-				{
+				if ($arGroup['STRING_ID'] === 'MASTER') {
 					return true;
 				}
 			}
-        }
+		}
 		return false;
-    }
+	}
 
 	private function arraySort($a, $b)
-        {
-            if ($a['SORT'] == $b['SORT']) {
-                return 0;
-            }
-            return ($a['SORT'] < $b['SORT']) ? -1 : 1;
-    }
+	{
+		if ($a['SORT'] == $b['SORT']) {
+			return 0;
+		}
+		return ($a['SORT'] < $b['SORT']) ? -1 : 1;
+	}
 
-/*
+	/*
 ИБ
 */
 	private function getElementList(array $arFilter, array $selectFields, array $arOrder, array $arNavParams)
-    {
-        if (\CModule::IncludeModule("iblock")) {
+	{
+		if (\CModule::IncludeModule("iblock")) {
 
-            $dbItems = \CIBlockElement::GetList(
+			$dbItems = \CIBlockElement::GetList(
 				$arOrder,
-                $arFilter,
-                false,
-                $arNavParams,
-                $selectFields
-            );
+				$arFilter,
+				false,
+				$arNavParams,
+				$selectFields
+			);
 
-            $result = array();
-            while($arRes = $dbItems->fetch())
-            {
-                $arRes['PROPERTIES'] = [];
-                $result[$arRes['ID']] = $arRes;
-            }
+			$result = array();
+			while ($arRes = $dbItems->fetch()) {
+				$arRes['PROPERTIES'] = [];
+				$result[$arRes['ID']] = $arRes;
+			}
 
-            CIBlockElement::GetPropertyValuesArray($result, $arFilter['IBLOCK_ID'], $arFilter);
+			CIBlockElement::GetPropertyValuesArray($result, $arFilter['IBLOCK_ID'], $arFilter);
 
 			foreach ($result as $key => $item) {
 
@@ -447,30 +442,29 @@ class CUserDocumentsModerator extends CBitrixComponent
 						'DESC' => $prop['HINT']
 					];
 
-					if(preg_match("/^DOC_/", $code)){
+					if (preg_match("/^DOC_/", $code)) {
 						$result[$key]['DOCS'][$code] = $fieldProp;
-					}
-					else{
+					} else {
 						$result[$key]['PROPS'][$code] = $fieldProp;
 					}
-
 				}
 				unset($result[$key]['PROPERTIES']);
 			}
 
-            return $result;
-        }
-    }
+			return $result;
+		}
+	}
 
 
 	/*
     Список данных из HLblock c данными документИД/пользователь/статус
     */
-    private function getListDocs($userID = []) {
+	private function getListDocs($userID = [])
+	{
 
-        $classsDocs = \HLWrap::init(self::$_HL_Reference);
+		$classsDocs = \HLWrap::init(self::$_HL_Reference);
 
-        // $getStatusList = self::getStatusList();
+		// $getStatusList = self::getStatusList();
 
 		$filter = [];
 		// if($userID)
@@ -484,8 +478,7 @@ class CUserDocumentsModerator extends CBitrixComponent
 			)
 		);
 
-        while ($arDoc = $rsDocs->Fetch())
-        {
+		while ($arDoc = $rsDocs->Fetch()) {
 			$arFields = [
 				'ID' => $arDoc['ID'],
 				'NUMBER' => $arDoc['UF_NUMBER'],
@@ -496,17 +489,18 @@ class CUserDocumentsModerator extends CBitrixComponent
 				//'UF_STATUS' => $getStatusList[$arStatus['UF_STATUS']],
 			];
 			$result[$arDoc['ID']] = $arFields;
-        }
+		}
 		// dump($result);
 		return $result;
-    }
+	}
 
 	/*
     Список данных из HLblock cо стутусами документа
     */
-    private function getCompany() {
+	private function getCompany()
+	{
 
-        $classCompany = \HLWrap::init(self::$_HL_Company);
+		$classCompany = \HLWrap::init(self::$_HL_Company);
 
 		$rsCompany = $classCompany::getList(
 			array(
@@ -514,62 +508,60 @@ class CUserDocumentsModerator extends CBitrixComponent
 			)
 		);
 
-        while ($company = $rsCompany->Fetch())
-        {
+		while ($company = $rsCompany->Fetch()) {
 			$arFields = [
 				'NAME' => $company['UF_NAME'],
 				'ADRES' => $company['UF_OBJECT'],
 				'INN' => $company['UF_INN']
 			];
-            $result[$company['ID']] = $arFields;
-        }
+			$result[$company['ID']] = $arFields;
+		}
 
 		return $result;
-    }
+	}
 
 
 	/**
-     * Получить имя элемента
+	 * Получить имя элемента
 	 *
 	 * @param array $arElements - массив элементов
 	 * @param int $id - идентификатор элемента
 	 *
 	 * @return string
-     */
+	 */
 	private function getElementName($arElements, $id)
 	{
-		foreach($arElements as $value)
-		{
+		foreach ($arElements as $value) {
 			if ($value['ID'] == $id)
 				return $value['NAME'];
 		}
 	}
 
 	/**
-     * Получить Регион по ID города
+	 * Получить Регион по ID города
 	 *
 	 * @param array $arElements - массив элементов
 	 * @param int $id - идентификатор элемента
 	 *
 	 * @return string
-     */
+	 */
 	private function getRegionByCity($arElements, $id)
 	{
 		CModule::IncludeModule("iblock");
-		foreach($arElements as $value)
-		{
-			if ($value['ID'] == $id){
+		foreach ($arElements as $value) {
+			if ($value['ID'] == $id) {
 
-				if($value['IBLOCK_SECTION_ID']){
+				if ($value['IBLOCK_SECTION_ID']) {
 					$res = CIBlockSection::GetByID($value['IBLOCK_SECTION_ID']);
-					if($ar_res = $res->GetNext())
+					if ($ar_res = $res->GetNext())
 						return $ar_res['NAME'];
 				}
 			}
 		}
 	}
 
-	public function getRequest() {
+	public function getRequest()
+	{
 
 		$instance = \Bitrix\Main\Application::getInstance();
 		$context = $instance->getContext();
@@ -589,31 +581,29 @@ class CUserDocumentsModerator extends CBitrixComponent
 	public function prepareComponentResult()
 	{
 
-		if ($this->isPost())
-		{
+		if ($this->isPost()) {
 			$arRequest = $this->getRequest();
 
 			$REQUEST_ID = $this->arResult['DETAIL']['ID'];
 
 			$sendEmail = false;
 
-			if($arRequest['checked'] && check_bitrix_sessid()){
+			if ($arRequest['checked'] && check_bitrix_sessid()) {
 
 				$typeStatus = 'Документы приняты';
 
-				if($arRequest['verification']=='Y'){
-					$arLoadProductArray = Array(
+				if ($arRequest['verification'] == 'Y') {
+					$arLoadProductArray = array(
 						"ACTIVE"         => "Y",
 					);
 					$el = new CIBlockElement;
 					$res = $el->Update($REQUEST_ID, $arLoadProductArray);
 					CIBlockElement::SetPropertyValues($REQUEST_ID, $this->getIblockId, 'N', 'CHECKED');
-				}
-				elseif($arRequest['revision']=='Y'){
-					$arLoadProductArray = Array(
+				} elseif ($arRequest['revision'] == 'Y') {
+					$arLoadProductArray = array(
 						"ACTIVE"         => "N",
 					);
-					if(strlen($arRequest['note'])>0)
+					if (strlen($arRequest['note']) > 0)
 						$arLoadProductArray['PREVIEW_TEXT'] = $arRequest['note'];
 
 					$el = new CIBlockElement;
@@ -621,9 +611,8 @@ class CUserDocumentsModerator extends CBitrixComponent
 					CIBlockElement::SetPropertyValues($REQUEST_ID, $this->getIblockId, 'Y', 'CHECKED');
 					$typeStatus = 'Документ(ы) некорректные';
 					$sendEmail = true;
-				}
-				else{
-					$arLoadProductArray = Array(
+				} else {
+					$arLoadProductArray = array(
 						"ACTIVE"         => "Y",
 					);
 					$el = new CIBlockElement;
@@ -632,8 +621,8 @@ class CUserDocumentsModerator extends CBitrixComponent
 					$sendEmail = true;
 				}
 
-				if($sendEmail)
-					self::sendMail($typeStatus,$arRequest['note']);
+				// if ($sendEmail)
+				// 	self::sendMail($typeStatus, $arRequest['note']);
 
 				global $APPLICATION;
 				LocalRedirect($APPLICATION->GetCurDir());
@@ -641,127 +630,124 @@ class CUserDocumentsModerator extends CBitrixComponent
 
 			}
 		}
-
 	}
 
 	// метод обработки режима ЧПУ
-    protected function sefMode()
-    {
-        $arComponentVariables = [
-            'sort'
-        ];
-        $arDefaultVariableAliases404 = array(
-            'section' => array(
-                'ELEMENT_COUNT' => 'count',
-            )
-        );
-        $arVariableAliases = CComponentEngine::makeComponentVariableAliases(
-            $arDefaultVariableAliases404,
-            $this->arParams["VARIABLE_ALIASES"]
-        );
+	protected function sefMode()
+	{
+		$arComponentVariables = [
+			'sort'
+		];
+		$arDefaultVariableAliases404 = array(
+			'section' => array(
+				'ELEMENT_COUNT' => 'count',
+			)
+		);
+		$arVariableAliases = CComponentEngine::makeComponentVariableAliases(
+			$arDefaultVariableAliases404,
+			$this->arParams["VARIABLE_ALIASES"]
+		);
 
 		//if (empty($this->arParams["SEF_FOLDER"])) {
-            // получаем данные из настроек инфоблока
-            // $dbResult = CIBlock::GetByID($this->arParams["IBLOCK_ID"])->GetNext();
-            // if (!empty($dbResult)) {
-            //     // перетираем данные в $arParams["SEF_URL_TEMPLATES"]
-            //     $this->arParams["SEF_URL_TEMPLATES"]["detail"] = $dbResult["DETAIL_PAGE_URL"];
-            //     $this->arParams["SEF_URL_TEMPLATES"]["section"] = $dbResult["SECTION_PAGE_URL"];
-            //     $this->arParams["SEF_FOLDER"] = $dbResult["LIST_PAGE_URL"];
-            // }
-        //}
+		// получаем данные из настроек инфоблока
+		// $dbResult = CIBlock::GetByID($this->arParams["IBLOCK_ID"])->GetNext();
+		// if (!empty($dbResult)) {
+		//     // перетираем данные в $arParams["SEF_URL_TEMPLATES"]
+		//     $this->arParams["SEF_URL_TEMPLATES"]["detail"] = $dbResult["DETAIL_PAGE_URL"];
+		//     $this->arParams["SEF_URL_TEMPLATES"]["section"] = $dbResult["SECTION_PAGE_URL"];
+		//     $this->arParams["SEF_FOLDER"] = $dbResult["LIST_PAGE_URL"];
+		// }
+		//}
 
 		$arDefaultUrlTemplates404 = [
 			"detail" => "#DETAIL_ID#/",
-            // "section" => "#SECTION_CODE#/",
-            // "element" => "#SECTION_CODE#/#ELEMENT_CODE#/",
-        ];
-        $arUrlTemplates = CComponentEngine::makeComponentUrlTemplates(
-            $arDefaultUrlTemplates404,
-            $this->arParams["SEF_URL_TEMPLATES"]
-        );
+			// "section" => "#SECTION_CODE#/",
+			// "element" => "#SECTION_CODE#/#ELEMENT_CODE#/",
+		];
+		$arUrlTemplates = CComponentEngine::makeComponentUrlTemplates(
+			$arDefaultUrlTemplates404,
+			$this->arParams["SEF_URL_TEMPLATES"]
+		);
 
 		$engine = new CComponentEngine($this);
-        $arVariables = [];
+		$arVariables = [];
 
 		$componentPage = $engine->guessComponentPath(
-            $this->arParams["SEF_FOLDER"],
-            $arUrlTemplates,
-            $arVariables
-        );
+			$this->arParams["SEF_FOLDER"],
+			$arUrlTemplates,
+			$arVariables
+		);
 
 		if ($componentPage == FALSE) {
-            $componentPage = 'list';
-        }
+			$componentPage = 'list';
+		}
 
 		CComponentEngine::initComponentVariables(
-            $componentPage,
-            $arComponentVariables,
-            $arVariableAliases,
-            $arVariables
-        );
+			$componentPage,
+			$arComponentVariables,
+			$arVariableAliases,
+			$arVariables
+		);
 
-        $this->arResult = [
-			'FOLDER'        => $SEF_FOLDER,
+		$this->arResult = [
+			'FOLDER'        => $this->arParams["SEF_FOLDER"],
 			'URL_TEMPLATES' => $arUrlTemplates,
 			'VARIABLES'     => $arVariables,
 			'ALIASES'       => $arVariableAliases,
 		];
-        return $componentPage;
-    }
+		return $componentPage;
+	}
 
 	// метод обработки режима без ЧПУ
-    protected function noSefMode()
-    {
-       if (empty($this->arParams["VARIABLE_ALIASES"]["CATALOG_URL"])) {
-            $dbResult = CIBlock::GetByID($this->arParams["IBLOCK_ID"])->GetNext();
-            if (!empty($dbResult)) {
-                $this->arParams["VARIABLE_ALIASES"]["ELEMENT_ID"] = preg_replace('/\#/', '', $dbResult["DETAIL_PAGE_URL"]);
-                $this->arParams["VARIABLE_ALIASES"]["SECTION_ID"] = preg_replace('/\#/', '', $dbResult["SECTION_PAGE_URL"]);
-                $this->arParams["VARIABLE_ALIASES"]["CATALOG_URL"] = preg_replace('/\#/', '', $dbResult["LIST_PAGE_URL"]);
-            }
-        }
-        $arDefaultVariableAliases = [
-            'ELEMENT_COUNT' => 'count',
-        ];
-        $arVariableAliases = CComponentEngine::makeComponentVariableAliases(
-            $arDefaultVariableAliases,
-            $this->arParams["VARIABLE_ALIASES"]
-        );
-        $arVariables = [];
-        // дополнительные GET параметры которые будем отлавливать в запросе, в массив $arVariables будет добавлена переменная sort, значение которой будет получено из $_REQUEST['sort'], применяется когда не нужно указывать точный псевдоним для ключа
-        $arComponentVariables = [
-            'sort'
-        ];
-        // метод предназначен для получения и объединения GET параметров результат записываем в $arVariables
-        CComponentEngine::initComponentVariables(
-            false,
-            $arComponentVariables,
-            $arVariableAliases,
-           	$arVariables
-        );
-        $context = Application::getInstance()->getContext();
-        $request = $context->getRequest();
-        $rDir = $request->getRequestedPageDirectory();
-        $componentPage = "";
-        // если запрошенная директория равна переданой в arParams["CATALOG_URL"], определяем тип страницы стартовая
-        if ($arVariableAliases["CATALOG_URL"] == $rDir) {
-            $componentPage = "index";
-        }
-        // по найденным параметрам $arVariables определяем тип страницы секция
-        if ((isset($arVariables["SECTION_ID"]) && intval($arVariables["SECTION_ID"]) > 0) || (isset($arVariables["SECTION_CODE"]) && $arVariables["SECTION_CODE"] <> '')) {
-            $componentPage = "section";
-        }
-        // по найденным параметрам $arVariables определяем тип страницы элемент
-        if ((isset($arVariables["ELEMENT_ID"]) && intval($arVariables["ELEMENT_ID"]) > 0) || (isset($arVariables["ELEMENT_CODE"]) && $arVariables["ELEMENT_CODE"] <> '')) {
-            $componentPage = "element";
-        }
-       $this->arResult = [
-            "VARIABLES" => $arVariables,
-            "ALIASES" => $arVariableAliases
-        ];
-        return $componentPage;
-    }
-
+	protected function noSefMode()
+	{
+		if (empty($this->arParams["VARIABLE_ALIASES"]["CATALOG_URL"])) {
+			$dbResult = CIBlock::GetByID($this->arParams["IBLOCK_ID"])->GetNext();
+			if (!empty($dbResult)) {
+				$this->arParams["VARIABLE_ALIASES"]["ELEMENT_ID"] = preg_replace('/\#/', '', $dbResult["DETAIL_PAGE_URL"]);
+				$this->arParams["VARIABLE_ALIASES"]["SECTION_ID"] = preg_replace('/\#/', '', $dbResult["SECTION_PAGE_URL"]);
+				$this->arParams["VARIABLE_ALIASES"]["CATALOG_URL"] = preg_replace('/\#/', '', $dbResult["LIST_PAGE_URL"]);
+			}
+		}
+		$arDefaultVariableAliases = [
+			'ELEMENT_COUNT' => 'count',
+		];
+		$arVariableAliases = CComponentEngine::makeComponentVariableAliases(
+			$arDefaultVariableAliases,
+			$this->arParams["VARIABLE_ALIASES"]
+		);
+		$arVariables = [];
+		// дополнительные GET параметры которые будем отлавливать в запросе, в массив $arVariables будет добавлена переменная sort, значение которой будет получено из $_REQUEST['sort'], применяется когда не нужно указывать точный псевдоним для ключа
+		$arComponentVariables = [
+			'sort'
+		];
+		// метод предназначен для получения и объединения GET параметров результат записываем в $arVariables
+		CComponentEngine::initComponentVariables(
+			false,
+			$arComponentVariables,
+			$arVariableAliases,
+			$arVariables
+		);
+		$context = Application::getInstance()->getContext();
+		$request = $context->getRequest();
+		$rDir = $request->getRequestedPageDirectory();
+		$componentPage = "";
+		// если запрошенная директория равна переданой в arParams["CATALOG_URL"], определяем тип страницы стартовая
+		if ($arVariableAliases["CATALOG_URL"] == $rDir) {
+			$componentPage = "index";
+		}
+		// по найденным параметрам $arVariables определяем тип страницы секция
+		if ((isset($arVariables["SECTION_ID"]) && intval($arVariables["SECTION_ID"]) > 0) || (isset($arVariables["SECTION_CODE"]) && $arVariables["SECTION_CODE"] <> '')) {
+			$componentPage = "section";
+		}
+		// по найденным параметрам $arVariables определяем тип страницы элемент
+		if ((isset($arVariables["ELEMENT_ID"]) && intval($arVariables["ELEMENT_ID"]) > 0) || (isset($arVariables["ELEMENT_CODE"]) && $arVariables["ELEMENT_CODE"] <> '')) {
+			$componentPage = "element";
+		}
+		$this->arResult = [
+			"VARIABLES" => $arVariables,
+			"ALIASES" => $arVariableAliases
+		];
+		return $componentPage;
+	}
 }
-?>

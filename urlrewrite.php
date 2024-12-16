@@ -8,6 +8,38 @@ $arUrlRewrite = array(
     'PATH' => '/raskrytie-informatsii/index.php',
     'SORT' => 100,
   ),
+  13 =>
+  array(
+    'CONDITION' => '#^/cabinet/counters/#',
+    'RULE' => '',
+    'ID' => 'bitrix:news',
+    'PATH' => '/cabinet/counters/index.php',
+    'SORT' => 100,
+  ),
+  12 =>
+  array(
+    'CONDITION' => '#^/cabinet/objects/#',
+    'RULE' => '',
+    'ID' => 'bitrix:news',
+    'PATH' => '/cabinet/objects/index.php',
+    'SORT' => 100,
+  ),
+  10 =>
+  array(
+    'CONDITION' => '#^/master/objects/#',
+    'RULE' => '',
+    'ID' => 'bitrix:news',
+    'PATH' => '/master/objects/index.php',
+    'SORT' => 100,
+  ),
+  11 =>
+  array(
+    'CONDITION' => '#^/master/meter/#',
+    'RULE' => '',
+    'ID' => 'bitrix:news',
+    'PATH' => '/master/meter/index.php',
+    'SORT' => 100,
+  ),
   3 =>
   array(
     'CONDITION' => '#^/services/#',
@@ -22,38 +54,6 @@ $arUrlRewrite = array(
     'RULE' => '',
     'ID' => 'bitrix:catalog',
     'PATH' => '/shelter/index.php',
-    'SORT' => 100,
-  ),
-  // 10 =>
-  // array(
-  //   'CONDITION' => '#^/cabinet/#',
-  //   'RULE' => '',
-  //   'ID' => 'zhek:meter',
-  //   'PATH' => '/cabinet/index.php',
-  //   'SORT' => 100,
-  // ),
-  5 =>
-  array(
-    'CONDITION' => '#^/cabinet/objects/#',
-    'RULE' => '',
-    'ID' => 'zhek:meter',
-    'PATH' => '/cabinet/objects/index.php',
-    'SORT' => 100,
-  ),
-  9 =>
-  array(
-    'CONDITION' => '#^/cabinet/counters/#',
-    'RULE' => '',
-    'ID' => 'zhek:meter',
-    'PATH' => '/cabinet/counters/index.php',
-    'SORT' => 100,
-  ),
-  8 =>
-  array(
-    'CONDITION' => '#^/meter/#',
-    'RULE' => '',
-    'ID' => 'zhek:meter',
-    'PATH' => '/meter/index.php',
     'SORT' => 100,
   ),
   6 =>

@@ -161,6 +161,7 @@ class LKClass
                 'NAME' => $object['UF_NAME'],
                 'ADDRESS' => $object['UF_ADRES'],
                 'DOGOVOR' => $object['UF_DOGOVOR'],
+                'ORG' => $object['UF_ORG'],
             ];
             $result[$object['ID']] = $value;
         }

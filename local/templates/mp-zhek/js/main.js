@@ -1062,7 +1062,7 @@ $(document).ready(function () {
 			if (menu_position != null && $(".header-container .sf-menu").is(":visible")) {
 				if ($(".transparent-header-container").length)
 					modificator = 7;
-				console.log(menu_position);
+
 
 				if (menu_position + modificator < topOfWindow) {
 					if (!$("#cm-sticky-clone").hasClass("move")) {
@@ -1333,7 +1333,10 @@ $(document).ready(function () {
 				if (menu_position != null && $(".header-container .sf-menu").is(":visible")) {
 					if ($(".transparent-header-container").length)
 						modificator = 7;
-					if (menu_position + modificator < topOfWindow) {
+					console.log('menu_position + modificator',menu_position + modificator);
+					console.log('+ topOfWindow',topOfWindow);
+
+					if (60+menu_position + modificator < topOfWindow) {
 						if (!$("#cm-sticky-clone").hasClass("move")) {
 							$("#cm-sticky-clone").addClass("move");
 							if ($(".transparent-header-container").length) {
