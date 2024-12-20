@@ -3,6 +3,8 @@
 use Bitrix\Main\Application,
     Bitrix\Main\Web\Uri;
 
+\Bitrix\Main\UI\Extension::load("ui.forms");
+
 if ($arResult['ACCESS']): ?>
 
     <div class="d-flex">
@@ -52,7 +54,11 @@ if ($arResult['ACCESS']): ?>
             ?>
         </div>
         <div class="col-auto">
-            <a class="ui-btn ui-btn-no-caps" href="<?= $arResult['FOLDER'] ?>">вернуться назад</a>
+            <div class="d-grid">
+                <a class="ui-btn ui-btn-no-caps ui-btn-sm" href="<?= $arResult['FOLDER'] ?>">вернуться назад</a>
+                <button class="ui-btn ui-btn-success mt-2 ms-0" data-bs-toggle="modal" data-bs-target="#counterModal<?= $value['ID']; ?>">добавить объект</button>
+            </div>
+
         </div>
 
     </div>
@@ -68,12 +74,25 @@ if ($arResult['ACCESS']): ?>
                         <div class="h6 card-subtitle mb-2 text-body-secondary"><?= $value['ADDRESS']; ?></div>
                     </div>
                     <div class="col-auto">
-                        <button class="ui-btn ui-btn-sm ui-btn-primary-dark">добавить счётчик</button>
+                        <button class="ui-btn ui-btn-sm ui-btn-secondary" data-bs-toggle="modal" data-bs-target="#counterModal<?= $value['ID']; ?>">добавить счётчик</button>
                     </div>
                 </div>
                 <?
-                // dump($value['ID']);
                 $grid_options = new CGridOptions($arResult["GRID_DETAIL"]);
+
+
+                $snippet = new Bitrix\Main\Grid\Panel\Snippet();
+                $controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getEditButton();
+                $controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getRemoveButton();
+                //$controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getForAllCheckbox();
+
+                // $controlPanel['GROUPS'][1]['ITEMS'][] = [
+                //     'ID'       => 'edit',
+                //     'TYPE'     => 'BUTTON',
+                //     'TEXT'        => 'добавить',
+                //     'CLASS'        => 'icon edit',
+                //     'ONCHANGE' => ''
+                // ];
 
                 $gridParams = [
                     'GRID_ID' => $arResult['DETAIL']['GRID'] . '_' . $value['ID'],
@@ -82,7 +101,7 @@ if ($arResult['ACCESS']): ?>
                     // 'FOOTER' => [
                     //     'TOTAL_ROWS_COUNT' => $arResult['GRID']['COUNT'],
                     // ],
-                    'SHOW_ROW_CHECKBOXES' => false,
+
                     'NAV_OBJECT' => $nav,
                     'AJAX_MODE' => 'Y',
                     //'AJAX_ID' => 'AJAX_'.$arResult['GRID_ID'],
@@ -94,242 +113,138 @@ if ($arResult['ACCESS']): ?>
                         ['NAME' => '50', 'VALUE' => '50'],
                         ['NAME' => '100', 'VALUE' => '100']
                     ],
-                    'AJAX_OPTION_JUMP' => 'Y',
-                    'SHOW_CHECK_ALL_CHECKBOXES' => false,
-                    'SHOW_ROW_ACTIONS_MENU' => false,
-                    'SHOW_GRID_SETTINGS_MENU' => true,
-                    'SHOW_NAVIGATION_PANEL' => false,
-                    'SHOW_PAGINATION' => false,
-                    'SHOW_SELECTED_COUNTER' => true,
-                    'SHOW_TOTAL_COUNTER' => true,
-                    'SHOW_PAGESIZE' => true,
-                    'SHOW_ACTION_PANEL' => false,
-                    'ALLOW_COLUMNS_SORT' => true,
-                    'ALLOW_COLUMNS_RESIZE' => true,
-                    'ALLOW_HORIZONTAL_SCROLL' => true,
-                    'ALLOW_SORT' => true,
-                    'ALLOW_PIN_HEADER' => true,
-                    'AJAX_OPTION_HISTORY' => 'N',
+                    'SHOW_ROW_CHECKBOXES'       => true,    //Разрешает отображение чекбоксов для строк.
+                    'AJAX_OPTION_JUMP'          => 'Y',
+                    'SHOW_CHECK_ALL_CHECKBOXES' => false,    //Разрешает отображение чекбоксов "Выбрать все"
+                    'SHOW_ROW_ACTIONS_MENU'     => true,    //Разрешает отображение меню действий строки
+                    'SHOW_GRID_SETTINGS_MENU'   => true,    //Разрешает отображение меню настройки грида (кнопка с шестеренкой)
+                    'SHOW_NAVIGATION_PANEL'     => false,    //Разрешает отображение кнопки панели навигации. (Постраничка, размер страницы и т. д.)
+                    'SHOW_PAGINATION'           => false,    //Разрешает отображение постраничной навигации
+                    'SHOW_SELECTED_COUNTER'     => false,   //Разрешает отображение счетчика выделенных строк
+                    'SHOW_TOTAL_COUNTER'        => false,    //Разрешает отображение счетчика общего количества строк на всех страницах
+                    'SHOW_PAGESIZE'             => false,    //Разрешает отображение выпадающего списка с выбором размера страницы
+                    'SHOW_ACTION_PANEL'         => true,    //Разрешает отображение панели групповых действий
+                    'ALLOW_COLUMNS_SORT'        => true,    //Разрешает сортировку колонок перетаскиванием
+                    'ALLOW_COLUMNS_RESIZE'      => true,    //Разрешает изменение размера колонок
+                    'ALLOW_HORIZONTAL_SCROLL'   => true,    //Разрешает горизонтальную прокрутку, если грид не помещается по ширине
+                    'ALLOW_SORT'                => true,    //Разрешает сортировку по клику на заголовок колонки
+                    'ALLOW_PIN_HEADER'          => true,    //Разрешает закрепление шапки грида к верху окна браузера при прокрутке
+                    'AJAX_OPTION_HISTORY'       => 'Y',
+                    'SHOW_GROUP_EDIT_BUTTON'    => true,    //Разрешает вывод стандартной кнопки "Редактировать" в панель групповых действий
+                    'ALLOW_INLINE_EDIT'         => true,    //Разрешает инлайн-редактирование строк
+                    'ALLOW_CONTEXT_MENU'        => true,    //Разрешает вывод контекстного меню по клику правой кнопкой на строку
+                    'ACTION_PANEL'              => $controlPanel,
+                    /*'ACTION_PANEL'              => [
+                        'GROUPS' => [
+                            'TYPE' => [
+                                'ITEMS' => [
+                                    [
+                                        'ID'       => 'edit',
+                                        'TYPE'     => 'BUTTON',
+                                        'TEXT'        => 'Редактировать',
+                                        'CLASS'        => 'icon edit',
+                                        'ONCHANGE' => ''
+                                    ],
+                                    [
+                                        'ID'       => 'delete',
+                                        'TYPE'     => 'BUTTON',
+                                        'TEXT'     => 'Удалить',
+                                        'CLASS'    => 'icon remove',
+                                        //'ONCHANGE' => $onchange->toArray()
+                                    ],
+                                ],
+                            ]
+                        ],
+                    ],*/
                 ];
                 $APPLICATION->IncludeComponent('bitrix:main.ui.grid', '', $gridParams);
                 ?>
             </div>
         </div>
-    <? endforeach; ?>
+        <? // dump($arResult);
+        ?>
+        <div class="modal fade" id="counterModal<?= $value['ID']; ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <form method="post">
+                        <div class="modal-header">
+                            <div class="modal-title">Добавить счётчик для
+                                <h4 class="modal-title"><?= $value['NAME']; ?></h4>
+                            </div>
 
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
 
-    <?
-    // $request = Application::getInstance()->getContext()->getRequest();
-    // $uriString = $request->getRequestUri();
-    // $uri = new Uri($uriString);
-    // $isArhive = $request->getQuery('arhive');
-    // $uri->addParams(array("arhive"=>"Y"));
-    // $arhiveUrl = $uri->getUri();
-
-    // dump($arResult['DETAIL']);
-    /*
-    ?>
-<div id='moderation' class="content">
-    <div class="row align-items-center pb-3 mb-2">
-        <div class="col-5 mb-1 h4"><?= $arResult['DETAIL']['USERNAME'] ?>
-            <? //=TruncateText($arResult['DETAIL']['USERNAME'], 50)
-                ?>
-        </div>
-        <div class="col-7 mb-4! card d-flex! flex-row justify-content-between align-items-center px-3 py-2">
-            <div class="d-flex flex-column align-items-center">
-                <div class="col-12 h6 my-0 text-uppercase text-blue"><?= TruncateText($arResult['DETAIL']['COURSE'], 28) ?></div>
-                <div class="col-12 h6 my-0 text-secondary"><?= $arResult['DETAIL']['STREAM']['NAME'] . ' - ' . $arResult['DETAIL']['STREAM']['TEXT'] ?></div>
-                <div class="col-12 small fst-italic text-muted">
-                    <small>Дата изменения: <?= $arResult['DETAIL']['DATE_UPDATE'] ?></small>
-
+                            <input class="ui-ctl-element" type="hidden" name="ADD" value="Y">
+                            <input class="ui-ctl-element" type="hidden" name="FIELDS[UF_ORG]" value="<?= $arResult['DETAIL']['ORG']['ID']; ?>">
+                            <input class="ui-ctl-element" type="hidden" name="FIELDS[UF_OBJECT]" value="<?= $value['ID']; ?>">
+                            <?= bitrix_sessid_post() ?>
+                            <div class="row gx-2">
+                                <div class="col-12 col-md">
+                                    <label>Наименование cчетчика</label>
+                                    <div class="ui-ctl ui-ctl-textbox ui-ctl-lg! ui-ctl-w100">
+                                        <input class="ui-ctl-element" type="text" name="FIELDS[UF_NAME]" placeholder="Наименование cчетчика">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md">
+                                    <label>Номер cчетчика</label>
+                                    <div class="ui-ctl ui-ctl-textbox ui-ctl-lg! ui-ctl-w100">
+                                        <input class="ui-ctl-element" type="text" name="FIELDS[UF_NUMBER]" placeholder="Номер cчетчика">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row gx-2 mt-3">
+                                <div class="col-12 col-md-6">
+                                    <label>Тип счетчика</label>
+                                    <? // dump($arResult['SERVICE_LIST'])
+                                    ?>
+                                    <div class="ui-ctl-dropdown! ui-ctl! ui-ctl-after-icon! ui-ctl-w100">
+                                        <!-- <div class="ui-ctl-after ui-ctl-icon-angle"></div> -->
+                                        <select class="selectpicker" data-width="100%" data-style="ui-btn ui-btn-no-caps ui-btn-dropdown ui-btn-light-border" multiple name="FIELDS[UF_TYPE][]">
+                                            <? foreach ($arResult['SERVICE_LIST'] as $key => $value): ?>
+                                                <option value="<?= $key ?>"><?= $value['NAME'] ?></option>
+                                            <? endforeach ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md">
+                                    <label>Дата счетчика</label>
+                                    <div class="ui-ctl ui-ctl-textbox ui-ctl-lg! ui-ctl-w100">
+                                        <input class="ui-ctl-element" type="date" name="FIELDS[UF_DATE]" placeholder="Дата счетчика">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="ui-btn ui-btn-success">Сохранить</button>
+                            <button type="button" class="ui-btn ui-btn-link" data-bs-dismiss="modal">Закрыть</button>
+                        </div>
+                    </form>
                 </div>
+
             </div>
-            <div class="text-end! text-center col-3! badge! small px-4 py-2 rounded-pill text-bg-light! text-bg-<?= $arResult['DETAIL']['STATUS']['VALUE'] ?> lh-sm">
-                <i class="small"><?= $arResult['DETAIL']['STATUS']['TEXT'] ?></i>
-            </div>
+        </div>
+    <? endforeach; ?>
+    <div class="row">
+        <div class="col"></div>
+        <div class="col-auto">
+
         </div>
     </div>
-</div>
-*/ ?>
+
 <? else: ?>
     <font class="errortext">Ошибка доступа</font>
 <? endif; ?>
-<?
-/*function templateItems($docVal, $useCheck, $admin = false){
-	$Format=ToLower(substr($docVal['FILE_NAME'], strrpos($docVal['FILE_NAME'], '.') + 1));
-	// dump($docVal[DESC]);
-	$result = '<div class="col-12 col-sm-6 col-md-4 col-lg mt-4 mt-md-0">
-		<div class="row"><div class="col doc_title small!">'.($docVal['DESC']?:TruncateText($docVal['NAME'], 28)).'</div></div>';
-		if(!$docVal['STATUS']){
-			$result .= '<div class="row">
-				<span class="col">не загружен</span>
-			</div>';
-		}
-		else{
-			$docStatus = $docVal['STATUS'];
-			$result .= '<div class="row g-2" >
-				<div class="col-auto">';
-					$result .= '<a class="mb-2 pt-2 btn btn-sm icon_file border-'.$docStatus['UF_CODE'].' text-'.$docStatus['UF_CODE'].'" data-fancybox '.($Format=='pdf'? 'data-type="iframe" data-options=\'{"iframe\" : {\"preload\" : true, \"css\" : {\"height\" : \"80%\"}}}\'':'').' data-src="'.$docVal['SRC'].'" href="javascript:;">
-							<i class="bi bi bi-file-earmark-'.$docStatus['UF_XML_ID'].' image text-'.$docStatus['UF_CODE'].'"></i><div class="small"><small><small>'.TruncateText($docStatus['UF_NAME'], 8).'</small></small></div>
-						</a>
-					</div>
-					<div class="col-8" id="'.$docVal['ID'].'">';
 
-							$result .= '<div class="mt-1 mb-2 text-muted">';
-							$result .= '<div class=""><span>'.TruncateText($docVal['FILE_NAME'], 35).'</span></div>';
-							//$result .= '<div class="text-'.$docStatus['UF_CODE'].'"><i class="bi bi-file-earmark-'.$docStatus['UF_XML_ID'].'" style="font-size: 1.3rem;"></i><span>'.$docStatus['UF_NAME'].'</span></div>';
-							$result .= '<div class="info_status_inner info_item_date mt-1 pl-0"><span class="">'.$docVal['DATE'].'</span></div>';
-										if($docStatus['ID']==3 && $docVal['INFO']):
-											$result .= '<div class="mt-1 ms-1 info_status_note"><div class="ps-3">'.$docVal['INFO'].'</div></div>';
-										endif;
-									$result .= '</div>
-
-					</div>
-			</div>';
-				if($admin && $docVal['ID'] || $useCheck && $docStatus['ID']==1):?>
-<?
-					$textCheck = !$admin?'Одобрить':'load';
-					$textRefuse = !$admin?'Отказать':'deny';
-					$result .= '<div class="btn_status">
-								<a class="btn_yes btn button-outline mb-1'.($admin?' w-auto':'').'" data-id="'.$docVal['ID'].'">
-								<i class="bi bi-check2'.(!$admin?' fs-6':'').'"></i>
-									'.$textCheck.'</a>
-								<a class="btn_no open_popup btn button-outline mb-1'.($admin?' w-auto':'').'" data-id="'.$docVal['ID'].'">
-									<i class="bi bi-x'.(!$admin?' fs-6':'').'"></i>
-									'.$textRefuse.'</a>';
-						if($admin){
-							$result .= '<a class="btn_load btn button-outline ms-1 mb-1'.($admin?' w-auto':'').'" data-id="'.$docVal['ID'].'">
-							<i class="bi bi-arrow-down"></i></a>';
-						}
-								//<!--button class="btn_no open_popup" data-id="'.$docVal['VALUE'].'">Отказать</!--button-->
-						$result .= '</div><!--btn-status-->';
-				endif;
-		}
-	$result .= '</div>';
-	return $result;
-}*/
-
-
-
-$url = $templateFolder . '/ajax.php';
-?>
 <script>
-    /* var url = <?= json_encode($url) ?>;
-    //var idIblock = <? //=$arResult['ID_STATUS']
-                        ?>;
-    function refresh() {
-        $('#moderation').load(document.URL + ' #moderation');
-    }
-    $(document).ready(function() {
-        $('#moderation').on('click', '.btn_yes', function(e) {
+    // var reloadParams = {
+    //     apply_filter: 'Y',
+    //     clear_nav: 'Y'
+    // };
+    // var gridObject = BX.Main.gridManager.getById('zhek_master_objects_detail_1'); // Идентификатор грида
 
-            var id = $(this).data('id');
-            var userid = $(this).closest('.doc_status').data('user');
-
-            //console.log(id)
-
-            if (id > 0) {
-
-                $.ajax({
-                    type: "POST",
-                    url: url,
-                    data: "ID=" + id + "&USER=" + userid + "&STATUS=" + 2,
-                    success: function(data) {
-                        console.log(data)
-                        refresh();
-                    }
-                });
-            }
-            e.preventDefault();
-
-        });
-        $('#moderation').on('click', '.btn_no', function(e) {
-            var id = $(this).data('id');
-            var userid = $(this).closest('.doc_status').data('user');
-            if (id > 0) {
-                idDenied = id;
-                userDenied = userid;
-            }
-            e.preventDefault();
-
-        });
-        $('#moderation').on('click', '.btn_load', function(e) {
-            var id = $(this).data('id');
-            var userid = $(this).closest('.doc_status').data('user');
-            if (id > 0) {
-                $.ajax({
-                    type: "POST",
-                    url: url,
-                    data: "ID=" + id + "&USER=" + userid + "&STATUS=" + 1,
-                    success: function(data) {
-                        console.log(data)
-                        refresh();
-                    }
-                });
-            }
-            e.preventDefault();
-
-        });
-        $(".btn_send").on('click', function(e) {
-            let COMENTS = $("#reason").val();
-            console.log(idDenied)
-            console.log(userDenied)
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: "ID=" + idDenied + "&USER=" + userDenied + "&STATUS=" + 3 + "&COMENTS=" + COMENTS,
-                success: function(data) {
-                    console.log(data)
-                    refresh();
-                }
-            });
-            $("#reason").val('');
-            e.preventDefault();
-
-        });
-
-        $('#moderation').on('click', '.open_popup', function() {
-            $('.popup_moderator').css({
-                'top': $(window).scrollTop() - 65
-            }).addClass('active_popup_moderator');
-            $('.bg_popup').fadeIn();
-            $('.bg_popup').click(function() {
-                $('.popup_moderator').removeClass('active_popup_moderator');
-                $('.bg_popup').fadeOut();
-                $("#reason").val('');
-            });
-            $('.btn_send').click(function() {
-                $('.popup_moderator').removeClass('active_popup_moderator');
-                $('.bg_popup').fadeOut();
-            });
-
-            $(window).scroll(function() {
-                $('.popup_moderator').css({
-                    'top': $(window).scrollTop() - 65
-                });
-            }).scroll();
-        });
-
-
-        $('#moderation').on('change', '.checkbox', function(e) {
-            checkAll();
-            $.each($("input[name='checkboxN']"), function() {
-                if (this.checked) {
-                    document.getElementById('divCheckbox').style.display = 'block';
-                    return false;
-                } else {
-                    document.getElementById('divCheckbox').style.display = 'none';
-
-                }
-            });
-            e.preventDefault();
-        });
-
-    });
-
-    function changeCheckBox(idCheckbox, check) {
-        for (let id of idCheckbox) {
-            document.getElementById(id).checked = check;
-        }
-    }*/
+    // if (gridObject.hasOwnProperty('instance')) {
+    //     gridObject.instance.reloadTable('POST', reloadParams);
+    // }
 </script>

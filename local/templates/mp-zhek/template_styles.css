@@ -2059,3 +2059,15 @@ button:focus-visible {
 	border-radius: 2px !important;
 	transition: none !important;
 }
+
+.ui-btn.ui-btn-dropdown:after{
+	border: none;
+}
+
+.ui-btn-light-border {
+	--bs-btn-border-color: rgb(var(--ui-field-color-border-default));
+	border-radius: var(--ui-border-radius-2xs);
+}
+.ui-btn-light-border:hover {
+	--bs-btn-border-color: var(--ui-field-color-primary);
+}

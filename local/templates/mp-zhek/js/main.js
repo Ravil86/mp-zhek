@@ -17,6 +17,9 @@ function gm_authFailure() {
 		alert('Please define Google Maps API Key.\nReplace YOUR_API_KEY with the key generated on https://developers.google.com/maps/documentation/javascript/get-api-key\nin below line before the </body> closing tag <script type="text/javascript" src="//maps.google.com/maps/api/js?key=YOUR_API_KEY"></script>');
 }
 $(document).ready(function () {
+
+	//  $('#multiselect').selectpicker();
+
 	// jQuery(document).ready(function($){
 	//preloader
 	var preloader = function () {
@@ -1333,8 +1336,8 @@ $(document).ready(function () {
 				if (menu_position != null && $(".header-container .sf-menu").is(":visible")) {
 					if ($(".transparent-header-container").length)
 						modificator = 7;
-					console.log('menu_position + modificator',menu_position + modificator);
-					console.log('+ topOfWindow',topOfWindow);
+					// console.log('menu_position + modificator',menu_position + modificator);
+					// console.log('+ topOfWindow',topOfWindow);
 
 					if (60+menu_position + modificator < topOfWindow) {
 						if (!$("#cm-sticky-clone").hasClass("move")) {

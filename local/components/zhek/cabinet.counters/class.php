@@ -93,7 +93,7 @@ class LKCounters extends CBitrixComponent implements Controllerable
 			foreach ($countersObject as $key => &$item) {
 
 				$types = [];
-				foreach ($item['TYPE'] as $value) {
+				foreach ($item['UF_TYPE'] as $value) {
 					$typeItem = $serviceList[$value];
 					$types[] = '<img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/>';
 				}
@@ -226,7 +226,7 @@ class LKCounters extends CBitrixComponent implements Controllerable
 
 		foreach ($request['METER'] as $kCounter => $meter) {
 
-			// LKClass::saveMeter($request['OBJECT'], $kCounter, $meter);
+			LKClass::saveMeter($request['OBJECT'], $kCounter, $meter);
 		}
 
 		return true;

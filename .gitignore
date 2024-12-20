@@ -7,3 +7,5 @@ includes/inc_*.php
 sitemap*
 yandex_*
 google*.html
+
+*.log

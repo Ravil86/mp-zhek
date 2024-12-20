@@ -59,6 +59,7 @@ class LKObjects extends CBitrixComponent
 		$arResult['GRID_ID'] = $this->arResult['GRID_ID'];
 
 		$serviceList = LKClass::getService();
+		$this->arResult['SERVICE_LIST'] = $serviceList;
 
 		// $myCompany = LKClass::myCompany();
 		$arItems = LKClass::getCompany();
@@ -86,31 +87,52 @@ class LKObjects extends CBitrixComponent
 
 			$this->arResult['DETAIL']['COLUMNS'] = [
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 70],
-				['id' => 'NAME', 'name' => 'Наименование cчетчика', 'default' => true, 'width' => 250],
-				['id' => 'NUMBER', 'name' => 'Номер cчетчика', 'default' => true, 'width' => 250],
+				['id' => 'UF_NAME', 'name' => 'Наименование cчетчика', 'default' => true, 'width' => 250, 'editable' => true],
+				['id' => 'UF_NUMBER', 'name' => 'Номер cчетчика', 'default' => true, 'width' => 250, 'editable' => true],
 				['id' => 'SERVICE', 'name' => 'Тип счетчика', 'default' => true, 'width' => 200],
-				['id' => 'DATE', 'name' => 'Сл. дата поверки', 'default' => true, 'width' => 200],
+				['id' => 'UF_DATE', 'name' => 'Сл. дата поверки', 'default' => true, 'width' => 200, "editable" => ['TYPE' => 'DATE']],
 				// ['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => '130'],
 			];
+
+			$snippet = new Bitrix\Main\Grid\Panel\Snippet();
 
 			foreach ($objectList as $key => &$item) {
 
 				$objectID = $item['ID'];
 
 				$countersObject = LKClass::getCounters($objectID);
-				// dump($countersObject);
-				// $types = [];
 
-				// foreach ($item['TYPE'] as $value) {
-				// 	$typeItem = $serviceList[$value];
-				// 	// dump($typeItem);
-				// 	$types[] = '<img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/>';
-				// }
+				foreach ($countersObject as $key => $counter) {
 
-				// $item['SERVICE'] = implode(' ', $types);
+					$types = [];
 
-				foreach ($countersObject as $key => $value) {
-					$item['ROWS'][$key] = ['data' => $value];
+					foreach ($counter['UF_TYPE'] as $value) {
+						$typeItem = $serviceList[$value];
+						$types[] = '<img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/>';
+					}
+					$counter['SERVICE'] = implode(' ', $types);
+
+					$data = $counter;
+					if ($counter['UF_DATE']) {
+						$objDateTime = new DateTime($counter['UF_DATE']);
+						$data['UF_DATE'] = $objDateTime->format("d.m.Y");
+					}
+
+					$item['ROWS'][$key] = [
+						'columns' => $counter,
+						'data' => $data,		//Данные для инлайн-редактирования
+
+						//'actions' => [ //Действия над ними
+						// [
+						// 	'text'    => 'Редактировать',
+						// 	'onclick' => 'document.location.href="/accountant/reports/1/edit/"'
+						// ],
+						// 	[
+						// 		'text'    => 'Удалить',
+						// 		'onclick' => 'document.location.href="/accountant/reports/1/delete/"'
+						// 	]
+						// ],
+					];
 				}
 
 				// $item['ROWS'] = $countersObject;
@@ -220,187 +242,10 @@ class LKObjects extends CBitrixComponent
 				];
 			}
 
-
-			/*foreach ($arObjects as $key => &$item) {
-
-				// $item['COMPANY'] = $item['COMPANY']['NAME'];
-
-				$status = '<a class="ui-btn ui-btn-default" href="' . $item["ID"] . '/">Инфо</a>';
-				//$status .= '<div class="btn btn-primary px-3 py-1 text-center opacity-75"><small>Инфо</small></div>';
-
-				$item["DETAIL"] = $status;
-
-				$this->arResult['GRID']['ROWS'][] = [
-					'data' => $item
-				];
-			}*/
-
-			// $this->arResult['LIST'] = $arItems['ITEMS'];
-
-			// $this->arResult['GRID']["COUNT"] = $arItems['COUNT'];
-
-			// $this->arResult['AREA'] = $this->getArea($arParams['IBLOCK_CODES']['CITY']);
-			// foreach ($this->arResult['AREA'] as $key => $city) {
-			// 	$arCity[$city['ID']] = $city['NAME'];
-			// }
-
-			/*$this->arResult['GRID']["FILTER"] = [
-				['id' => 'DATE_CREATE', 'name' => 'Дата', 'type' => 'date', 'default' => true],
-				['id' => 'NAME', 'name' => 'ФИО', 'type' => 'text', 'default' => true],
-				// ['id' => 'MO', 'name' => 'Муниципалитет', 'type' => 'list', 'items' => $arCity, 'params' => ['multiple' => 'N'], 'default' => true],
-				// ['id' => 'COURSE', 'name' => 'Курс', 'type' => 'list', 'items' => $this->courses, 'params' => ['multiple' => 'Y'], 'default' => true],
-			];*/
-
-			/*foreach ($this->arResult['LIST'] as $key => $value):?>
-<?
-				$data = [];
-				$arr = ParseDateTime($value['DATE_UPDATE'], FORMAT_DATETIME); // $value['DATE_CREATE']
-				$dateModif = strtolower(FormatDate("d M", MakeTimeStamp($value['DATE_UPDATE'])));
-				$dateCreate = strtolower(FormatDate("d M y", MakeTimeStamp($value['DATE_CREATE'])));
-
-				$time = $arr["HH"].":".$arr["MI"];
-				//$yearShort = strtolower(FormatDate("y", MakeTimeStamp($value['DATE_UPDATE'])));;
-				$year = $arr["YYYY"];
-
-				$data["ID"] = $value['ID'];
-
-				$data['DATE'] = '<div class="info_item_inner info_item_date">';
-				$data['DATE'] .= '<span class="text-nowrap! lh-sm small">'.$dateModif.' '.$time.'<br>'.$year.'</span></div>';
-				//$data['DATE'] .= '<div class="text-secondary small fst-italic py-2">#'.$value['ID'].'</div>';
-				$data['DATE'] .= '<div class="text-secondary small fst-italic py-2">#'.$value['ID'].' от '.$value['DATE_CREATE'].'</div>';
-
-				$data['NAME'] = '<div class="row g-0"><div class="col-6 col-sm-8 col-md-2 col-lg-auto">';
-							if($value["FOTO"]){
-								$data['NAME'] .= '<div class="user_photo" style="background-image: url('.$value["FOTO"].')"></div>';
-							}
-							else{
-								$bgColor = self::stringToColorCode(mb_substr($value['USERNAME'],0,6));
-								$data['NAME'] .= '<div class="user_photo d-flex justify-content-center align-items-center text-'.self::contrast_color($bgColor).' fs-5"
-									style="background-color: #'.$bgColor.'">';
-								$data['NAME'] .= mb_substr($value['USERNAME'],0,1).'</div>';
-							}
-				$data['NAME'] .= '</div>
-						<a class="col" href="'.$value["DETAIL_PAGE_URL"].'" class="olimp_item-a">
-
-							<div class="col">
-								<div class="user_title h6">'.$value['USERNAME'].'</div>
-							</div>
-							<div class="col">
-									<div class="text-secondary small"><span>'.$value['CITY'].'</span></div>
-							</div>
-
-					</a></div>';
-
-
-				$data["COURSE"] = $value['COURSE'];
-
-				//$streamReqID = $getLearning[$value['USER_ID']]['REQUESTS'][$value['REQUEST_ID']]['STREAM_ID'];
-				//$streamReqInfo = $streamList[$streamReqID];
-
-				$data["STREAM"] = $value["STREAM"]['NAME'].'<br>'.$value["STREAM"]['TEXT'];
-
-				//$streamCourse = $streamList[ (key( $getLearningOld[$value['USER_ID']][$value['COURSE_ID']]) )];
-				//$data["STREAM"] .= '<br>ОЛД_'.$streamCourse['NAME'].'<br>'.$streamCourse['TEXT'];
-
-
-				// dump($value);
-				$data["SNILS"] = $value["SNILS"];
-
-				$data["NOTE"] = $value['NOTE'];
-				?>
-<?
-				$this->arResult['GRID']['ROWS'][] = [
-					'data' => $data
-				];
-
-			endforeach;*/
 		}
 
 		//return $componentPage;
 		return $this->arResult;
-	}
-
-	/**
-	 * Получаем все документы пользователей
-	 *
-	 * @param string $group - группа модератора для которой находить участников
-	 */
-	/*private function getDocs($detailID = null, $arSort = [], $arNav = [], $userFilter = [], $userDetail = null)
-	{
-		global $USER;
-		$arParams = $this->arParams;
-
-		$filter = [];
-
-		$getCompany = $this->getCompany();
-
-		// dump($getCompany);
-
-		$itemList = $this->getListDocs();
-
-		foreach ($itemList as $key => &$value) {
-			$value['COMPANY'] = $getCompany[$value['COMPANY']];
-		}
-		// dump($itemList);
-		return $itemList;
-
-		// $filter['IBLOCK_ID'] = $this->getIblockId;
-
-		// foreach ($getUsersDocs as $key => $value) {
-		// 	$result['ITEMS'][$arData['ID']] = $arData;
-		// }
-
-
-
-		// foreach ($result['ITEMS'] as $k => &$item) {
-
-		// 	$userID = $item['USER_ID'];
-		// 	$userDocStat = $getDocsStatus[$userID];
-
-		// 	$item['USER'] = $arUserFields[$userID];
-		// 	$item['USERNAME'] = $arUserFields[$userID]['LAST_NAME'].' '.$arUserFields[$userID]['NAME'].' '.$arUserFields[$userID]['SECOND_NAME'];
-		// 	$item['SNILS'] = $arUserFields[$userID]['UF_SNILS'];
-		// 	$item['FOTO'] = CFile::GetPath($arUserFields[$userID]['PERSONAL_PHOTO']);
-		// }
-
-		// if($detailID && !$userDetail)
-		// 	return array_shift($result['ITEMS']);
-		// else
-		// 	return $result;
-
-		//return $this->arResult['ITEMS'];
-	}
-	*/
-
-	private function stringToColorCode($str)
-	{
-		$code = dechex(crc32($str));
-		$code = substr($code, 0, 6);
-		return $code;
-	}
-
-	private function contrast_color($hex)
-	{
-		$hex = trim($hex, ' #');
-
-		$size = strlen($hex);
-		if ($size == 3) {
-			$parts = str_split($hex, 1);
-			$hex = '';
-			foreach ($parts as $row) {
-				$hex .= $row . $row;
-			}
-		}
-
-		$dec = hexdec($hex);
-		$rgb = array(
-			0xFF & ($dec >> 0x10),
-			0xFF & ($dec >> 0x8),
-			0xFF & $dec
-		);
-
-		$contrast = (round($rgb[0] * 299) + round($rgb[1] * 587) + round($rgb[2] * 114)) / 1000;
-		return ($contrast >= 133) ? 'dark' : 'white';
 	}
 
 
@@ -437,65 +282,10 @@ class LKObjects extends CBitrixComponent
 	}
 
 
-	/*
-    Список данных из HLblock c данными документИД/пользователь/статус
-    */
-	private function getListDocs($userID = [])
-	{
-
-		$classsDocs = \HLWrap::init(self::$_HL_Reference);
-
-		// $getStatusList = self::getStatusList();
-
-		$filter = [];
-		// if($userID)
-		// 	$filter['UF_USER_ID'] = $userID;
-
-
-		$rsDocs = $classsDocs::getList(
-			array(
-				'select' => array('*'),
-				// 'filter' => $filter,
-			)
-		);
-
-		while ($arDoc = $rsDocs->Fetch()) {
-			$arFields = [
-				'ID' => $arDoc['ID'],
-				'NUMBER' => $arDoc['UF_NUMBER'],
-				'COMPANY' => $arDoc['UF_COMPANY'],
-				'DATE' => $arDoc['UF_DATE'],
-				'STATUS' => $arDoc['UF_STATUS'],
-				// 'DATE' => ConvertDateTime($arDoc['UF_DATE'], "DD.MM.Y GG:MI:SS", "ru")
-				//'UF_STATUS' => $getStatusList[$arStatus['UF_STATUS']],
-			];
-			$result[$arDoc['ID']] = $arFields;
-		}
-		// dump($result);
-		return $result;
-	}
-
-
-	/**
-	 * Получить имя элемента
-	 *
-	 * @param array $arElements - массив элементов
-	 * @param int $id - идентификатор элемента
-	 *
-	 * @return string
-	 */
-	// private function getElementName($arElements, $id)
-	// {
-	// 	foreach ($arElements as $value) {
-	// 		if ($value['ID'] == $id)
-	// 			return $value['NAME'];
-	// 	}
-	// }
-
 	public function getRequest()
 	{
 
-		$instance = \Bitrix\Main\Application::getInstance();
+		$instance = Application::getInstance();
 		$context = $instance->getContext();
 		$request = $context->getRequest();
 		$arRequest = $request->toArray();
@@ -504,7 +294,7 @@ class LKObjects extends CBitrixComponent
 
 	public function isPost()
 	{
-		$instance = \Bitrix\Main\Application::getInstance();
+		$instance = Application::getInstance();
 		$context = $instance->getContext();
 		$server = $context->getServer();
 		return $server->getRequestMethod() == 'POST';
@@ -513,54 +303,34 @@ class LKObjects extends CBitrixComponent
 	public function prepareComponentResult()
 	{
 
-		if ($this->isPost()) {
-			$arRequest = $this->getRequest();
+		$arRequest = $this->getRequest();
 
-			$REQUEST_ID = $this->arResult['DETAIL']['ID'];
+		if ($this->isPost() && check_bitrix_sessid()) {
 
-			$sendEmail = false;
 
-			if ($arRequest['checked'] && check_bitrix_sessid()) {
+			Bitrix\Main\Diag\Debug::dumpToFile(var_export($arRequest, 1), '$arRequest', 'test.log');
+			// dump($arRequest);
 
-				/*$typeStatus = 'Документы приняты';
-
-				if ($arRequest['verification'] == 'Y') {
-					$arLoadProductArray = array(
-						"ACTIVE"         => "Y",
-					);
-					$el = new CIBlockElement;
-					$res = $el->Update($REQUEST_ID, $arLoadProductArray);
-					CIBlockElement::SetPropertyValues($REQUEST_ID, $this->getIblockId, 'N', 'CHECKED');
-				} elseif ($arRequest['revision'] == 'Y') {
-					$arLoadProductArray = array(
-						"ACTIVE"         => "N",
-					);
-					if (strlen($arRequest['note']) > 0)
-						$arLoadProductArray['PREVIEW_TEXT'] = $arRequest['note'];
-
-					$el = new CIBlockElement;
-					$res = $el->Update($REQUEST_ID, $arLoadProductArray);
-					CIBlockElement::SetPropertyValues($REQUEST_ID, $this->getIblockId, 'Y', 'CHECKED');
-					$typeStatus = 'Документ(ы) некорректные';
-					$sendEmail = true;
-				} else {
-					$arLoadProductArray = array(
-						"ACTIVE"         => "Y",
-					);
-					$el = new CIBlockElement;
-					$res = $el->Update($REQUEST_ID, $arLoadProductArray);
-					CIBlockElement::SetPropertyValues($REQUEST_ID, $this->getIblockId, 'Y', 'CHECKED');
-					$sendEmail = true;
+			if ($arRequest["ADD"] == 'Y') {
+				LKClass::addCounter($arRequest["FIELDS"]);
+			} else {
+				foreach ($arRequest["FIELDS"] as $counterID => $fields) {
+					LKClass::saveCounter($counterID, $fields);
 				}
-
-				// if ($sendEmail)
-				// 	self::sendMail($typeStatus, $arRequest['note']);
-
-				global $APPLICATION;
-				LocalRedirect($APPLICATION->GetCurDir());*/
-				//LocalRedirect($this->arParams['SEF_FOLDER']);
-
 			}
+
+			// $fields = [
+			// 	'VOICE'         => $arFields['VOICE'],
+			// 	'TEAM_ID'       => $ID,
+			// ];
+			// HackApi::sendVoiceMentor($fields);
+
+
+			// }
+
+			if (!isset($arRequest["AJAX_CALL"]))
+			LocalRedirect(Context::getCurrent()->getRequest()->getRequestUri());
+
 		}
 	}
 

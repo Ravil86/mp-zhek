@@ -76,6 +76,9 @@ $arSite = $rsSites->Fetch();
 
         SITE_TEMPLATE_PATH . '/css/special.css',
         // SITE_TEMPLATE_PATH.'/css/special.min.css',
+
+        // '//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/2.0.0-beta1/css/bootstrap-select.min.css',
+        SITE_TEMPLATE_PATH . '/lib/bootstrap-select/css/bootstrap-select.min.css',
     );
 
     foreach ($arCss as $key => $css) {
@@ -110,12 +113,9 @@ $arSite = $rsSites->Fetch();
         SITE_TEMPLATE_PATH . '/js/jquery.blockUI.min.js',
         SITE_TEMPLATE_PATH . '/js/main.js',
 
-        //cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js',
-        SITE_TEMPLATE_PATH . '/lib/bootstrap/js/bootstrap.min.js',
 
-        // <script type="text/javascript" src="js/odometer.min.js"></script>
-
-        //<script type="text/javascript" src="//cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> -->
+        SITE_TEMPLATE_PATH . '/lib/bootstrap/js/bootstrap.bundle.min.js',
+        // SITE_TEMPLATE_PATH . '/lib/bootstrap/js/bootstrap.min.js',
 
         SITE_TEMPLATE_PATH . '/lib/fancybox/fancybox.umd.js',
         //SITE_TEMPLATE_PATH.'/js/masonry.pkgd.min.js',
@@ -126,6 +126,11 @@ $arSite = $rsSites->Fetch();
 
         SITE_TEMPLATE_PATH . '/js/special.js',
         // SITE_TEMPLATE_PATH.'/js/special.min.js',
+
+        // '//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/2.0.0-beta1/js/bootstrap-select.min.js',
+        // '//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/2.0.0-beta1/js/i18n/defaults-ru_RU.min.js'
+        SITE_TEMPLATE_PATH . '/lib/bootstrap-select/js/bootstrap-select.min.js',
+        SITE_TEMPLATE_PATH . '/lib/bootstrap-select/js/i18n/defaults-ru_RU.min.js'
     );
 
     foreach ($arJs as $key => $js) {

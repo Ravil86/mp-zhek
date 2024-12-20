@@ -84,6 +84,65 @@ class LKClass
         }
     }
 
+    public static function addCounter($data)
+    {
+
+        $classHL = \HLWrap::init(self::$_HL_Counters);
+
+        $classHL::add($data);
+        // $classHL::update($counterID, $data);
+        // $filter = ['ID' => $objectID];
+
+        // $params = array(
+        //     "order" => array(
+        //         "ID" => "asc"
+        //     ),
+        //     "filter" => $filter,
+        // );
+        // $rsVoice = $classHL::getList($params);
+
+        // if ($arVoice = $rsVoice->Fetch()) {
+
+        //     $classHL::update($arVoice["ID"], $value);
+        // } else {
+        //     $classHL::add($value);
+        // }
+    }
+
+    public static function saveCounter($counterID, $data)
+    {
+
+        $classHL = \HLWrap::init(self::$_HL_Counters);
+
+        $classHL::update($counterID, $data);
+
+        // $filter = ['ID' => $objectID];
+
+        // $value = [
+        //     'ID' => $data['ID'],
+        //     'NAME' => $data['UF_NAME'],
+        //     'NUMBER' => $data['UF_NUMBER'],
+        //     'ORG' => $data['UF_ORG'],
+        //     'TYPE' => $data['UF_TYPE'],
+        // ];
+
+        // $params = array(
+        //     "order" => array(
+        //         "ID" => "asc"
+        //     ),
+        //     "filter" => $filter,
+        // );
+        // $rsVoice = $classHL::getList($params);
+
+        // if ($arVoice = $rsVoice->Fetch()) {
+
+        //     $classHL::update($arVoice["ID"], $value);
+        // } else {
+        //     $classHL::add($value);
+        // }
+    }
+
+
     public static function myCompany()
     {
         $result = null;
@@ -186,14 +245,15 @@ class LKClass
 
         $result = [];
         while ($counter = $rsHLoad->fetch()) {
-            $value = [
-                'ID' => $counter['ID'],
-                'NAME' => $counter['UF_NAME'],
-                'NUMBER' => $counter['UF_NUMBER'],
-                'ORG' => $counter['UF_ORG'],
-                'TYPE' => $counter['UF_TYPE'],
-            ];
-            $result[$counter['ID']] = $value;
+            // $value = [
+            //     'ID' => $counter['ID'],
+            //     'NAME' => $counter['UF_NAME'],
+            //     'NUMBER' => $counter['UF_NUMBER'],
+            //     'ORG' => $counter['UF_ORG'],
+            //     'TYPE' => $counter['UF_TYPE'],
+            // ];
+            $result[$counter['ID']] = $counter;
+            // $result[$counter['ID']] = $value;
         }
 
         return $result;

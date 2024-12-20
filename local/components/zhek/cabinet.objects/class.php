@@ -86,10 +86,10 @@ class LKObjects extends CBitrixComponent
 
 			$this->arResult['DETAIL']['COLUMNS'] = [
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 70],
-				['id' => 'NAME', 'name' => 'Наименование cчетчика', 'default' => true, 'width' => 250],
-				['id' => 'NUMBER', 'name' => 'Номер cчетчика', 'default' => true, 'width' => 250],
+				['id' => 'UF_NAME', 'name' => 'Наименование cчетчика', 'default' => true, 'width' => 250],
+				['id' => 'UF_NUMBER', 'name' => 'Номер cчетчика', 'default' => true, 'width' => 250],
 				['id' => 'SERVICE', 'name' => 'Тип счетчика', 'default' => true, 'width' => 200],
-				['id' => 'DATE', 'name' => 'Сл. дата поверки', 'default' => true, 'width' => 200],
+				['id' => 'UF_DATE', 'name' => 'Сл. дата поверки', 'default' => true, 'width' => 200],
 				// ['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => '130'],
 			];
 
@@ -97,7 +97,7 @@ class LKObjects extends CBitrixComponent
 
 				$types = [];
 
-				foreach ($item['TYPE'] as $value) {
+				foreach ($item['UF_TYPE'] as $value) {
 					$typeItem = $serviceList[$value];
 					// dump($typeItem);
 					$types[] = '<img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/>';

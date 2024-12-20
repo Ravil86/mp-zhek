@@ -127,10 +127,8 @@ pre {
 input:not(.form-check-input),
 textarea {
 	font-family: "PT Sans", sans-serif;
-	border: 1px solid #EBEBEB;
-	font-size: 14px;
-	line-height: 24px;
-	/* padding: 12px 15px; */
+	/* font-size: 14px; */
+	/* line-height: 24px; */
 	color: #303030;
 	margin: 0;
 }
@@ -5330,10 +5328,10 @@ div.pp_default .pp_close:hover {
 
 input,
 textarea {
-	border-radius: 0;
+	/*border-radius: 0;
 	-moz-border-radius: 0;
 	-webkit-border-radius: 0;
-	-webkit-appearance: none;
+	-webkit-appearance: none;*/
 }
 
 input[type='checkbox'] {
