@@ -64,6 +64,11 @@ class LKObjects extends CBitrixComponent
 		// $myCompany = LKClass::myCompany();
 		$arItems = LKClass::getCompany();
 
+		// dump($this->arResult);
+
+		if (is_array($arItems))
+			$this->arResult['GRID']['COUNT'] = count($arItems);
+
 		// if ($myCompany)
 		$getObjects = LKClass::getObjects();
 		foreach ($getObjects as $key => $value) {
@@ -89,7 +94,6 @@ class LKObjects extends CBitrixComponent
 			foreach ($serviceList as $key => $value) {
 				$serviceItems[$value['ID']] = $value['NAME'];
 			}
-
 
 			$this->arResult['DETAIL']['COLUMNS'] = [
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 70],
@@ -155,21 +159,10 @@ class LKObjects extends CBitrixComponent
 			}
 
 			$this->arResult['ITEMS'] = $objectList;
-
-
-
-			// $this->arResult['DETAIL'] = $arItems[$this->arResult['VARIABLES']['DETAIL_ID']];
-
 		} else {
 
-
-			//инициализируем объект с настройками пользователя для нашего грида
 			$grid_options = new CGridOptions($this->arResult["GRID_ID"]);
-
-			//размер страницы в постраничке (передаем умолчания)
-			$nav_params = $grid_options->GetNavParams(array("nPageSize" => 10));
-			// $nav_params = $grid_options->GetNavParams();
-
+			$nav_params = $grid_options->GetNavParams(array("nPageSize" => 5));
 			$nav = new Bitrix\Main\UI\PageNavigation($this->arResult["GRID_ID"]);
 			$nav->allowAllRecords(true)
 				->setPageSize($nav_params['nPageSize'])
@@ -179,7 +172,6 @@ class LKObjects extends CBitrixComponent
 				$nav_params = false;
 			else
 				$nav_params['iNumPage'] = $nav->getCurrentPage();
-
 
 			//какую сортировку сохранил пользователь (передаем то, что по умолчанию)
 			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
@@ -191,8 +183,15 @@ class LKObjects extends CBitrixComponent
 				['id' => 'DETAIL', 'name' => '', 'default' => true,],
 			];
 
-			// $filterOption = new Bitrix\Main\UI\Filter\Options($this->arResult["GRID_ID"]);
-			// $filterData = $filterOption->GetFilter();
+			$filterOption = new Bitrix\Main\UI\Filter\Options("filter_" . $this->arResult["GRID_ID"]);
+			$filter = $filterOption->GetFilter();
+
+			$navParams = [
+				'offset' => $nav->getOffset(),
+				'limit' => $nav->getLimit(),
+			];
+
+			$itemsCompany = LKClass::getCompany([], $filter, $navParams);
 
 			/*
 			$useFilter = false;
@@ -230,7 +229,7 @@ class LKObjects extends CBitrixComponent
 				$arSort['sort']['DATE_CREATE'] = $arSort['sort']['TIMESTAMP_X'];
 			*/
 
-			foreach ($arItems as $key => &$item) {
+			foreach ($itemsCompany as $key => &$item) {
 				$countObjects = 0;
 
 				if ($arObjects[$item['ID']])

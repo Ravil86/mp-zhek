@@ -63,3 +63,11 @@ height: unset;
 	font-weight: bold;
 	font-size: 1rem;
 }
+
+.main-ui-pagination-arrow{
+line-height: 1.5;
+}
+
+.main-ui-pagination-arrows a {
+	color: #2067b0;
+}

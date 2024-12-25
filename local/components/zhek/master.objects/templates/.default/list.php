@@ -15,6 +15,24 @@ use Bitrix\Highloadblock as HL;
 
 ?>
 <? if ($arResult['ACCESS']): ?>
+    <div class="d-flex">
+        <div class="col">
+            <?
+            $APPLICATION->IncludeComponent('bitrix:main.ui.filter', '', [
+                'FILTER_ID' => 'filter_' . $arResult['GRID_ID'],
+                'GRID_ID' => $arResult['GRID_ID'],
+                // 'FILTER' => [],
+                'FILTER' => $arResult['GRID']['FILTER'],
+                'ENABLE_LIVE_SEARCH' => true,
+                'ENABLE_LABEL' => true,
+            ]);
+
+            ?>
+        </div>
+        <div class="col-auto">
+            <button class="ui-btn ui-btn-success mt-2 ms-0" data-bs-toggle="modal" data-bs-target="#addObject">добавить объект</button>
+        </div>
+    </div>
     <div class="col-md-12">
         <?
         $grid_options = new CGridOptions($arResult["GRID_ID"]);
@@ -22,33 +40,20 @@ use Bitrix\Highloadblock as HL;
         //размер страницы в постраничке (передаем умолчания)
         $nav_params = $grid_options->GetNavParams();
 
-        $curentYear = date('Y');
-        $lastYear = date('Y', strtotime('-1 year'));
-
         $nav = new Bitrix\Main\UI\PageNavigation($arResult["GRID_ID"]);
         $nav->allowAllRecords(true)
             ->setRecordCount($arResult['GRID']['COUNT']) //Для работы кнопки "показать все"
             ->setPageSize($nav_params['nPageSize'])
             ->initFromUri();
 
-        // $APPLICATION->IncludeComponent('bitrix:main.ui.filter', '', [
-        //     'FILTER_ID' => $arResult['GRID_ID'],
-        //     'GRID_ID' => $arResult['GRID_ID'],
-        //     'FILTER' => $arResult['GRID']['FILTER'],
-        //     'ENABLE_LIVE_SEARCH' => true,
-        //     'ENABLE_LABEL' => true,
-        // ]);
-
         $gridParams = [
             'GRID_ID' => $arResult['GRID_ID'],
             'COLUMNS' => $arResult['GRID']['COLUMNS'],
             'ROWS' => $arResult['GRID']['ROWS'],
-            // 'FOOTER' => [
-            //     'TOTAL_ROWS_COUNT' => $arResult['GRID']['COUNT'],
-            // ],
+            'TOTAL_ROWS_COUNT' => $arResult['GRID']['COUNT'],
             'SHOW_ROW_CHECKBOXES' => false,
             'NAV_OBJECT' => $nav,
-            'AJAX_MODE' => 'Y',
+            'AJAX_MODE' => 'N',
             'AJAX_ID' => 'AJAX_' . $arResult['GRID_ID'],
             // 'AJAX_ID' => \CAjax::getComponentID('bitrix:main.ui.grid', '.default', ''),
             'PAGE_SIZES' => [

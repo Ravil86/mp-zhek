@@ -164,7 +164,7 @@ class LKClass
         // $userId = Bitrix\Main\Engine\CurrentUser::get()->getId();
     }
 
-    public static function getCompany($orgID = [])
+    public static function getCompany($orgID = [], $filter = [], $nav = [])
     {
 
         // $curentUser = self::curentUserFields();
@@ -173,18 +173,24 @@ class LKClass
 
 
         if ($orgID)
-            $filter = ['ID' => $orgID];
+            $arFilter = ['ID' => $orgID];
+        elseif ($filter)
+            $arFilter = ['UF_NAME' => '%' . $filter['FIND'] . '%'];
         else
-            $filter = [];
+            $arFilter = [];
 
         // dump($filter);
+        $params =  [
+            'filter' => $arFilter,
+            'select' => array('*'),
+        ];
 
-        $rsCompany = $classCompany::getList(
-            array(
-                'filter' => $filter,
-                'select' => array('*'),
-            )
-        );
+        if ($nav) {
+            $params['limit'] = $nav['limit'];
+            $params['offset'] = $nav['offset'];
+        }
+
+        $rsCompany = $classCompany::getList($params);
 
         while ($company = $rsCompany->Fetch()) {
             $arFields = [
