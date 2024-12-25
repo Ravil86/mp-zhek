@@ -56,7 +56,7 @@ if ($arResult['ACCESS']): ?>
         <div class="col-auto">
             <div class="d-grid">
                 <a class="ui-btn ui-btn-no-caps ui-btn-sm" href="<?= $arResult['FOLDER'] ?>">вернуться назад</a>
-                <button class="ui-btn ui-btn-success mt-2 ms-0" data-bs-toggle="modal" data-bs-target="#counterModal<?= $value['ID']; ?>">добавить объект</button>
+                <button class="ui-btn ui-btn-success mt-2 ms-0" data-bs-toggle="modal" data-bs-target="#addObject">добавить объект</button>
             </div>
 
         </div>
@@ -226,6 +226,52 @@ if ($arResult['ACCESS']): ?>
             </div>
         </div>
     <? endforeach; ?>
+    <div class="modal fade" id="addObject" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <form method="post">
+                    <div class="modal-header">
+                        <div class="modal-title">Добавить объект
+                            <h4 class="modal-title"><?= $value['NAME']; ?></h4>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input class="ui-ctl-element" type="hidden" name="ADD_OBJECT" value="Y">
+                        <input class="ui-ctl-element" type="hidden" name="FIELDS[UF_ORG]" value="<?= $arResult['DETAIL']['ORG']['ID']; ?>">
+                        <?= bitrix_sessid_post() ?>
+                        <div class="row gx-2">
+                            <div class="col-12 col-md">
+                                <label>Наименование объекта</label>
+                                <div class="ui-ctl ui-ctl-textarea ui-ctl-resize-y ui-ctl-w100">
+                                    <textarea class="ui-ctl-element" name="FIELDS[UF_NAME]" placeholder="Наименование объекта"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row gx-2 mt-3">
+                            <div class="col-12 col-md">
+                                <label>Адрес</label>
+                                <div class="ui-ctl ui-ctl-textarea ui-ctl-lg! ui-ctl-w100">
+                                    <textarea class="ui-ctl-element" name="FIELDS[UF_ADRES]" placeholder="Адрес"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md">
+                                <label>Договор</label>
+                                <div class="ui-ctl ui-ctl-textbox ui-ctl-lg! ui-ctl-w100">
+                                    <input class="ui-ctl-element" type="text" name="FIELDS[UF_DOGOVOR]" placeholder="Договор">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="ui-btn ui-btn-success">Сохранить</button>
+                        <button type="button" class="ui-btn ui-btn-link" data-bs-dismiss="modal">Закрыть</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
     <div class="row">
         <div class="col"></div>
         <div class="col-auto">

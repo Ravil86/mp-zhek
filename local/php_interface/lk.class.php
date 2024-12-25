@@ -84,11 +84,17 @@ class LKClass
         }
     }
 
+    public static function addObject($data)
+    {
+
+        $classHL = \HLWrap::init(self::$_HL_Objects);
+        $classHL::add($data);
+    }
+
     public static function addCounter($data)
     {
 
         $classHL = \HLWrap::init(self::$_HL_Counters);
-
         $classHL::add($data);
         // $classHL::update($counterID, $data);
         // $filter = ['ID' => $objectID];

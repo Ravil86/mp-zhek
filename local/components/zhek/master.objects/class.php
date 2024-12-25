@@ -85,11 +85,17 @@ class LKObjects extends CBitrixComponent
 			$grid_options = new CGridOptions($this->arResult['DETAIL']['GRID']);
 			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
 
+			// dump($serviceList);
+			foreach ($serviceList as $key => $value) {
+				$serviceItems[$value['ID']] = $value['NAME'];
+			}
+
+
 			$this->arResult['DETAIL']['COLUMNS'] = [
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 70],
 				['id' => 'UF_NAME', 'name' => 'Наименование cчетчика', 'default' => true, 'width' => 250, 'editable' => true],
 				['id' => 'UF_NUMBER', 'name' => 'Номер cчетчика', 'default' => true, 'width' => 250, 'editable' => true],
-				['id' => 'SERVICE', 'name' => 'Тип счетчика', 'default' => true, 'width' => 200],
+				['id' => 'SERVICE', 'name' => 'Тип счетчика', 'default' => true, 'width' => 200, "editable" => ['TYPE' => 'MULTISELECT', 'items' => $serviceItems]],
 				['id' => 'UF_DATE', 'name' => 'Сл. дата поверки', 'default' => true, 'width' => 200, "editable" => ['TYPE' => 'DATE']],
 				// ['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => '130'],
 			];
@@ -241,7 +247,6 @@ class LKObjects extends CBitrixComponent
 					'data' => $item
 				];
 			}
-
 		}
 
 		//return $componentPage;
@@ -311,7 +316,9 @@ class LKObjects extends CBitrixComponent
 			Bitrix\Main\Diag\Debug::dumpToFile(var_export($arRequest, 1), '$arRequest', 'test.log');
 			// dump($arRequest);
 
-			if ($arRequest["ADD"] == 'Y') {
+			if ($arRequest["ADD_OBJECT"] == 'Y') {
+				LKClass::addObject($arRequest["FIELDS"]);
+			} elseif ($arRequest["ADD_COUNTER"] == 'Y') {
 				LKClass::addCounter($arRequest["FIELDS"]);
 			} else {
 				foreach ($arRequest["FIELDS"] as $counterID => $fields) {
@@ -329,8 +336,7 @@ class LKObjects extends CBitrixComponent
 			// }
 
 			if (!isset($arRequest["AJAX_CALL"]))
-			LocalRedirect(Context::getCurrent()->getRequest()->getRequestUri());
-
+				LocalRedirect(Context::getCurrent()->getRequest()->getRequestUri());
 		}
 	}
 
