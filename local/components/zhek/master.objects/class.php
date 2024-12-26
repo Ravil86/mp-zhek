@@ -52,6 +52,8 @@ class LKObjects extends CBitrixComponent
 	private function run()
 	{
 
+		$this->arResult['PAGE_SIZE'] = 5;
+
 		$this->arResult['ACCESS'] = $this->checkAccess();
 		$arItems = [];
 
@@ -61,10 +63,7 @@ class LKObjects extends CBitrixComponent
 		$serviceList = LKClass::getService();
 		$this->arResult['SERVICE_LIST'] = $serviceList;
 
-		// $myCompany = LKClass::myCompany();
 		$arItems = LKClass::getCompany();
-
-		// dump($this->arResult);
 
 		if (is_array($arItems))
 			$this->arResult['GRID']['COUNT'] = count($arItems);
@@ -162,7 +161,7 @@ class LKObjects extends CBitrixComponent
 		} else {
 
 			$grid_options = new CGridOptions($this->arResult["GRID_ID"]);
-			$nav_params = $grid_options->GetNavParams(array("nPageSize" => 5));
+			$nav_params = $grid_options->GetNavParams(array("nPageSize" => $this->arResult['PAGE_SIZE']));
 			$nav = new Bitrix\Main\UI\PageNavigation($this->arResult["GRID_ID"]);
 			$nav->allowAllRecords(true)
 				->setPageSize($nav_params['nPageSize'])
@@ -177,10 +176,11 @@ class LKObjects extends CBitrixComponent
 			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
 			$this->arResult['GRID']['COLUMNS'] = [
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 70],
-				['id' => 'NAME', 'name' => 'Организация', /*'sort' => 'NAME', */ 'default' => true],
-				['id' => 'ADRES', 'name' => 'Адрес организации', /*'sort' => 'ADDRESS', */ 'default' => true, 'width' => 300],
-				['id' => 'INN', 'name' => 'ИНН',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => true, 'width' => 200],
-				['id' => 'DETAIL', 'name' => '', 'default' => true,],
+				['id' => 'UF_NAME', 'name' => 'Организация', /*'sort' => 'NAME', */ 'default' => true, 'editable' => true],
+				['id' => 'UF_ADDRESS', 'name' => 'Адрес организации', /*'sort' => 'ADDRESS', */ 'default' => true, 'width' => 300, 'editable' => true],
+				['id' => 'UF_INN', 'name' => 'ИНН',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => true, 'width' => 200, 'editable' => true],
+				['id' => 'USER', 'name' => 'Пользователь', 'default' => true],
+				['id' => 'DETAIL', 'name' => '', 'default' => true],
 			];
 
 			$filterOption = new Bitrix\Main\UI\Filter\Options("filter_" . $this->arResult["GRID_ID"]);
@@ -311,14 +311,19 @@ class LKObjects extends CBitrixComponent
 
 		if ($this->isPost() && check_bitrix_sessid()) {
 
-
-			Bitrix\Main\Diag\Debug::dumpToFile(var_export($arRequest, 1), '$arRequest', 'test.log');
 			// dump($arRequest);
 
 			if ($arRequest["ADD_OBJECT"] == 'Y') {
 				LKClass::addObject($arRequest["FIELDS"]);
 			} elseif ($arRequest["ADD_COUNTER"] == 'Y') {
 				LKClass::addCounter($arRequest["FIELDS"]);
+			} elseif ($arRequest["ADD_COMPANY"] == 'Y') {
+				LKClass::addCompany($arRequest["FIELDS"]);
+			} elseif ($arRequest["grid_id"] == 'zhek_master_objects') {
+				Bitrix\Main\Diag\Debug::dumpToFile(var_export($arRequest, 1), '$arRequest', 'test.log');
+				foreach ($arRequest["FIELDS"] as $companyID => $fields) {
+					LKClass::saveCompany($companyID, $fields);
+				}
 			} else {
 				foreach ($arRequest["FIELDS"] as $counterID => $fields) {
 					LKClass::saveCounter($counterID, $fields);

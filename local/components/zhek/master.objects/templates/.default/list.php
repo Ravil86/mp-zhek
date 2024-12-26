@@ -30,15 +30,13 @@ use Bitrix\Highloadblock as HL;
             ?>
         </div>
         <div class="col-auto">
-            <button class="ui-btn ui-btn-success mt-2 ms-0" data-bs-toggle="modal" data-bs-target="#addObject">добавить объект</button>
+            <button class="ui-btn ui-btn-primary mt-2 ms-0" data-bs-toggle="modal" data-bs-target="#addCompany">Добавить организацию</button>
         </div>
     </div>
     <div class="col-md-12">
         <?
         $grid_options = new CGridOptions($arResult["GRID_ID"]);
-
-        //размер страницы в постраничке (передаем умолчания)
-        $nav_params = $grid_options->GetNavParams();
+        $nav_params = $grid_options->GetNavParams(array("nPageSize" => $arResult['PAGE_SIZE']));
 
         $nav = new Bitrix\Main\UI\PageNavigation($arResult["GRID_ID"]);
         $nav->allowAllRecords(true)
@@ -46,14 +44,20 @@ use Bitrix\Highloadblock as HL;
             ->setPageSize($nav_params['nPageSize'])
             ->initFromUri();
 
+        $snippet = new Bitrix\Main\Grid\Panel\Snippet();
+        $controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getEditButton();
+        $controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getRemoveButton();
+
         $gridParams = [
             'GRID_ID' => $arResult['GRID_ID'],
             'COLUMNS' => $arResult['GRID']['COLUMNS'],
             'ROWS' => $arResult['GRID']['ROWS'],
             'TOTAL_ROWS_COUNT' => $arResult['GRID']['COUNT'],
-            'SHOW_ROW_CHECKBOXES' => false,
+            'SHOW_ROW_CHECKBOXES' => true,
+            'DEFAULT_PAGE_SIZE' => $arResult['PAGE_SIZE'],
             'NAV_OBJECT' => $nav,
-            'AJAX_MODE' => 'N',
+            // 'CURRENT_PAGE' => $nav->getCurrentPage(),
+            'AJAX_MODE' => 'Y',
             'AJAX_ID' => 'AJAX_' . $arResult['GRID_ID'],
             // 'AJAX_ID' => \CAjax::getComponentID('bitrix:main.ui.grid', '.default', ''),
             'PAGE_SIZES' => [
@@ -63,7 +67,6 @@ use Bitrix\Highloadblock as HL;
                 ['NAME' => '50', 'VALUE' => '50'],
                 ['NAME' => '100', 'VALUE' => '100']
             ],
-            'AJAX_OPTION_JUMP' => 'Y',
             'SHOW_CHECK_ALL_CHECKBOXES' => false,
             'SHOW_ROW_ACTIONS_MENU' => false,
             'SHOW_GRID_SETTINGS_MENU' => true,
@@ -72,16 +75,63 @@ use Bitrix\Highloadblock as HL;
             'SHOW_SELECTED_COUNTER' => true,
             'SHOW_TOTAL_COUNTER' => true,
             'SHOW_PAGESIZE' => true,
-            'SHOW_ACTION_PANEL' => false,
+            'SHOW_ACTION_PANEL' => true,
             'ALLOW_COLUMNS_SORT' => true,
             'ALLOW_COLUMNS_RESIZE' => true,
             'ALLOW_HORIZONTAL_SCROLL' => true,
             'ALLOW_SORT' => true,
             'ALLOW_PIN_HEADER' => true,
+            'AJAX_OPTION_JUMP' => 'N',
             'AJAX_OPTION_HISTORY' => 'N',
+            'ACTION_PANEL' => $controlPanel,
         ];
         $APPLICATION->IncludeComponent('bitrix:main.ui.grid', '', $gridParams);
         ?>
+    </div>
+    <div class="modal fade" id="addCompany" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <form method="post">
+                    <div class="modal-header">
+                        <div class="modal-title">Добавить объект
+                            <h4 class="modal-title"><?= $value['NAME']; ?></h4>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input class="ui-ctl-element" type="hidden" name="ADD_COMPANY" value="Y">
+                        <?= bitrix_sessid_post() ?>
+                        <div class="row gx-2">
+                            <div class="col-12 col-md">
+                                <label>Наименование организации</label>
+                                <div class="ui-ctl ui-ctl-textarea ui-ctl-resize-y ui-ctl-w100">
+                                    <textarea class="ui-ctl-element" name="FIELDS[UF_NAME]" placeholder="Наименование организации"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row gx-2 mt-3">
+                            <div class="col-12 col-md">
+                                <label>Адрес</label>
+                                <div class="ui-ctl ui-ctl-textarea ui-ctl-lg! ui-ctl-w100">
+                                    <textarea class="ui-ctl-element" name="FIELDS[UF_ADDRESS]" placeholder="Адрес"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md">
+                                <label>ИНН</label>
+                                <div class="ui-ctl ui-ctl-textbox ui-ctl-lg! ui-ctl-w100">
+                                    <input class="ui-ctl-element" type="text" name="FIELDS[UF_INN]" placeholder="ИНН">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="ui-btn ui-btn-success">Сохранить</button>
+                        <button type="button" class="ui-btn ui-btn-link" data-bs-dismiss="modal">Закрыть</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
     </div>
 <? else: ?>
     <font class="errortext">нет доступа</font>

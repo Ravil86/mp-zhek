@@ -150,14 +150,12 @@ class CabinetCompany extends CBitrixComponent
 				$arSort['sort']['DATE_CREATE'] = $arSort['sort']['TIMESTAMP_X'];
 			*/
 
-			$arItems = [];
+			// $arItems = [];
 			$myCompany = LKClass::myCompany();
 
-			// if ($myCompany)
-			// 	$arItems = LKClass::getObjects($myCompany['ID']);
 
 			$this->arResult['DETAIL'] = $myCompany;
-			// dump($myCompany);
+
 
 			// foreach ($arItems as $key => &$item) {
 

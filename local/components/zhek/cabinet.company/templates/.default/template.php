@@ -17,7 +17,7 @@ if ($arResult['ACCESS']): ?>
 
     <div class="row align-items-center@ pb-3 mb-2">
         <div class="col-5 mb-1 h4">
-            <h3><?= $arResult['DETAIL']['NAME'] ?></h3>
+            <h3><?= $arResult['DETAIL']['UF_NAME'] ?></h3>
             <? //=TruncateText($arResult['DETAIL']['USERNAME'], 50)
             ?>
         </div>
@@ -26,10 +26,10 @@ if ($arResult['ACCESS']): ?>
             <div class="card">
                 <div class="list-group list-group-flush lh-sm">
                     <div class="list-group-item py-2">
-                        <div class="text-secondary">ИНН:</div> <?= $arResult['DETAIL']['INN'] ?>
+                        <div class="text-secondary">ИНН:</div> <?= $arResult['DETAIL']['UF_INN'] ?>
                     </div>
                     <div class="list-group-item py-2">
-                        <div class="text-secondary">Адрес:</div> <?= $arResult['DETAIL']['ADRES'] ?>
+                        <div class="text-secondary">Адрес:</div> <?= $arResult['DETAIL']['UF_ADDRESS'] ?>
                     </div>
                 </div>
             </div>

@@ -84,6 +84,13 @@ class LKClass
         }
     }
 
+    public static function addCompany($data)
+    {
+
+        $classHL = \HLWrap::init(self::$_HL_Company);
+        $classHL::add($data);
+    }
+
     public static function addObject($data)
     {
 
@@ -148,6 +155,12 @@ class LKClass
         // }
     }
 
+    public static function saveCompany($companyID, $data)
+    {
+        $classHL = \HLWrap::init(self::$_HL_Company);
+        $classHL::update($companyID, $data);
+    }
+
 
     public static function myCompany()
     {
@@ -195,9 +208,9 @@ class LKClass
         while ($company = $rsCompany->Fetch()) {
             $arFields = [
                 'ID' => $company['ID'],
-                'NAME' => $company['UF_NAME'],
-                'ADRES' => $company['UF_ADDRESS'],
-                'INN' => $company['UF_INN']
+                'UF_NAME' => $company['UF_NAME'],
+                'UF_ADDRESS' => $company['UF_ADDRESS'],
+                'UF_INN' => $company['UF_INN']
             ];
             if ($orgID)
                 $result = $arFields;

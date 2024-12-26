@@ -12,12 +12,12 @@ if ($arResult['ACCESS']): ?>
             <div class="card col-10">
                 <div class="card-header">
                     <h2 class="h5 mb-0">
-                        <?= $arResult['DETAIL']['ORG']['NAME'] ?></h2>
+                        <?= $arResult['DETAIL']['ORG']['UF_NAME'] ?></h2>
                 </div>
                 <div class="card-body py-2 lh-sm">
                     <div class="row">
-                        <div class="col-4 fs-6 lead text-body-secondary"><em class="small">ИНН:</em> <?= $arResult['DETAIL']['ORG']['INN'] ?></div>
-                        <div class="col-8 fs-6 lead text-body-secondary"><em class="small">Адрес:</em> <?= $arResult['DETAIL']['ORG']['ADRES'] ?></div>
+                        <div class="col-4 fs-6 lead text-body-secondary"><em class="small">ИНН:</em> <?= $arResult['DETAIL']['ORG']['UF_INN'] ?></div>
+                        <div class="col-8 fs-6 lead text-body-secondary"><em class="small">Адрес:</em> <?= $arResult['DETAIL']['ORG']['UF_ADDRESS'] ?></div>
 
                     </div>
 
