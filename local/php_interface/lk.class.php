@@ -19,6 +19,39 @@ class LKClass
 
     protected static $_HL_Meter = "Meter"; // HL типы услуг
 
+    protected static $MASTER = "MASTER"; // код группы Мастер участка
+    protected static $ORG = "ORG"; // код группы Организации
+
+    public static function isMaster()
+    {
+        global $USER;
+        if ($USER->IsAuthorized()) {
+            $rsGroups = \CUser::GetUserGroupEx($USER->GetID());
+
+            while ($arGroup = $rsGroups->GetNext()) {
+                if ($USER->IsAdmin() || $arGroup['STRING_ID'] === self::$MASTER) {
+                    return true;
+                }
+            }
+        } else
+            return false;
+    }
+
+    public static function isOperator()
+    {
+        global $USER;
+        if ($USER->IsAuthorized()) {
+            $rsGroups = \CUser::GetUserGroupEx($USER->GetID());
+
+            while ($arGroup = $rsGroups->GetNext()) {
+                if ($USER->IsAdmin() || $arGroup['STRING_ID'] === self::$ORG) {
+                    return true;
+                }
+            }
+        } else
+            return false;
+    }
+
     public static function meters($objectID, $last = false)
     {
         $classHL = \HLWrap::init(self::$_HL_Meter);
@@ -165,34 +198,35 @@ class LKClass
     public static function myCompany()
     {
         $result = null;
-        $curentUser = self::curentUserFields();
 
+        $userId = Bitrix\Main\Engine\CurrentUser::get()->getId();
+        if ($userId)
+            $result = self::getCompany($userId);
 
-        if ($curentUser['UF_COMPANY'])
-            $result = self::getCompany($curentUser['UF_COMPANY']);
+        //$curentUser = self::curentUserFields();
+        //связка организации через св-во у пользователя
+        // if ($curentUser['UF_COMPANY'])
+        //     $result = self::getCompany($curentUser['UF_COMPANY']);
 
-
-        // print_r($result);
+        // return current($result);
         return $result;
-        // $userId = Bitrix\Main\Engine\CurrentUser::get()->getId();
     }
 
-    public static function getCompany($orgID = [], $filter = [], $nav = [])
+    public static function getCompany($userID = null, $search = [], $nav = [])
+    // public static function getCompany($orgID = [], $filter = [], $nav = [])
     {
-
-        // $curentUser = self::curentUserFields();
 
         $classCompany = \HLWrap::init(self::$_HL_Company);
 
-
-        if ($orgID)
-            $arFilter = ['ID' => $orgID];
-        elseif ($filter)
-            $arFilter = ['UF_NAME' => '%' . $filter['FIND'] . '%'];
+        if ($userID)
+            $arFilter = ['UF_USER_ID' => $userID];
+        // if ($orgID)
+        //     $arFilter = ['ID' => $orgID];
+        elseif ($search)
+            $arFilter = ['UF_NAME' => '%' . $search['FIND'] . '%'];
         else
             $arFilter = [];
 
-        // dump($filter);
         $params =  [
             'filter' => $arFilter,
             'select' => array('*'),
@@ -202,20 +236,21 @@ class LKClass
             $params['limit'] = $nav['limit'];
             $params['offset'] = $nav['offset'];
         }
-
         $rsCompany = $classCompany::getList($params);
 
         while ($company = $rsCompany->Fetch()) {
-            $arFields = [
-                'ID' => $company['ID'],
-                'UF_NAME' => $company['UF_NAME'],
-                'UF_ADDRESS' => $company['UF_ADDRESS'],
-                'UF_INN' => $company['UF_INN']
-            ];
-            if ($orgID)
-                $result = $arFields;
+            // $arFields = [
+            //     'ID' => $company['ID'],
+            //     'UF_NAME' => $company['UF_NAME'],
+            //     'UF_ADDRESS' => $company['UF_ADDRESS'],
+            //     'UF_INN' => $company['UF_INN'],
+            //     'UF_USER_ID' => $company['UF_USER_ID']
+            // ];
+            if ($userID)
+                // if ($orgID)
+                $result = $company;
             else
-                $result[$company['ID']] = $arFields;
+                $result[$company['ID']] = $company;
         }
 
         return $result;
@@ -307,7 +342,10 @@ class LKClass
                 'ID' => $service['ID'],
                 'NAME' => $service['UF_NAME'],
                 'UNIT' => $service['UF_UNIT'],
+                'LITERA' => $service['UF_LITERA'],
+                'COLOR' => $service['UF_COLOR'],
                 'ICON' => $arFile['SRC'],
+
             ];
             $result[$service['ID']] = $value;
         }

@@ -10,7 +10,7 @@ use Bitrix\Main\Context,
 	Bitrix\Main\Application,
 	Bitrix\Main\Web\Uri;
 
-class LKObjects extends CBitrixComponent
+class CabinetObjects extends CBitrixComponent
 {
 
 	protected static $_HL_Reference = "ReferenceCustomer"; // HL общий реестр

@@ -34,10 +34,10 @@ $arUrlRewrite = array(
   ),
   11 =>
   array(
-    'CONDITION' => '#^/master/meter/#',
+    'CONDITION' => '#^/master/contracts/#',
     'RULE' => '',
     'ID' => 'bitrix:news',
-    'PATH' => '/master/meter/index.php',
+    'PATH' => '/master/contracts/index.php',
     'SORT' => 100,
   ),
   3 =>

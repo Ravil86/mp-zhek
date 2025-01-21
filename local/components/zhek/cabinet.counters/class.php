@@ -15,7 +15,7 @@ use Bitrix\Main\Engine\Contract\Controllerable;
 use Bitrix\Main\Engine\ActionFilter;
 
 
-class LKCounters extends CBitrixComponent implements Controllerable
+class CabinetCounters extends CBitrixComponent implements Controllerable
 {
 
 	public function onPrepareComponentParams($arParams)

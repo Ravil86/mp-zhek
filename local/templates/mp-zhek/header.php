@@ -145,7 +145,7 @@ $arSite = $rsSites->Fetch();
 </div>
 
 <body>
-    <main class="site-container<? //php echo ($_COOKIE['cm_layout']==" boxed" ? ' boxed' : '' );
+    <main class="site-container<? //php echo ($_COOKIE['cm_layout']==" boxed" ? ' boxed' : '' ); 
                                 ?>">
         <!--<div class="site-container boxed">-->
         <? // TopBar start
@@ -168,8 +168,8 @@ $arSite = $rsSites->Fetch();
 
                 <ul class="contact-details float-end d-none d-lg-block">
                     <li id="specialButton" class="lh-1"><i class="template-display me-2 fs-6"></i><button class="btn p-0" title="Версия для слабовидщих">Версия для слабовидщих</button></li>
-                    <li class="d-none d-xl-block"><a href="https://old.mp-zhek-3.ru" target="_blank">Прежняя версия
-                            сайта</a></li>
+                    <!-- <li class="d-none d-xl-block"><a href="https://old.mp-zhek-3.ru" target="_blank">Прежняя версия сайта</a></li> -->
+                    <li id="lkButton" class="lh-1"><i class="features-person me-2 fs-6"></i><a href="/cabinet/">Личный кабинет</a></li>
                 </ul>
                 <ul class="social-icons">
                     <li class="show-on-mobiles">

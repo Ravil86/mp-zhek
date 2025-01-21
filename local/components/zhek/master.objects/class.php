@@ -11,7 +11,7 @@ use Bitrix\Main\Context,
 	Bitrix\Main\Application,
 	Bitrix\Main\Web\Uri;
 
-class LKObjects extends CBitrixComponent
+class MasterObjects extends CBitrixComponent
 {
 
 	protected static $_HL_Reference = "ReferenceCustomer"; // HL общий реестр
@@ -52,7 +52,7 @@ class LKObjects extends CBitrixComponent
 	private function run()
 	{
 
-		$this->arResult['PAGE_SIZE'] = 5;
+		$this->arResult['PAGE_SIZE'] = 10;
 
 		$this->arResult['ACCESS'] = $this->checkAccess();
 		$arItems = [];
@@ -95,7 +95,7 @@ class LKObjects extends CBitrixComponent
 			}
 
 			$this->arResult['DETAIL']['COLUMNS'] = [
-				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 70],
+				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
 				['id' => 'UF_NAME', 'name' => 'Наименование cчетчика', 'default' => true, 'width' => 250, 'editable' => true],
 				['id' => 'UF_NUMBER', 'name' => 'Номер cчетчика', 'default' => true, 'width' => 250, 'editable' => true],
 				['id' => 'SERVICE', 'name' => 'Тип счетчика', 'default' => true, 'width' => 200, "editable" => ['TYPE' => 'MULTISELECT', 'items' => $serviceItems]],
@@ -160,6 +160,32 @@ class LKObjects extends CBitrixComponent
 			$this->arResult['ITEMS'] = $objectList;
 		} else {
 
+			$result = \Bitrix\Main\UserGroupTable::getList(array(
+				'order' => array('USER.LAST_LOGIN' => 'DESC'),
+				'filter' => array(
+					// 'USER.ACTIVE' => 'Y',
+					'GROUP_ID' => [8, 1],
+				),
+				'select' => array(
+					'ID' => 'USER.ID',
+					'LOGIN' => 'USER.LOGIN',
+					// 'PERSONAL_GENDER' => 'USER.PERSONAL_GENDER',
+					'NAME' => 'USER.NAME',
+					'LAST_NAME' => 'USER.LAST_NAME',
+					// 'PERSONAL_CITY' => 'USER.PERSONAL_CITY',
+					'UF_COMPANY' => 'USER.UF_COMPANY',
+					'UF_PASSWORD' => 'USER.UF_PASSWORD'
+				),
+			));
+
+			while ($user = $result->fetch()) {
+
+				$user['SHORT_NAME'] = ($user['LAST_NAME'] ? $user['LAST_NAME'] . ' ' : '') . $user['NAME'];
+
+				$userList[$user['ID']] = $user;
+				$userItems[$user['ID']] = $user['SHORT_NAME'];
+			}
+
 			$grid_options = new CGridOptions($this->arResult["GRID_ID"]);
 			$nav_params = $grid_options->GetNavParams(array("nPageSize" => $this->arResult['PAGE_SIZE']));
 			$nav = new Bitrix\Main\UI\PageNavigation($this->arResult["GRID_ID"]);
@@ -172,14 +198,21 @@ class LKObjects extends CBitrixComponent
 			else
 				$nav_params['iNumPage'] = $nav->getCurrentPage();
 
+			$rsEnum = HLWrap::getEnumProp('UF_TYPE');
+			while ($arEnum = $rsEnum->Fetch()) {
+				//dump($arEnum);
+			}
+
 			//какую сортировку сохранил пользователь (передаем то, что по умолчанию)
 			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
 			$this->arResult['GRID']['COLUMNS'] = [
-				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 70],
-				['id' => 'UF_NAME', 'name' => 'Организация', /*'sort' => 'NAME', */ 'default' => true, 'editable' => true],
-				['id' => 'UF_ADDRESS', 'name' => 'Адрес организации', /*'sort' => 'ADDRESS', */ 'default' => true, 'width' => 300, 'editable' => true],
-				['id' => 'UF_INN', 'name' => 'ИНН',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => true, 'width' => 200, 'editable' => true],
-				['id' => 'USER', 'name' => 'Пользователь', 'default' => true],
+				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
+				['id' => 'UF_NAME', 'name' => 'Организация', /*'sort' => 'NAME', */ 'default' => true, 'width' => 300,  'editable' => true],
+				['id' => 'UF_ADDRESS', 'name' => 'Адрес организации', /*'sort' => 'ADDRESS', */ 'default' => false, 'editable' => true],
+				['id' => 'UF_INN', 'name' => 'ИНН',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => true, 'editable' => true],
+				['id' => 'DOGOVOR', 'name' => 'Текущий договор', 'default' => true],
+				['id' => 'UF_USER', 'name' => 'Оператор', 'default' => true, "editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]],
+				['id' => 'UF_TYPE', 'name' => 'Тип организации', 'default' => false, "editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]],
 				['id' => 'DETAIL', 'name' => '', 'default' => true],
 			];
 
@@ -191,7 +224,21 @@ class LKObjects extends CBitrixComponent
 				'limit' => $nav->getLimit(),
 			];
 
-			$itemsCompany = LKClass::getCompany([], $filter, $navParams);
+			$itemsCompany = LKClass::getCompany(null, $filter, $navParams);
+
+
+			// $result = \Bitrix\Main\UserTable::getList(array(
+			// 	'filter' => array('GROUP_ID' => 8),
+			// 	'select' => array('ID', 'SHORT_NAME'), // выберем идентификатор и генерируемое (expression) поле SHORT_NAME
+			// 	'order' => array('LAST_LOGIN' => 'DESC'), // все группы, кроме основной группы администраторов,
+			// 	// 'limit' => 3
+			// ));
+
+			// while ($arUser = $result->fetch()) {
+
+			// 	dump($arUser);
+			// }
+
 
 			/*
 			$useFilter = false;
@@ -231,6 +278,16 @@ class LKObjects extends CBitrixComponent
 
 			foreach ($itemsCompany as $key => &$item) {
 				$countObjects = 0;
+
+				// dump($item);
+				if ($item['UF_NAME']) {
+					$item['UF_NAME'] = '<a class="" href="' . $item["ID"] . '/">' . $item['UF_NAME'] . '</a>';
+				}
+
+				if ($item['UF_USER_ID']) {
+					$orgUser = $userList[$item['UF_USER_ID']];
+					$item['UF_USER'] = '[' . $orgUser['ID'] . '] ' . $orgUser['SHORT_NAME'];
+				}
 
 				if ($arObjects[$item['ID']])
 					$countObjects = count($arObjects[$item['ID']]);

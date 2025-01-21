@@ -16,17 +16,9 @@ if ($arResult['ACCESS']): ?>
                 </div>
                 <div class="card-body py-2 lh-sm">
                     <div class="row">
+                        <div class="col-4 fs-6 lead text-body-secondary"><em class="small">ИНН:</em> <?= $arResult['DETAIL']['ORG']['UF_INN'] ?></div>
+                        <div class="col-8 fs-6 lead text-body-secondary"><em class="small">Адрес:</em> <?= $arResult['DETAIL']['ORG']['UF_ADDRESS'] ?></div>
 
-                        <div class="col-4 fs-6 lead text-body-secondary">
-                            <? if ($arResult['DETAIL']['ORG']['UF_INN']): ?>
-                                <em class="small">ИНН:</em> <?= $arResult['DETAIL']['ORG']['UF_INN'] ?>
-                            <? endif; ?>
-                        </div>
-                        <div class="col-8 fs-6 lead text-body-secondary">
-                            <? if ($arResult['DETAIL']['ORG']['UF_ADDRESS']): ?>
-                                <em class="small">Адрес:</em> <?= $arResult['DETAIL']['ORG']['UF_ADDRESS'] ?>
-                            <? endif; ?>
-                        </div>
                     </div>
 
                 </div>
@@ -71,14 +63,14 @@ if ($arResult['ACCESS']): ?>
 
     </div>
     <?
-    $i = 1;
     foreach ($arResult['ITEMS'] as $key => $value): ?>
 
         <div class="card my-2">
+
             <div class="card-body">
                 <div class="row">
                     <div class="col">
-                        <h5 class="card-title"><?= $i ?>. <?= $value['NAME']; ?> (#<?= $value['ID']; ?>)</h5>
+                        <h5 class="card-title"> #<?= $value['ID']; ?> <?= $value['NAME']; ?></h5>
                         <div class="h6 card-subtitle mb-2 text-body-secondary"><?= $value['ADDRESS']; ?></div>
                     </div>
                     <div class="col-auto">
@@ -122,7 +114,7 @@ if ($arResult['ACCESS']): ?>
                         ['NAME' => '100', 'VALUE' => '100']
                     ],
                     'SHOW_ROW_CHECKBOXES'       => true,    //Разрешает отображение чекбоксов для строк.
-                    'AJAX_OPTION_JUMP'          => 'N',
+                    'AJAX_OPTION_JUMP'          => 'Y',
                     'SHOW_CHECK_ALL_CHECKBOXES' => false,    //Разрешает отображение чекбоксов "Выбрать все"
                     'SHOW_ROW_ACTIONS_MENU'     => true,    //Разрешает отображение меню действий строки
                     'SHOW_GRID_SETTINGS_MENU'   => true,    //Разрешает отображение меню настройки грида (кнопка с шестеренкой)
@@ -137,7 +129,7 @@ if ($arResult['ACCESS']): ?>
                     'ALLOW_HORIZONTAL_SCROLL'   => true,    //Разрешает горизонтальную прокрутку, если грид не помещается по ширине
                     'ALLOW_SORT'                => true,    //Разрешает сортировку по клику на заголовок колонки
                     'ALLOW_PIN_HEADER'          => true,    //Разрешает закрепление шапки грида к верху окна браузера при прокрутке
-                    'AJAX_OPTION_HISTORY'       => 'N',
+                    'AJAX_OPTION_HISTORY'       => 'Y',
                     'SHOW_GROUP_EDIT_BUTTON'    => true,    //Разрешает вывод стандартной кнопки "Редактировать" в панель групповых действий
                     'ALLOW_INLINE_EDIT'         => true,    //Разрешает инлайн-редактирование строк
                     'ALLOW_CONTEXT_MENU'        => true,    //Разрешает вывод контекстного меню по клику правой кнопкой на строку
@@ -233,15 +225,14 @@ if ($arResult['ACCESS']): ?>
 
             </div>
         </div>
-        <? $i++; ?>
     <? endforeach; ?>
     <div class="modal fade" id="addObject" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <form method="post">
                     <div class="modal-header">
-                        <div class="modal-title">Добавить объект для
-                            <h4 class="modal-title"><?= $arResult['DETAIL']['ORG']['UF_NAME']; ?></h4>
+                        <div class="modal-title">Добавить объект
+                            <h4 class="modal-title"><?= $value['NAME']; ?></h4>
                         </div>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>

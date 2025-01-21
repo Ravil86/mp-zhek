@@ -2060,7 +2060,7 @@ button:focus-visible {
 	transition: none !important;
 }
 
-.ui-btn.ui-btn-dropdown:after{
+.ui-btn.ui-btn-dropdown:after {
 	border: none;
 }
 
@@ -2068,6 +2068,12 @@ button:focus-visible {
 	--bs-btn-border-color: rgb(var(--ui-field-color-border-default));
 	border-radius: var(--ui-border-radius-2xs);
 }
+
 .ui-btn-light-border:hover {
 	--bs-btn-border-color: var(--ui-field-color-primary);
+}
+
+
+#specialButton i {
+	height: 20px;
 }

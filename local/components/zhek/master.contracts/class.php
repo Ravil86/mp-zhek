@@ -11,7 +11,7 @@ use Bitrix\Main\Context,
 	Bitrix\Main\Application,
 	Bitrix\Main\Web\Uri;
 
-class CUserDocumentsModerator extends CBitrixComponent
+class MasterContracts extends CBitrixComponent
 {
 
 	protected static $_HL_Reference = "ReferenceCustomer"; // HL общий реестр
@@ -83,6 +83,33 @@ class CUserDocumentsModerator extends CBitrixComponent
 
 			$this->arResult['DETAIL'] = $this->getDocs()[$this->arResult['VARIABLES']['DETAIL_ID']];
 
+			$orgServices = $this->arResult['DETAIL']['UF_SERVICE'];
+
+			foreach ($orgServices as $service) {
+
+				$this->arResult['SERVICE'][$service]['ID'] = $service;
+				$this->arResult['SERVICE'][$service]['OBJECTS'] = [];
+			}
+			// dump($this->arResult['SERVICE']);
+
+			$arObjects = LKClass::getObjects($this->arResult['DETAIL']['COMPANY_ID']);
+
+			foreach ($arObjects as $object) {
+				// dump($object);
+
+				$counterObjects = LKClass::getCounters($object['ID']);
+				foreach ($counterObjects as $counter) {
+
+					foreach ($counter['UF_TYPE'] as $type) {
+						$this->arResult['SERVICE'][$type]['OBJECTS'][$object['ID']]['INFO'] = $object;
+						$this->arResult['SERVICE'][$type]['OBJECTS'][$object['ID']]['COUNTER'] = $counter;
+						// dump($type);
+					}
+
+					// dump($counter);
+				}
+			}
+			// dump($this->arResult['SERVICE']);
 			// $this->arResult['DETAIL'] = $this->getAllDocs($arVariables['DETAIL_ID']);
 			// $this->arResult['DOCSLIST'] = $this->getAllDocs($this->arResult['DETAIL']['ID'], ['DATE_CREATE'	=> 'DESC'], [], false, $this->arResult['DETAIL']['USER_ID'])['ITEMS'];
 
@@ -113,11 +140,12 @@ class CUserDocumentsModerator extends CBitrixComponent
 			//какую сортировку сохранил пользователь (передаем то, что по умолчанию)
 			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
 			$this->arResult['GRID']['COLUMNS'] = [
-				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => '70'],
-				['id' => 'DATE', 'name' => 'Дата', 'sort' => 'TIMESTAMP_X', 'default' => true, 'width' => '150'],
-				['id' => 'NUMBER', 'name' => '№', 'sort' => 'NUMBER', 'default' => true, 'width' => '130'],
-				['id' => 'COMPANY', 'name' => 'Наименование организации', 'sort' => 'COMPANY', 'default' => true, 'width' => '300'],
-				['id' => 'STATUS', 'name' => 'Статус', 'sort' => '', 'default' => true, 'width' => '200'],
+				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 60],
+				['id' => 'DATE', 'name' => 'Дата', 'sort' => 'TIMESTAMP_X', 'default' => true, 'width' => 100],
+				['id' => 'NUMBER', 'name' => '№', 'sort' => 'NUMBER', 'default' => true, 'width' => 70],
+				['id' => 'COMPANY', 'name' => 'Наименование организации', 'sort' => 'COMPANY', 'default' => true],
+				['id' => 'SERVICE', 'name' => 'Услуги', 'default' => true,],
+				['id' => 'STATUS', 'name' => 'Статус', 'default' => true],
 				// ['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => '130'],
 			];
 
@@ -160,12 +188,22 @@ class CUserDocumentsModerator extends CBitrixComponent
 
 			$arItems = $this->getDocs(false, $arSort['sort'], $nav_params, $userFilter);
 
-			// dump($arItems);
+
+
 			foreach ($arItems as $key => &$item) {
 
 				// dump($item);
 
-				$item['COMPANY'] = $item['COMPANY']['NAME'];
+				$arService = [];
+				foreach ($item['PROVIDER'] as $pid => $value) {
+					// dump($value);
+					$arService[$pid] = '<span class="text-' . $value['COLOR'] . '">' . $value['VALUE'] . '</span>';
+					// $arService['SERVICE'][$pid] = $value['VALUE'];
+				}
+				if ($arService)
+					$item['SERVICE'] = implode('<br>', $arService);
+
+				// $item['COMPANY'] = $item['COMPANY']['NAME'];
 
 				$status = '<a class="d-flex!" href="' . $item["ID"] . '/">';
 				$status .= '<div class="btn btn-primary px-3 py-1 text-center opacity-75"><small>' . $item['STATUS'] . '</small></div>';
@@ -274,14 +312,54 @@ class CUserDocumentsModerator extends CBitrixComponent
 
 		$filter = [];
 
-		$getCompany = $this->getCompany();
+		$getCompany = LKClass::getCompany();
 
-		// dump($getCompany);
+		$serviceList = LKClass::getService();
 
-		$itemList = $this->getListDocs();
+		$itemList = $this->getContracts();
 
-		foreach ($itemList as $key => &$value) {
-			$value['COMPANY'] = $getCompany[$value['COMPANY']];
+		$rsFields = HLWrap::getEnumProp('UF_YEAR');
+		while ($field = $rsFields->Fetch()) {
+			$yearList[$field['ID']] = $field['VALUE'];
+		}
+		// dump($yearList);
+
+		$arCompany = [];
+		foreach ($itemList as &$value) {
+
+			$value['NUMBER'] = $value['UF_NUMBER'] < 10 ? '0' . $value['UF_NUMBER'] : $value['UF_NUMBER'];
+
+			$value['COMPANY_ID'] = $value['COMPANY'];
+			$arCompany = $getCompany[$value['COMPANY']];
+
+			if ($value['UF_YEAR']) {
+				$value['YEAR'] = $yearList[$value['UF_YEAR']];
+			}
+
+			if ($arCompany) {
+				$value['COMPANY'] = $arCompany['UF_NAME'];
+
+				foreach ($arCompany as $key => $item) {
+					preg_match('/^UF_(\D*)/', $key, $match);
+					if ($match[0]) {
+						$value['COMPANY_INFO'][$match[1]] = $item;
+					}
+				}
+			}
+
+			//$value['COMPANY'] = $getCompany[$value['COMPANY']];
+
+			if ($value['UF_SERVICE']) {
+				foreach ($value['UF_SERVICE'] as &$service) {
+
+					$arService = $serviceList[$service];
+					$arService['VALUE'] = $arService['NAME'] . ' - ' . $arService['LITERA'];
+
+					$value['PROVIDER'][] = $arService;
+				}
+			}
+
+			// dump($value);
 		}
 		// dump($itemList);
 		return $itemList;
@@ -430,7 +508,7 @@ class CUserDocumentsModerator extends CBitrixComponent
 	/*
     Список данных из HLblock c данными документИД/пользователь/статус
     */
-	private function getListDocs($userID = [])
+	private function getContracts($userID = [])
 	{
 
 		$classsDocs = \HLWrap::init(self::$_HL_Reference);
@@ -440,7 +518,6 @@ class CUserDocumentsModerator extends CBitrixComponent
 		$filter = [];
 		// if($userID)
 		// 	$filter['UF_USER_ID'] = $userID;
-
 
 		$rsDocs = $classsDocs::getList(
 			array(
@@ -452,10 +529,15 @@ class CUserDocumentsModerator extends CBitrixComponent
 		while ($arDoc = $rsDocs->Fetch()) {
 			$arFields = [
 				'ID' => $arDoc['ID'],
-				'NUMBER' => $arDoc['UF_NUMBER'],
+				'UF_NUMBER' => $arDoc['UF_NUMBER'],
+				// 'NUMBER' => $arDoc['UF_NUMBER'],
 				'COMPANY' => $arDoc['UF_COMPANY'],
-				'DATE' => $arDoc['UF_DATE'],
+				'UF_DATE' => $arDoc['UF_DATE'],
 				'STATUS' => $arDoc['UF_STATUS'],
+				'UF_SERVICE' => $arDoc['UF_SERVICE'],
+				'UF_YEAR' => $arDoc['UF_YEAR'],
+				'DATE' => ConvertDateTime($arDoc['UF_DATE'], "DD.MM.Y", "ru"),
+				'FORMAT_DATE' => FormatDate("j F Y", MakeTimeStamp($arDoc['UF_DATE'])),
 				// 'DATE' => ConvertDateTime($arDoc['UF_DATE'], "DD.MM.Y GG:MI:SS", "ru")
 				//'UF_STATUS' => $getStatusList[$arStatus['UF_STATUS']],
 			];
@@ -465,10 +547,7 @@ class CUserDocumentsModerator extends CBitrixComponent
 		return $result;
 	}
 
-	/*
-    Список данных из HLblock cо стутусами документа
-    */
-	private function getCompany()
+	/*private function getCompany()
 	{
 
 		$classCompany = \HLWrap::init(self::$_HL_Company);
@@ -489,7 +568,7 @@ class CUserDocumentsModerator extends CBitrixComponent
 		}
 
 		return $result;
-	}
+	}*/
 
 
 	/**
@@ -597,7 +676,7 @@ class CUserDocumentsModerator extends CBitrixComponent
 
 				global $APPLICATION;
 				LocalRedirect($APPLICATION->GetCurDir());*/
-				//LocalRedirect($this->arParams['SEF_FOLDER']);
+			//LocalRedirect($this->arParams['SEF_FOLDER']);
 
 			//}
 		}
@@ -721,5 +800,4 @@ class CUserDocumentsModerator extends CBitrixComponent
 		];
 		return $componentPage;
 	}
-
 }

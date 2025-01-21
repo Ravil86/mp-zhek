@@ -4,10 +4,10 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 $APPLICATION->SetTitle("Кабинет");
 ?>
 <? $APPLICATION->IncludeComponent(
-	"zhek:master.meter",
+	"zhek:master.contracts",
 	".default",
 	[
-		'SEF_FOLDER' => '/master/meter/',
+		'SEF_FOLDER' => '/master/contracts/',
 		'SEF_URL_TEMPLATES' => [
 			'list' => '',
 			'detail' => '#DETAIL_ID#/',

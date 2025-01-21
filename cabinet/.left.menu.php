@@ -5,21 +5,21 @@ $aMenuLinks = array(
 		"/cabinet/",
 		array(),
 		array(),
-		""
+		'LKClass::isOperator()'
 	),
 	array(
 		"Объекты предприятия",
 		"/cabinet/objects/",
 		array(),
 		array(),
-		""
+		'LKClass::isOperator()'
 	),
 	array(
 		"Внести показания",
 		"/cabinet/counters/",
 		array(),
 		array(),
-		""
+		'LKClass::isOperator()'
 	),
 	// array(
 	// 	"История начислений",
