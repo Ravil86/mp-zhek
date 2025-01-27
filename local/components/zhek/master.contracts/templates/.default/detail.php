@@ -15,13 +15,45 @@ if ($arResult['ACCESS']): ?>
     // dump($arResult['DETAIL']);
     ?>
     <div id='contracts' class="content">
-        <div class="py-3">
+        <?/*<div class="py-3">
             ID: <?= $arResult['DETAIL']['ID'] ?>
         </div>
-        <? foreach ($arResult['DETAIL']['PROVIDER'] as $key => $provider) : ?>
-            <?
-            // dump($provider);
-            ?>
+        */ ?>
+        <?/*
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row gx-2 align-items-center mb-2">
+                    <div class="col-3 pt-2 pb-1">Заказчик:</div>
+                    <div class="col-9 text-center pt-2 pb-1 border-bottom">
+                        <?= $arResult['DETAIL']['COMPANY_INFO']['NAME'] ?>
+                    </div>
+                </div>
+                <div class="row gx-2 align-items-center mb-2">
+                    <div class="col-3 pt-2 pb-1">Юридический адрес:</div>
+                    <div class="col-9 text-center pt-2 pb-1 border-bottom"><?= $arResult['DETAIL']['COMPANY_INFO']['ADDRESS'] ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        */ ?>
+        <?
+        // dump($provider);
+        function cmp($a, $b)
+        {
+            return $a['DATE'] <=> $b['DATE'];
+        }
+        ?>
+        <?
+        foreach ($arResult['DETAIL']['PROVIDER'] as $key => $provider) : ?>
+            <? if ($arResult['SERVICE'][$provider['ID']]['OBJECTS']): ?>
+                <div class="row mb-1">
+                    <div class="col">
+                    </div>
+                    <div class="col-auto">
+                        <a class="ui-btn ui-btn-primary-dark" href="#">скачать справку</a>
+                    </div>
+                </div>
+            <? endif; ?>
             <div class="card mb-3 border-<?= $provider['COLOR'] ?>">
                 <div class="card-body">
                     <div class="row gx-2 align-items-center mb-2">
@@ -44,13 +76,15 @@ if ($arResult['ACCESS']): ?>
                         <div class="card-body!">
                             <div class="h5 text-center">СПРАВКА № <?= $key + 1 ?> от «<?= FormatDate("j", MakeTimeStamp(time())) ?>» <?= FormatDate("F Y", MakeTimeStamp(time())) ?>г.</div>
                             <? if ($arResult['SERVICE'][$provider['ID']]['OBJECTS']): ?>
-                                <table class="table">
-                                    <thead>
+                                <table class="table table-sm!">
+                                    <thead class="small">
                                         <tr class="text-center">
                                             <th>№<br>п/п</th>
                                             <th>Наименование объекта</th>
-                                            <th>Адрес</th>
+                                            <!-- <th>ID</th> -->
+                                            <th width="200">Адрес</th>
                                             <th>Вид услуги</th>
+                                            <th>ID</th>
                                             <th>Дата очередной поверки ПУ</th>
                                             <th>Номер пломбы ПУ</th>
                                             <th>Ед. изм.</th>
@@ -62,20 +96,45 @@ if ($arResult['ACCESS']): ?>
                                     <tbody>
                                         <?
                                         $i = 1;
+
+                                        // dump($arResult['PREV_METERS']);
                                         foreach ($arResult['SERVICE'][$provider['ID']]['OBJECTS'] as $key => $value): ?>
-                                            <? // dump($value);
+                                            <?
+                                            $prevMeters = null;
+                                            $lastMeters = null;
+                                            $potreb = null;
+
+                                            // dump($arResult['PREV_METERS'][$key][$value['COUNTER']['ID']]);
+
+                                            if (is_array($arResult['PREV_METERS'][$key][$value['COUNTER']['ID']])) {
+                                                $prevMeters = $arResult['PREV_METERS'][$key][$value['COUNTER']['ID']][0]['METER'];
+                                            }
+                                            //$prevMeters = array_shift($arResult['PREV_METERS'][$key][$value['COUNTER']['ID']])['METER'];
+
+                                            if (is_array($arResult['LAST_METERS'][$key][$value['COUNTER']['ID']]))
+                                                $lastMeters = array_shift($arResult['LAST_METERS'][$key][$value['COUNTER']['ID']])['METER'];
+
+
+                                            if ($prevMeters && $lastMeters)
+                                                $potreb = $lastMeters - $prevMeters;
+                                            // $meterLast = array_shift($value['METERS']);
+
+                                            // dump($value['LAST_METERS']);
                                             ?>
                                             <tr>
                                                 <td><?= $i; ?></td>
                                                 <td><?= $value['INFO']['NAME']; ?></td>
+                                                <!-- <th><?= $key
+                                                            ?></th> -->
                                                 <td><?= $value['INFO']['ADDRESS']; ?></td>
                                                 <td><?= $provider['NAME']; ?></td>
+                                                <td><?= $value['COUNTER']['ID']; ?></td>
                                                 <td><?= $value['COUNTER']['UF_DATE']; ?></td>
                                                 <td><?= $value['COUNTER']['UF_NUMBER']; ?></td>
                                                 <td><?= $provider['UNIT']; ?></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
+                                                <td><?= $prevMeters; ?></td>
+                                                <td><?= $lastMeters; ?></td>
+                                                <td><?= $potreb ?></td>
                                             </tr>
                                             <? $i++; ?>
                                         <? endforeach ?>
@@ -88,8 +147,9 @@ if ($arResult['ACCESS']): ?>
             </div>
         <? endforeach; ?>
     </div>
+
 <? else: ?>
-    <font class="errortext">Ошибка доступа</font>
+    <font class="errortext">нет доступа</font>
 <? endif; ?>
 <?
 function templateItems($docVal, $useCheck, $admin = false)

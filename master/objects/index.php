@@ -2,7 +2,7 @@
 define("NEED_AUTH", true);
 define('LK', true);
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
-$APPLICATION->SetTitle("Кабинет");
+$APPLICATION->SetTitle("Объекты");
 ?>
 <?
 $APPLICATION->IncludeComponent(
@@ -17,7 +17,7 @@ $APPLICATION->IncludeComponent(
 		'SEF_MODE' => 'Y',
 		'GROUP_CODES' => [
 			'MODERATOR' => 'OPERATORS',
-			'ADMINISTRATOR' => 'ADMIN',
+			'ADMINISTRATOR' => 'MASTER',
 		]
 	]
 );

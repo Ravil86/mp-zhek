@@ -1,3 +1,2 @@
 <?
-$sSectionName="Реестр показаний";
-?>
+$sSectionName = "Кабинет";

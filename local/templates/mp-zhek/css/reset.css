@@ -41,7 +41,7 @@ table {
 	/*border-spacing: 0;*/
 }
 caption, th, td {
-	text-align: left;
+	/* text-align: left; */
 	font-weight: normal;
 }
 blockquote:before, blockquote:after,

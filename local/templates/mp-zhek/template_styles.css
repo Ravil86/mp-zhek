@@ -2016,7 +2016,11 @@
 }
 
 .table td {
-	padding: .6rem 1rem;
+	/* padding: .6rem 1rem; */
+}
+
+.table>:not(caption)>*>* {
+vertical-align: middle;
 }
 
 .page-content {
@@ -2076,4 +2080,12 @@ button:focus-visible {
 
 #specialButton i {
 	height: 20px;
+}
+
+.ui-btn {
+padding: 0 10px;
+}
+
+.main-grid a {
+	/* color: var(--ui-link-color); */
 }

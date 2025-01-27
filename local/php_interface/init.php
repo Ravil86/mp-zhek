@@ -22,6 +22,13 @@ function dump($var, $type = 0)
 	}
 }
 
+function gg($var)
+{
+	echo "<pre>";
+	print_r($var);
+	echo "</pre>";
+}
+
 function getFileArray($fileId, $onlyPath = false)
 {
 

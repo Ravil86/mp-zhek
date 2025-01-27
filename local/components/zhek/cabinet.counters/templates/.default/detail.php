@@ -44,25 +44,24 @@ if ($arResult['ACCESS']):
             <? foreach ($arResult['DETAIL']['LIST'] as $key => $item): ?>
                 <?
                 $raznost = 0;
-                //dump($item);
-                //dump($arResult['DETAIL']['LAST_METERS'][$item['ID']]);
 
+                if (is_array($arResult['DETAIL']['PREV_METERS'][$item['ID']]))
+                    $prevMeter = array_shift($arResult['DETAIL']['PREV_METERS'][$item['ID']]);
+
+                //$prevMeter = $arResult['DETAIL']['PREV_METERS'][$item['ID']];
                 $lastMeter = $arResult['DETAIL']['LAST_METERS'][$item['ID']];
-                $prevMeter = $arResult['DETAIL']['PREV_METERS'][$item['ID']];
 
                 if ($lastMeter && $prevMeter)
                     $raznost = $lastMeter - $prevMeter;
 
-                $raznostFormat = number_format($raznost, 4, '.', '');
-
-                $lastMeterFormat = number_format($lastMeter, 4, '.', '');
                 $prevMeterFormat = number_format($prevMeter, 4, '.', '');
+                $lastMeterFormat = number_format($lastMeter, 4, '.', '');
+                $raznostFormat = number_format($raznost, 4, '.', '');
                 ?>
                 <div class="row card">
                     <div class="card-body ps-2 pe-1 py-0">
                         <div class="row gx-2 align-items-stretch">
-                            <div class="col-3 py-3 d-flex align-items-center"><? //= $item['ID']
-                                                                                ?> <?= $item['UF_NAME'] ?></div>
+                            <div class="col-3 py-3 d-flex align-items-center"><?= $item['UF_NAME'] ?></div>
                             <div class="col py-3 d-flex align-items-center"><?= $item['SERVICE'] ?></div>
                             <div class="col py-3 d-flex align-items-center"><?= $prevMeterFormat ?></div>
                             <div class="col py-3 d-flex align-items-center"><?= $raznostFormat ?></div>

@@ -1,10 +1,9 @@
 <? define("NEED_AUTH", true);
- define("LK", true);
+define("LK", true);
 //define('NOT_MENU',true);
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
-$APPLICATION->SetTitle("Кабинет");
+$APPLICATION->SetTitle("Показаний приборов учета");
 ?>
-<h3>Внесение показаний приборов учета</h3>
 <? // dump(LKClass::myCompany());
 ?>
 <? $APPLICATION->IncludeComponent(

@@ -11,6 +11,8 @@ Loader::includeModule("iblock");
 class LKClass
 {
 
+    protected static $_HL_Contracts = "Contracts"; // HL организации
+
     protected static $_HL_Company = "Company"; // HL организации
     protected static $_HL_Objects = "Objects"; // HL Объекты
 
@@ -100,7 +102,7 @@ class LKClass
 
         $filter = [
             'UF_OBJECT' => $objectID,
-            ">=" . "UF_DATE"  => new DateTime(date('01.m.Y') . " 00:00:00"),
+            ">=" . "UF_DATE"  => new DateTime(date('01.m.Y') . " 00:00:00"),    //Каждый месяц новое значение
             'UF_COUNTER' => $counter,
         ];
         // dump($filter);
@@ -348,6 +350,31 @@ class LKClass
 
             ];
             $result[$service['ID']] = $value;
+        }
+
+        return $result;
+    }
+
+    public static function getYears()
+    {
+        HLWrap::init(self::$_HL_Contracts);
+        $rsFields = HLWrap::getEnumProp('UF_YEAR');
+        while ($field = $rsFields->Fetch()) {
+            $result[$field['ID']] = $field['VALUE'];
+        }
+
+        return $result;
+    }
+
+    public static function getStatus()
+    {
+        HLWrap::init(self::$_HL_Contracts);
+        $rsFields = HLWrap::getEnumProp('UF_STATUS');
+        while ($field = $rsFields->Fetch()) {
+            $result[$field['ID']] = [
+                'VALUE' => $field['VALUE'],
+                'CODE' => $field['XML_ID'],
+            ];
         }
 
         return $result;

@@ -30,9 +30,9 @@ class MasterObjects extends CBitrixComponent
 		if ($this->arParams["SEF_MODE"] == "Y") {
 			$componentPage = $this->sefMode();
 		}
-		if ($this->arParams["SEF_MODE"] != "Y") {
-			$componentPage = $this->noSefMode();
-		}
+		// if ($this->arParams["SEF_MODE"] != "Y") {
+		// 	$componentPage = $this->noSefMode();
+		// }
 
 		if (!$componentPage) {
 			Tools::process404(
@@ -99,7 +99,7 @@ class MasterObjects extends CBitrixComponent
 				['id' => 'UF_NAME', 'name' => 'Наименование cчетчика', 'default' => true, 'width' => 250, 'editable' => true],
 				['id' => 'UF_NUMBER', 'name' => 'Номер cчетчика', 'default' => true, 'width' => 250, 'editable' => true],
 				['id' => 'SERVICE', 'name' => 'Тип счетчика', 'default' => true, 'width' => 200, "editable" => ['TYPE' => 'MULTISELECT', 'items' => $serviceItems]],
-				['id' => 'UF_DATE', 'name' => 'Сл. дата поверки', 'default' => true, 'width' => 200, "editable" => ['TYPE' => 'DATE']],
+				['id' => 'UF_DATE', 'name' => 'Дата очередной поверки', 'default' => true, 'width' => 200, "editable" => ['TYPE' => 'DATE']],
 				// ['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => '130'],
 			];
 
@@ -213,7 +213,7 @@ class MasterObjects extends CBitrixComponent
 				['id' => 'DOGOVOR', 'name' => 'Текущий договор', 'default' => true],
 				['id' => 'UF_USER', 'name' => 'Оператор', 'default' => true, "editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]],
 				['id' => 'UF_TYPE', 'name' => 'Тип организации', 'default' => false, "editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]],
-				['id' => 'DETAIL', 'name' => '', 'default' => true],
+				['id' => 'DETAIL', 'name' => 'Объектов', 'default' => true],
 			];
 
 			$filterOption = new Bitrix\Main\UI\Filter\Options("filter_" . $this->arResult["GRID_ID"]);
@@ -279,9 +279,11 @@ class MasterObjects extends CBitrixComponent
 			foreach ($itemsCompany as $key => &$item) {
 				$countObjects = 0;
 
+				$column = $item;
+
 				// dump($item);
 				if ($item['UF_NAME']) {
-					$item['UF_NAME'] = '<a class="" href="' . $item["ID"] . '/">' . $item['UF_NAME'] . '</a>';
+					$column['UF_NAME'] = '<a class="ui-link fs-6" href="' . $item["ID"] . '/">' . $item['UF_NAME'] . '</a>';
 				}
 
 				if ($item['UF_USER_ID']) {
@@ -295,12 +297,23 @@ class MasterObjects extends CBitrixComponent
 				// $item['COMPANY'] = $item['COMPANY']['NAME'];
 
 				$status = '<a class="d-flex!" href="' . $item["ID"] . '/">';
-				$status .= '<div class="ui-btn ui-btn-secondary px-3 py-1 text-center opacity-75">Объектов <i class="ui-btn-counter ms-2">' . $countObjects . '</i></div>';
+
+				$status .= '<div class="ui-btn ui-btn-secondary ui-btn-sm px-3 py-1 text-center opacity-75">Объектов ';
+				//if ($countObjects) {
+				$status .= '<div class="ui-counter ui-counter-' . ($countObjects ? 'primary gray!' : 'dark') . ' ms-2">
+									<div class="ui-counter-inner">' . $countObjects . '</div>
+								</div>';
+				//$status .= '<i class="ui-btn-counter ui-counter-primary ms-2">' . $countObjects . '</i>';
+				//}
+				$status .= '</div>';
 				$status .= '</a>';
 				$item["DETAIL"] = $status;
 
+				// dump($item);
+
 				$this->arResult['GRID']['ROWS'][] = [
-					'data' => $item
+					'data' => $item,			//для редактирования
+					'columns'	=> $column		//отображение
 				];
 			}
 		}

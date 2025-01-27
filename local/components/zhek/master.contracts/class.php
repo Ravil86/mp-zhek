@@ -14,7 +14,7 @@ use Bitrix\Main\Context,
 class MasterContracts extends CBitrixComponent
 {
 
-	protected static $_HL_Reference = "ReferenceCustomer"; // HL общий реестр
+	protected static $_HL_Reference = "Contracts"; // HL Контракты
 	protected static $_HL_Objects = "Objects"; // HL общий реестр
 	protected static $_HL_Company = "Company"; // HL категории курсов
 
@@ -77,8 +77,6 @@ class MasterContracts extends CBitrixComponent
 
 		// $this->getIblockId = $this->getIblockId();
 
-		// dump();
-
 		if ($this->arResult['VARIABLES']) {
 
 			$this->arResult['DETAIL'] = $this->getDocs()[$this->arResult['VARIABLES']['DETAIL_ID']];
@@ -94,21 +92,71 @@ class MasterContracts extends CBitrixComponent
 
 			$arObjects = LKClass::getObjects($this->arResult['DETAIL']['COMPANY_ID']);
 
+			$this->arResult['PREV_METERS'] = [];
+			$this->arResult['LAST_METERS'] = [];
 			foreach ($arObjects as $object) {
-				// dump($object);
+
+				$prevMetersObject = [];
+				$lastMetersObject = [];
+
+				$arPrevMeters = LKClass::meters($object['ID']);
+				// dump($object['ID']);
+				// dump($arMeters);
+
+				foreach ($arPrevMeters as $key => $meter) {
+					$prevMetersObject[$meter['COUNTER']][] = $meter;
+					/*$metersObject[$meter['COUNTER']][$meter['ID']] = [
+						'ID' => $meter['ID'],
+						'METER' => $meter['METER'],
+						'DATE' => $meter['DATE'],
+					];*/
+				}
+				// if ($prevMetersObject)
+				// 	array_shift($prevMetersObject);
+
+				// dump($prevMetersObject);
+				$this->arResult['PREV_METERS'][$object['ID']] = $prevMetersObject;
+
+				$arLastMeters = LKClass::meters($object['ID'], true);
+				foreach ($arLastMeters as $key => $lastMeter) {
+					$lastMetersObject[$lastMeter['COUNTER']][$lastMeter['ID']] = $lastMeter;
+				}
+				$this->arResult['LAST_METERS'][$object['ID']] = $lastMetersObject;
+				// dump($metersLastObject);
+				// $this->arResult['SERVICE'][$type]['OBJECTS'][$object['ID']]['INFO']
+				// dump($metersObject);
 
 				$counterObjects = LKClass::getCounters($object['ID']);
+
+				// dump($counterObjects);
 				foreach ($counterObjects as $counter) {
 
+					// $this->arResult['METERS'][$object['ID']] = $object;
+					// $this->arResult['METERS'][$object['ID']]['COUNTER'] = [];
+
+					// dump($counter['ID']);
+
+
+					//$this->arResult['METERS'][$object['ID']]['COUNTERS'][$counter['ID']][] = $meter;
+
 					foreach ($counter['UF_TYPE'] as $type) {
+
+						// dump($metersObject[$counter['ID']]);
+						// dump($metersLastObject[$counter['ID']]);
+
 						$this->arResult['SERVICE'][$type]['OBJECTS'][$object['ID']]['INFO'] = $object;
 						$this->arResult['SERVICE'][$type]['OBJECTS'][$object['ID']]['COUNTER'] = $counter;
+
+
+						// $this->arResult['SERVICE'][$type]['OBJECTS'][$object['ID']]['METERS'] = $metersObject[$counter['ID']];
+						// $this->arResult['SERVICE'][$type]['OBJECTS'][$object['ID']]['LAST_METERS'] = $metersLastObject[$counter['ID']];
+
 						// dump($type);
 					}
-
-					// dump($counter);
 				}
 			}
+
+			// dump($this->arResult['METERS']);
 			// dump($this->arResult['SERVICE']);
 			// $this->arResult['DETAIL'] = $this->getAllDocs($arVariables['DETAIL_ID']);
 			// $this->arResult['DOCSLIST'] = $this->getAllDocs($this->arResult['DETAIL']['ID'], ['DATE_CREATE'	=> 'DESC'], [], false, $this->arResult['DETAIL']['USER_ID'])['ITEMS'];
@@ -152,7 +200,12 @@ class MasterContracts extends CBitrixComponent
 			$filterOption = new Bitrix\Main\UI\Filter\Options($this->arResult["GRID_ID"]);
 			$filterData = $filterOption->GetFilter();
 
-			$useFilter = false;
+			$userFilter = false;
+
+			global $USER;
+			if ($this->arResult['OPERATOR']) {
+				$userFilter['USER_ID'] = $USER->GetID();
+			}
 
 			if (isset($filterData["DATE_MODIFY_from"])) {
 				$userFilter["DATE_MODIFY_FROM"] = $filterData["DATE_MODIFY_from"];
@@ -171,14 +224,9 @@ class MasterContracts extends CBitrixComponent
 			if (isset($filterData["DATE_CREATE_to"])) {
 				$userFilter["<=DATE_CREATE"] = $filterData["DATE_CREATE_to"];
 			}
-			if (isset($filterData["COURSE"])) {
-				$userFilter["PROPERTY_COURSE"] = $filterData["COURSE"];
-			}
-			if (isset($filterData["COURSE"]))
-				$userFilter["PROPERTY_COURSE"] = $filterData["COURSE"];
-
-			if (isset($filterData["MO"]))
-				$userFilter["PROPERTY_MO"] = $filterData["MO"];
+			// if (isset($filterData["COURSE"])) {
+			// 	$userFilter["PROPERTY_COURSE"] = $filterData["COURSE"];
+			// }
 
 			if (!$nav_params['nPageSize'])
 				$nav_params['nPageSize'] = 500;
@@ -187,7 +235,6 @@ class MasterContracts extends CBitrixComponent
 				$arSort['sort']['DATE_CREATE'] = $arSort['sort']['TIMESTAMP_X'];
 
 			$arItems = $this->getDocs(false, $arSort['sort'], $nav_params, $userFilter);
-
 
 
 			foreach ($arItems as $key => &$item) {
@@ -206,7 +253,7 @@ class MasterContracts extends CBitrixComponent
 				// $item['COMPANY'] = $item['COMPANY']['NAME'];
 
 				$status = '<a class="d-flex!" href="' . $item["ID"] . '/">';
-				$status .= '<div class="btn btn-primary px-3 py-1 text-center opacity-75"><small>' . $item['STATUS'] . '</small></div>';
+				$status .= '<div class="btn btn-' . $item['STATUS']['CODE'] . ' px-3 py-1 text-center opacity-75"><small>' . $item['STATUS']['VALUE'] . '</small></div>';
 				$status .= '</a>';
 				$item["STATUS"] = $status;
 
@@ -310,31 +357,41 @@ class MasterContracts extends CBitrixComponent
 		global $USER;
 		$arParams = $this->arParams;
 
-		$filter = [];
+		$getCompany = [];
+		$arCompany = [];
 
-		$getCompany = LKClass::getCompany();
+		// $filter = [];
+		// gg($userFilter);
+		if (isset($userFilter['USER_ID'])) {
+			$arCompany = LKClass::getCompany($userFilter['USER_ID']);
+			if ($arCompany && isset($arCompany['ID']))
+				$itemList = $this->getContracts($arCompany['ID']);
+		} else {
+			$getCompany = LKClass::getCompany();
+			$itemList = $this->getContracts();
+		}
 
 		$serviceList = LKClass::getService();
 
-		$itemList = $this->getContracts();
+		$yearList = LKClass::getYears();
 
-		$rsFields = HLWrap::getEnumProp('UF_YEAR');
-		while ($field = $rsFields->Fetch()) {
-			$yearList[$field['ID']] = $field['VALUE'];
-		}
-		// dump($yearList);
+		$statusList = LKClass::getStatus();
 
-		$arCompany = [];
+		// gg($statusList);
+
 		foreach ($itemList as &$value) {
 
 			$value['NUMBER'] = $value['UF_NUMBER'] < 10 ? '0' . $value['UF_NUMBER'] : $value['UF_NUMBER'];
 
 			$value['COMPANY_ID'] = $value['COMPANY'];
-			$arCompany = $getCompany[$value['COMPANY']];
+			if ($getCompany)
+				$arCompany = $getCompany[$value['COMPANY']];
 
 			if ($value['UF_YEAR']) {
 				$value['YEAR'] = $yearList[$value['UF_YEAR']];
 			}
+
+			$value['STATUS'] = $statusList[$value['UF_STATUS']];
 
 			if ($arCompany) {
 				$value['COMPANY'] = $arCompany['UF_NAME'];
@@ -353,7 +410,8 @@ class MasterContracts extends CBitrixComponent
 				foreach ($value['UF_SERVICE'] as &$service) {
 
 					$arService = $serviceList[$service];
-					$arService['VALUE'] = $arService['NAME'] . ' - ' . $arService['LITERA'];
+					$arService['VALUE'] = $arService['LITERA'] . ' - ' . $arService['NAME'];
+					// $arService['VALUE'] = $arService['NAME'] . ' - ' . $arService['LITERA'];
 
 					$value['PROVIDER'][] = $arService;
 				}
@@ -435,11 +493,15 @@ class MasterContracts extends CBitrixComponent
 		if ($USER->IsAuthorized()) {
 			$rsGroups = \CUser::GetUserGroupEx($USER->GetID());
 			while ($arGroup = $rsGroups->GetNext()) {
+
+				// gg(LKClass::isOperator());
+
 				if ($arGroup['GROUP_ID'] == 1 || $arGroup['STRING_ID'] === $arParams['GROUP_CODES']['ADMINISTRATOR']) {
 					$this->arResult['ADMIN'] = true;
 					return true;
 				}
-				if ($arGroup['STRING_ID'] === 'MASTER') {
+				if ($arGroup['STRING_ID'] === $arParams['GROUP_CODES']['OPERATOR']) {
+					$this->arResult['OPERATOR'] = true;
 					return true;
 				}
 			}
@@ -508,7 +570,7 @@ class MasterContracts extends CBitrixComponent
 	/*
     Список данных из HLblock c данными документИД/пользователь/статус
     */
-	private function getContracts($userID = [])
+	private function getContracts($orgID = [])
 	{
 
 		$classsDocs = \HLWrap::init(self::$_HL_Reference);
@@ -516,13 +578,14 @@ class MasterContracts extends CBitrixComponent
 		// $getStatusList = self::getStatusList();
 
 		$filter = [];
-		// if($userID)
-		// 	$filter['UF_USER_ID'] = $userID;
+		if ($orgID)
+			$filter['UF_COMPANY'] = $orgID;
 
 		$rsDocs = $classsDocs::getList(
 			array(
+				'order'	=> ['UF_DATE' => 'desc'],
 				'select' => array('*'),
-				// 'filter' => $filter,
+				'filter' => $filter,
 			)
 		);
 
@@ -533,7 +596,7 @@ class MasterContracts extends CBitrixComponent
 				// 'NUMBER' => $arDoc['UF_NUMBER'],
 				'COMPANY' => $arDoc['UF_COMPANY'],
 				'UF_DATE' => $arDoc['UF_DATE'],
-				'STATUS' => $arDoc['UF_STATUS'],
+				'UF_STATUS' => $arDoc['UF_STATUS'],
 				'UF_SERVICE' => $arDoc['UF_SERVICE'],
 				'UF_YEAR' => $arDoc['UF_YEAR'],
 				'DATE' => ConvertDateTime($arDoc['UF_DATE'], "DD.MM.Y", "ru"),

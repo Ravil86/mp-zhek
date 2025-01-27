@@ -289,7 +289,7 @@ if ($arResult['ACCESS']): ?>
     </div>
 
 <? else: ?>
-    <font class="errortext">Ошибка доступа</font>
+    <font class="errortext">нет доступа</font>
 <? endif; ?>
 
 <script>

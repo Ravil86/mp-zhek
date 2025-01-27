@@ -24,6 +24,14 @@ $arUrlRewrite = array(
     'PATH' => '/cabinet/objects/index.php',
     'SORT' => 100,
   ),
+  14 =>
+  array(
+    'CONDITION' => '#^/cabinet/contracts/#',
+    'RULE' => '',
+    'ID' => 'bitrix:news',
+    'PATH' => '/cabinet/contracts/index.php',
+    'SORT' => 100,
+  ),
   10 =>
   array(
     'CONDITION' => '#^/master/objects/#',

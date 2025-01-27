@@ -8,15 +8,22 @@ $aMenuLinks = array(
 		'LKClass::isOperator()'
 	),
 	array(
-		"Объекты предприятия",
-		"/cabinet/objects/",
+		"Внести показания",
+		"/cabinet/counters/",
 		array(),
 		array(),
 		'LKClass::isOperator()'
 	),
 	array(
-		"Внести показания",
-		"/cabinet/counters/",
+		"Контракты (справки)",
+		"/cabinet/contracts/",
+		array(),
+		array(),
+		'LKClass::isOperator()'
+	),
+	array(
+		"Объекты предприятия",
+		"/cabinet/objects/",
 		array(),
 		array(),
 		'LKClass::isOperator()'

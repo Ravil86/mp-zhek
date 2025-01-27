@@ -106,9 +106,11 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 			$prevMeters = LKClass::meters($objectID);
 			$lastMeters = LKClass::meters($objectID, true);
 
+			// dump($prevMeters);
+
 			foreach ($prevMeters as $key => $value) {
 
-				$arPrevMeters[$value['COUNTER']] = $value['METER'];
+				$arPrevMeters[$value['COUNTER']][] = $value['METER'];
 				// $arPrevMeters[$value['COUNTER']] = [
 				// 	'VALUE' => $value['METER'],
 				// 	'DATE' => $value['DATE'],

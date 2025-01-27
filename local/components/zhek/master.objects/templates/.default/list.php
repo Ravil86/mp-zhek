@@ -140,9 +140,9 @@ use Bitrix\Highloadblock as HL;
                         <?= bitrix_sessid_post() ?>
                         <div class="row gx-2">
                             <div class="col-12 col-md">
-                                <label>Наименование организации</label>
+                                <label>ФИО</label>
                                 <div class="ui-ctl ui-ctl-textarea ui-ctl-resize-y ui-ctl-w100">
-                                    <textarea class="ui-ctl-element" name="FIELDS[UF_NAME]" placeholder="Наименование организации"></textarea>
+                                    <textarea class="ui-ctl-element" name="FIELDS[UF_NAME]" placeholder="ФИО"></textarea>
                                 </div>
                             </div>
                         </div>

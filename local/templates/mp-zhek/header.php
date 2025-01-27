@@ -145,7 +145,7 @@ $arSite = $rsSites->Fetch();
 </div>
 
 <body>
-    <main class="site-container<? //php echo ($_COOKIE['cm_layout']==" boxed" ? ' boxed' : '' ); 
+    <main class="site-container<? //php echo ($_COOKIE['cm_layout']==" boxed" ? ' boxed' : '' );
                                 ?>">
         <!--<div class="site-container boxed">-->
         <? // TopBar start
@@ -325,8 +325,8 @@ $arSite = $rsSites->Fetch();
             <? if (!defined('NOT_CONTAINER')): ?>
                 <div class="container page-content page-margin-top-section padding-bottom-100">
                     <? if (!defined('NOT_MENU') && !defined('ERROR_404')): ?>
-                        <div class="row">
-                            <div class="col-12 col-md-3<?= defined('LK') ? ' col-xxl-2' : '' ?> mb-4">
+                        <div class="row gx-3">
+                            <div class="col-12 col-md-3<?= defined('LK') ? ' col-xxl-auto' : '' ?> mb-4">
                                 <? if (defined('LK')): ?>
 
                                     <? if ($USER->IsAuthorized()): ?>
@@ -382,7 +382,7 @@ $arSite = $rsSites->Fetch();
                                     ); ?>
                                 <? endif; ?>
                             </div>
-                            <div class="col-12 col-md-9 <?= defined('LK') ? ' col-xxl-10' : '' ?>">
+                            <div class="col-12 col-md-9 <?= defined('LK') ? ' col-xxl' : '' ?>">
                             <? endif ?>
                         <? endif ?>
                     <? endif ?>
