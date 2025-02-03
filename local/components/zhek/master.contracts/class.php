@@ -18,6 +18,9 @@ class MasterContracts extends CBitrixComponent
 	protected static $_HL_Objects = "Objects"; // HL общий реестр
 	protected static $_HL_Company = "Company"; // HL категории курсов
 
+	var $serviceList = [];
+	var $statusList = [];
+	var $companyList = [];
 
 	/*public function onPrepareComponentParams($arParams) {
 
@@ -75,6 +78,25 @@ class MasterContracts extends CBitrixComponent
 
 		$this->arResult['ACCESS'] = $this->checkAccess();
 
+
+		$this->arResult['GRID_ID'] = str_replace('.', '_', str_replace(':', '_', $this->GetName()));
+		$arResult['GRID_ID'] = $this->arResult['GRID_ID'];
+
+		$this->serviceList = LKClass::getService();
+
+		$this->statusList = LKClass::getStatus();
+		$this->companyList = LKClass::getCompany();
+
+		$this->arResult['STATUS_LIST'] = $this->statusList;
+		$this->arResult['COMPANY_LIST'] = $this->companyList;
+
+		foreach ($this->companyList as $key => $value) {
+			$this->arResult['COMPANY_JSON'][] = [
+				'value' => $value['ID'],
+				'label' => $value['UF_NAME'],
+			];
+		}
+
 		// $this->getIblockId = $this->getIblockId();
 
 		if ($this->arResult['VARIABLES']) {
@@ -88,7 +110,6 @@ class MasterContracts extends CBitrixComponent
 				$this->arResult['SERVICE'][$service]['ID'] = $service;
 				$this->arResult['SERVICE'][$service]['OBJECTS'] = [];
 			}
-			// dump($this->arResult['SERVICE']);
 
 			$arObjects = LKClass::getObjects($this->arResult['DETAIL']['COMPANY_ID']);
 
@@ -100,8 +121,6 @@ class MasterContracts extends CBitrixComponent
 				$lastMetersObject = [];
 
 				$arPrevMeters = LKClass::meters($object['ID']);
-				// dump($object['ID']);
-				// dump($arMeters);
 
 				foreach ($arPrevMeters as $key => $meter) {
 					$prevMetersObject[$meter['COUNTER']][] = $meter;
@@ -114,7 +133,6 @@ class MasterContracts extends CBitrixComponent
 				// if ($prevMetersObject)
 				// 	array_shift($prevMetersObject);
 
-				// dump($prevMetersObject);
 				$this->arResult['PREV_METERS'][$object['ID']] = $prevMetersObject;
 
 				$arLastMeters = LKClass::meters($object['ID'], true);
@@ -122,27 +140,19 @@ class MasterContracts extends CBitrixComponent
 					$lastMetersObject[$lastMeter['COUNTER']][$lastMeter['ID']] = $lastMeter;
 				}
 				$this->arResult['LAST_METERS'][$object['ID']] = $lastMetersObject;
-				// dump($metersLastObject);
-				// $this->arResult['SERVICE'][$type]['OBJECTS'][$object['ID']]['INFO']
-				// dump($metersObject);
+
 
 				$counterObjects = LKClass::getCounters($object['ID']);
 
-				// dump($counterObjects);
 				foreach ($counterObjects as $counter) {
 
 					// $this->arResult['METERS'][$object['ID']] = $object;
 					// $this->arResult['METERS'][$object['ID']]['COUNTER'] = [];
 
-					// dump($counter['ID']);
-
 
 					//$this->arResult['METERS'][$object['ID']]['COUNTERS'][$counter['ID']][] = $meter;
 
 					foreach ($counter['UF_TYPE'] as $type) {
-
-						// dump($metersObject[$counter['ID']]);
-						// dump($metersLastObject[$counter['ID']]);
 
 						$this->arResult['SERVICE'][$type]['OBJECTS'][$object['ID']]['INFO'] = $object;
 						$this->arResult['SERVICE'][$type]['OBJECTS'][$object['ID']]['COUNTER'] = $counter;
@@ -150,22 +160,17 @@ class MasterContracts extends CBitrixComponent
 
 						// $this->arResult['SERVICE'][$type]['OBJECTS'][$object['ID']]['METERS'] = $metersObject[$counter['ID']];
 						// $this->arResult['SERVICE'][$type]['OBJECTS'][$object['ID']]['LAST_METERS'] = $metersLastObject[$counter['ID']];
-
-						// dump($type);
 					}
 				}
 			}
-
-			// dump($this->arResult['METERS']);
-			// dump($this->arResult['SERVICE']);
 			// $this->arResult['DETAIL'] = $this->getAllDocs($arVariables['DETAIL_ID']);
 			// $this->arResult['DOCSLIST'] = $this->getAllDocs($this->arResult['DETAIL']['ID'], ['DATE_CREATE'	=> 'DESC'], [], false, $this->arResult['DETAIL']['USER_ID'])['ITEMS'];
 
 		} else {
 
-			$this->arResult['GRID_ID'] = 'grid_meter';
+			// $this->arResult['GRID_ID'] = 'grid_meter';
 
-			$arResult['GRID_ID'] = $this->arResult['GRID_ID'];
+			// $arResult['GRID_ID'] = $this->arResult['GRID_ID'];
 
 			//инициализируем объект с настройками пользователя для нашего грида
 			$grid_options = new CGridOptions($this->arResult["GRID_ID"]);
@@ -184,16 +189,28 @@ class MasterContracts extends CBitrixComponent
 			else
 				$nav_params['iNumPage'] = $nav->getCurrentPage();
 
+			// dump($this->serviceList);
+			foreach ($this->serviceList as $serv) {
+				$arService[$serv['ID']] = $serv['NAME'];
+			}
+
+			// dump(\Bitrix\Main\Grid\Editor\Types::getList());
+			// dump($this->statusList);
+			foreach ($this->statusList as $key => $stat) {
+				$arStatus[$key] = $stat['VALUE'];
+			}
 
 			//какую сортировку сохранил пользователь (передаем то, что по умолчанию)
 			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
 			$this->arResult['GRID']['COLUMNS'] = [
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 60],
-				['id' => 'DATE', 'name' => 'Дата', 'sort' => 'TIMESTAMP_X', 'default' => true, 'width' => 100],
-				['id' => 'NUMBER', 'name' => '№', 'sort' => 'NUMBER', 'default' => true, 'width' => 70],
+				['id' => 'DATE', 'name' => 'Дата', /*'sort' => 'TIMESTAMP_X',*/ 'default' => true,  "editable" => ['TYPE' => 'CUSTOM']],
+				// ['id' => 'DATE', 'name' => 'Дата', /*'sort' => 'TIMESTAMP_X',*/ 'default' => true, 'width' => 100, "editable" => ['TYPE' => 'DATE']],
+				['id' => 'NUMBER', 'name' => '№', /*'sort' => 'NUMBER',*/ 'default' => true, 'width' => 70, 'editable' => true],
 				['id' => 'COMPANY', 'name' => 'Наименование организации', 'sort' => 'COMPANY', 'default' => true],
-				['id' => 'SERVICE', 'name' => 'Услуги', 'default' => true,],
-				['id' => 'STATUS', 'name' => 'Статус', 'default' => true],
+				['id' => 'FULL_NUMBER', 'name' => 'Номер', 'sort' => '', 'default' => true, 'width' => 150],
+				['id' => 'SERVICE', 'name' => 'Услуги', 'default' => true, "editable" => ['TYPE' => 'MULTISELECT', 'items' => $arService]],
+				['id' => 'STATUS', 'name' => 'Статус', 'default' => true, 'editable' => ['TYPE' => 'DROPDOWN', 'items' => $arStatus]],
 				// ['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => '130'],
 			];
 
@@ -236,20 +253,24 @@ class MasterContracts extends CBitrixComponent
 
 			$arItems = $this->getDocs(false, $arSort['sort'], $nav_params, $userFilter);
 
-
 			foreach ($arItems as $key => &$item) {
 
-				// dump($item);
+				$data = $item;
 
+				$item['SERVICE'] = '';
 				$arService = [];
 				foreach ($item['PROVIDER'] as $pid => $value) {
-					// dump($value);
 					$arService[$pid] = '<span class="text-' . $value['COLOR'] . '">' . $value['VALUE'] . '</span>';
 					// $arService['SERVICE'][$pid] = $value['VALUE'];
 				}
 				if ($arService)
 					$item['SERVICE'] = implode('<br>', $arService);
 
+				$data['SERVICE'] = array_values($item['UF_SERVICE']);
+				$data['STATUS'] = $item['UF_STATUS'];
+
+				$number = '№ ' . $item['NUMBER'] . '-' . $item['YEAR'] . ' от ' . $item['DATE'];
+				$item["FULL_NUMBER"] = $number;
 				// $item['COMPANY'] = $item['COMPANY']['NAME'];
 
 				$status = '<a class="d-flex!" href="' . $item["ID"] . '/">';
@@ -257,8 +278,41 @@ class MasterContracts extends CBitrixComponent
 				$status .= '</a>';
 				$item["STATUS"] = $status;
 
+				// <input value="01.01.2025" name="DATE" class="main-grid-editor main-grid-editor-text main-grid-editor-date" id="DATE_control">
+				$data['DATE'] = '<div class="ui-ctl ui-ctl-after-icon ui-ctl-date">
+									<a class="ui-ctl-after ui-ctl-icon-calendar"></a>
+									<!--<div class="ui-ctl-element">14.10.2014</div>-->
+								<input type="text" id="" class= "ui-ctl-element" name="DATE" value="' . $item['DATE'] . '">
+								</div>
+									<script>
+										(function() {
+											const input = document.querySelector(`input[name="DATE"]`);
+
+											const button = input.closest(".ui-ctl-date")
+											// const button = input.previousElementSibling;
+											console.log("button",button);
+											// const button = input.nextElementSibling;
+											let picker = null;
+											const getPicker = () => {
+												if (picker === null) {
+													picker = new BX.UI.DatePicker.DatePicker({
+														targetNode: input,
+														inputField: input,
+														enableTime: false,
+														useInputEvents: false,
+													});
+												}
+
+												return picker;
+											};
+
+											BX.Event.bind(button, "click", () => getPicker().show());
+										})();
+									</script>';
+
 				$this->arResult['GRID']['ROWS'][] = [
-					'data' => $item
+					'columns' => $item,
+					'data' => $data			//Данные для инлайн-редактирования
 				];
 			}
 
@@ -273,7 +327,7 @@ class MasterContracts extends CBitrixComponent
 
 			$this->arResult['GRID']["FILTER"] = [
 				['id' => 'DATE_CREATE', 'name' => 'Дата', 'type' => 'date', 'default' => true],
-				['id' => 'NAME', 'name' => 'ФИО', 'type' => 'text', 'default' => true],
+				// ['id' => 'NAME', 'name' => 'ФИО', 'type' => 'text', 'default' => true],
 				// ['id' => 'MO', 'name' => 'Муниципалитет', 'type' => 'list', 'items' => $arCity, 'params' => ['multiple' => 'N'], 'default' => true],
 				// ['id' => 'COURSE', 'name' => 'Курс', 'type' => 'list', 'items' => $this->courses, 'params' => ['multiple' => 'Y'], 'default' => true],
 			];
@@ -329,8 +383,6 @@ class MasterContracts extends CBitrixComponent
 				//$streamCourse = $streamList[ (key( $getLearningOld[$value['USER_ID']][$value['COURSE_ID']]) )];
 				//$data["STREAM"] .= '<br>ОЛД_'.$streamCourse['NAME'].'<br>'.$streamCourse['TEXT'];
 
-
-				// dump($value);
 				$data["SNILS"] = $value["SNILS"];
 
 				$data["NOTE"] = $value['NOTE'];
@@ -367,17 +419,16 @@ class MasterContracts extends CBitrixComponent
 			if ($arCompany && isset($arCompany['ID']))
 				$itemList = $this->getContracts($arCompany['ID']);
 		} else {
-			$getCompany = LKClass::getCompany();
+			$getCompany = $this->companyList;
+			// $getCompany = LKClass::getCompany();
 			$itemList = $this->getContracts();
 		}
 
-		$serviceList = LKClass::getService();
+		// $serviceList = LKClass::getService();
 
 		$yearList = LKClass::getYears();
 
-		$statusList = LKClass::getStatus();
-
-		// gg($statusList);
+		// $statusList = LKClass::getStatus();
 
 		foreach ($itemList as &$value) {
 
@@ -391,7 +442,7 @@ class MasterContracts extends CBitrixComponent
 				$value['YEAR'] = $yearList[$value['UF_YEAR']];
 			}
 
-			$value['STATUS'] = $statusList[$value['UF_STATUS']];
+			$value['STATUS'] = $this->statusList[$value['UF_STATUS']];
 
 			if ($arCompany) {
 				$value['COMPANY'] = $arCompany['UF_NAME'];
@@ -403,13 +454,16 @@ class MasterContracts extends CBitrixComponent
 					}
 				}
 			}
-
+			// dump($value['ID']);
+			// dump($value['UF_SERVICE']);
 			//$value['COMPANY'] = $getCompany[$value['COMPANY']];
+			// dump($this->serviceList);
 
-			if ($value['UF_SERVICE']) {
-				foreach ($value['UF_SERVICE'] as &$service) {
+			if ($value['UF_SERVICE'] && is_array($value['UF_SERVICE'])) {
 
-					$arService = $serviceList[$service];
+				foreach ($value['UF_SERVICE'] as $service) {
+					// dump($service);
+					$arService = $this->serviceList[$service];
 					$arService['VALUE'] = $arService['LITERA'] . ' - ' . $arService['NAME'];
 					// $arService['VALUE'] = $arService['NAME'] . ' - ' . $arService['LITERA'];
 
@@ -417,9 +471,9 @@ class MasterContracts extends CBitrixComponent
 				}
 			}
 
-			// dump($value);
+
+			// dump($value['PROVIDER']);
 		}
-		// dump($itemList);
 		return $itemList;
 
 		// $filter['IBLOCK_ID'] = $this->getIblockId;
@@ -517,55 +571,6 @@ class MasterContracts extends CBitrixComponent
 		return ($a['SORT'] < $b['SORT']) ? -1 : 1;
 	}
 
-	/*
-	ИБ
-	*/
-	private function getElementList(array $arFilter, array $selectFields, array $arOrder, array $arNavParams)
-	{
-		if (\CModule::IncludeModule("iblock")) {
-
-			$dbItems = \CIBlockElement::GetList(
-				$arOrder,
-				$arFilter,
-				false,
-				$arNavParams,
-				$selectFields
-			);
-
-			$result = array();
-			while ($arRes = $dbItems->fetch()) {
-				$arRes['PROPERTIES'] = [];
-				$result[$arRes['ID']] = $arRes;
-			}
-
-			CIBlockElement::GetPropertyValuesArray($result, $arFilter['IBLOCK_ID'], $arFilter);
-
-			foreach ($result as $key => $item) {
-
-				foreach ($item['PROPERTIES'] as $code => $prop) {
-
-					$fieldProp = [
-						'NAME' => $prop['NAME'],
-						'VALUE' => $prop['VALUE'],
-						'DESCRIPTION' => $prop['DESCRIPTION'],
-						'VALUE_ID' => $prop['PROPERTY_VALUE_ID'],
-						'SEARCHABLE' => $prop['SEARCHABLE'],
-						'DESC' => $prop['HINT']
-					];
-
-					if (preg_match("/^DOC_/", $code)) {
-						$result[$key]['DOCS'][$code] = $fieldProp;
-					} else {
-						$result[$key]['PROPS'][$code] = $fieldProp;
-					}
-				}
-				unset($result[$key]['PROPERTIES']);
-			}
-
-			return $result;
-		}
-	}
-
 
 	/*
     Список данных из HLblock c данными документИД/пользователь/статус
@@ -590,6 +595,7 @@ class MasterContracts extends CBitrixComponent
 		);
 
 		while ($arDoc = $rsDocs->Fetch()) {
+
 			$arFields = [
 				'ID' => $arDoc['ID'],
 				'UF_NUMBER' => $arDoc['UF_NUMBER'],
@@ -610,68 +616,6 @@ class MasterContracts extends CBitrixComponent
 		return $result;
 	}
 
-	/*private function getCompany()
-	{
-
-		$classCompany = \HLWrap::init(self::$_HL_Company);
-
-		$rsCompany = $classCompany::getList(
-			array(
-				'select' => array('*'),
-			)
-		);
-
-		while ($company = $rsCompany->Fetch()) {
-			$arFields = [
-				'NAME' => $company['UF_NAME'],
-				'ADRES' => $company['UF_OBJECT'],
-				'INN' => $company['UF_INN']
-			];
-			$result[$company['ID']] = $arFields;
-		}
-
-		return $result;
-	}*/
-
-
-	/**
-	 * Получить имя элемента
-	 *
-	 * @param array $arElements - массив элементов
-	 * @param int $id - идентификатор элемента
-	 *
-	 * @return string
-	 */
-	private function getElementName($arElements, $id)
-	{
-		foreach ($arElements as $value) {
-			if ($value['ID'] == $id)
-				return $value['NAME'];
-		}
-	}
-
-	/**
-	 * Получить Регион по ID города
-	 *
-	 * @param array $arElements - массив элементов
-	 * @param int $id - идентификатор элемента
-	 *
-	 * @return string
-	 */
-	private function getRegionByCity($arElements, $id)
-	{
-		CModule::IncludeModule("iblock");
-		foreach ($arElements as $value) {
-			if ($value['ID'] == $id) {
-
-				if ($value['IBLOCK_SECTION_ID']) {
-					$res = CIBlockSection::GetByID($value['IBLOCK_SECTION_ID']);
-					if ($ar_res = $res->GetNext())
-						return $ar_res['NAME'];
-				}
-			}
-		}
-	}
 
 	public function getRequest()
 	{
@@ -694,54 +638,33 @@ class MasterContracts extends CBitrixComponent
 	public function prepareComponentResult()
 	{
 
-		if ($this->isPost()) {
-			$arRequest = $this->getRequest();
+		$arRequest = $this->getRequest();
 
-			$REQUEST_ID = $this->arResult['DETAIL']['ID'];
+		if ($this->isPost() && check_bitrix_sessid()) {
 
-			$sendEmail = false;
+			// Bitrix\Main\Diag\Debug::dumpToFile(var_export($arRequest, 1), '$arRequest', 'test.log');
+			$data = [];
+			foreach ($arRequest["FIELDS"] as $contractID => $fields) {
 
-			/*if ($arRequest['checked'] && check_bitrix_sessid()) {
+				foreach ($fields as $key => $value) {
+					// Bitrix\Main\Diag\Debug::dumpToFile(var_export($value, 1), '$$value', 'test.log');
 
-				$typeStatus = 'Документы приняты';
-
-				if ($arRequest['verification'] == 'Y') {
-					$arLoadProductArray = array(
-						"ACTIVE"         => "Y",
-					);
-					$el = new CIBlockElement;
-					$res = $el->Update($REQUEST_ID, $arLoadProductArray);
-					CIBlockElement::SetPropertyValues($REQUEST_ID, $this->getIblockId, 'N', 'CHECKED');
-				} elseif ($arRequest['revision'] == 'Y') {
-					$arLoadProductArray = array(
-						"ACTIVE"         => "N",
-					);
-					if (strlen($arRequest['note']) > 0)
-						$arLoadProductArray['PREVIEW_TEXT'] = $arRequest['note'];
-
-					$el = new CIBlockElement;
-					$res = $el->Update($REQUEST_ID, $arLoadProductArray);
-					CIBlockElement::SetPropertyValues($REQUEST_ID, $this->getIblockId, 'Y', 'CHECKED');
-					$typeStatus = 'Документ(ы) некорректные';
-					$sendEmail = true;
-				} else {
-					$arLoadProductArray = array(
-						"ACTIVE"         => "Y",
-					);
-					$el = new CIBlockElement;
-					$res = $el->Update($REQUEST_ID, $arLoadProductArray);
-					CIBlockElement::SetPropertyValues($REQUEST_ID, $this->getIblockId, 'Y', 'CHECKED');
-					$sendEmail = true;
+					if ($key == 'SERVICE' && is_array($value)) {
+						foreach ($value as $val) {
+							$arVal[] = $val['VALUE'];
+						}
+						$data['UF_' . $key] = $arVal;
+					} else {
+						$data['UF_' . $key] = $value;
+					}
 				}
+				// Bitrix\Main\Diag\Debug::dumpToFile(var_export($data, 1), '$data', 'test.log');
 
-				// if ($sendEmail)
-				// 	self::sendMail($typeStatus, $arRequest['note']);
+				LKClass::saveContract($contractID, $data);
+			}
 
-				global $APPLICATION;
-				LocalRedirect($APPLICATION->GetCurDir());*/
-			//LocalRedirect($this->arParams['SEF_FOLDER']);
-
-			//}
+			if (!isset($arRequest["AJAX_CALL"]))
+			LocalRedirect(Context::getCurrent()->getRequest()->getRequestUri());
 		}
 	}
 

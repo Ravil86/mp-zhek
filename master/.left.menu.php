@@ -1,15 +1,22 @@
 <?
 $aMenuLinks = array(
 	array(
-		"Справки контрактов",
+		"Объекты предприятий",
+		"/master/objects/",
+		array(),
+		array(),
+		'LKClass::isMaster()'
+	),
+	array(
+		"Контракты",
 		"/master/contracts/",
 		array(),
 		array(),
 		'LKClass::isMaster()'
 	),
 	array(
-		"Объекты предприятий",
-		"/master/objects/",
+		"Сводный реестр",
+		"/master/reestr/",
 		array(),
 		array(),
 		'LKClass::isMaster()'

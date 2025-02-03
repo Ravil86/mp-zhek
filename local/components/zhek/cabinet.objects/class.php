@@ -99,8 +99,8 @@ class CabinetObjects extends CBitrixComponent
 
 				foreach ($item['UF_TYPE'] as $value) {
 					$typeItem = $serviceList[$value];
-					// dump($typeItem);
-					$types[] = '<img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/>';
+					$types[] = '<img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'].'<span>';
+					// $types[] = '<img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/>';
 				}
 
 				$item['SERVICE'] = implode(' ', $types);

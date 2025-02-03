@@ -14,8 +14,29 @@ use Bitrix\Main\Context,
 use Bitrix\Highloadblock as HL;
 ?>
 <? if ($arResult['ACCESS']): ?>
-    <div class="col-md-12">
-        <?
+<? $APPLICATION->IncludeComponent(
+	"zhek:cabinet.company",
+	".default",
+	[
+		// 'IBLOCK_CODES' => [
+		// 	'REQUEST' => 'documents',
+		// 	'CITY' => 'areas',
+		// ],
+		'SEF_FOLDER' => '/cabinet/',
+		'SEF_URL_TEMPLATES' => [
+			'list' => '',
+			'detail' => '#DETAIL_ID#/',
+		],
+		'SEF_MODE' => 'Y',
+		'GROUP_CODES' => [
+			'ORGANIZATION' => 'ORG',
+			'ADMINISTRATOR' => 'ADMIN',
+		]
+	]
+);
+?>
+<div class="col-md-12">
+    <?
         $grid_options = new CGridOptions($arResult["GRID_ID"]);
 
         //размер страницы в постраничке (передаем умолчания)
@@ -76,7 +97,7 @@ use Bitrix\Highloadblock as HL;
         ];
         $APPLICATION->IncludeComponent('bitrix:main.ui.grid', '', $gridParams);
         ?>
-    </div>
+</div>
 <? else: ?>
-    <font class="errortext">нет доступа</font>
+<font class="errortext">нет доступа</font>
 <? endif; ?>

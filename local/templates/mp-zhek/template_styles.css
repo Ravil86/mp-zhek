@@ -2089,3 +2089,9 @@ padding: 0 10px;
 .main-grid a {
 	/* color: var(--ui-link-color); */
 }
+
+@media (min-width: 1600px) {
+    .container-xxl {
+        max-width: 1620px;
+    }
+}

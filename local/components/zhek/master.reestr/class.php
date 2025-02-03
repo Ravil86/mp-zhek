@@ -52,7 +52,7 @@ class MasterObjects extends CBitrixComponent
 	private function run()
 	{
 
-		$this->arResult['PAGE_SIZE'] = 10;
+		$this->arResult['PAGE_SIZE'] = 20;
 
 		$this->arResult['ACCESS'] = $this->checkAccess();
 		$arItems = [];
@@ -209,12 +209,12 @@ class MasterObjects extends CBitrixComponent
 			$this->arResult['GRID']['COLUMNS'] = [
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
 				['id' => 'UF_NAME', 'name' => 'Организация', /*'sort' => 'NAME', */ 'default' => true, 'width' => 300,  'editable' => true],
-				['id' => 'UF_ADDRESS', 'name' => 'Адрес организации', /*'sort' => 'ADDRESS', */ 'default' => false, 'editable' => true],
-				['id' => 'UF_INN', 'name' => 'ИНН',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => true, 'editable' => true],
-				['id' => 'DOGOVOR', 'name' => 'Текущий договор', 'default' => false],
-				['id' => 'UF_USER', 'name' => 'Оператор', 'default' => true, "editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]],
+				['id' => 'UF_ADDRESS', 'name' => 'Адрес организации', /*'sort' => 'ADDRESS', */ 'default' => false],
+				['id' => 'UF_INN', 'name' => 'ИНН',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => false],
+				['id' => 'DOGOVOR', 'name' => 'Текущий контракт', 'default' => true],
+				['id' => 'OBJECT', 'name' => 'Объект', 'default' => true],
+				['id' => 'METER', 'name' => 'Показания', 'default' => true],
 				['id' => 'UF_TYPE', 'name' => 'Тип организации', 'default' => false, "editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]],
-				['id' => 'DETAIL', 'name' => 'Объектов', 'default' => true],
 			];
 
 			$filterOption = new Bitrix\Main\UI\Filter\Options("filter_" . $this->arResult["GRID_ID"]);
@@ -227,56 +227,6 @@ class MasterObjects extends CBitrixComponent
 
 			$itemsCompany = LKClass::getCompany(null, $filter, $navParams);
 
-
-			// $result = \Bitrix\Main\UserTable::getList(array(
-			// 	'filter' => array('GROUP_ID' => 8),
-			// 	'select' => array('ID', 'SHORT_NAME'), // выберем идентификатор и генерируемое (expression) поле SHORT_NAME
-			// 	'order' => array('LAST_LOGIN' => 'DESC'), // все группы, кроме основной группы администраторов,
-			// 	// 'limit' => 3
-			// ));
-
-			// while ($arUser = $result->fetch()) {
-
-			// 	dump($arUser);
-			// }
-
-
-			/*
-			$useFilter = false;
-
-			if (isset($filterData["DATE_MODIFY_from"])) {
-				$userFilter["DATE_MODIFY_FROM"] = $filterData["DATE_MODIFY_from"];
-				$userFilter["DATE_MODIFY_TO"] = $filterData["DATE_MODIFY_to"];
-			}
-
-			if (isset($filterData["FIND"])) {
-				if (isset($filterData["NAME"]))
-					$userFilter["NAME"] = "%" . $filterData["NAME"] . "%";
-				else
-					$userFilter["NAME"] = "%" . $filterData["FIND"] . "%";
-			}
-			if (isset($filterData["DATE_CREATE_from"])) {
-				$userFilter[">=DATE_CREATE"] = $filterData["DATE_CREATE_from"];
-			}
-			if (isset($filterData["DATE_CREATE_to"])) {
-				$userFilter["<=DATE_CREATE"] = $filterData["DATE_CREATE_to"];
-			}
-			if (isset($filterData["COURSE"])) {
-				$userFilter["PROPERTY_COURSE"] = $filterData["COURSE"];
-			}
-			if (isset($filterData["COURSE"]))
-				$userFilter["PROPERTY_COURSE"] = $filterData["COURSE"];
-
-			if (isset($filterData["MO"]))
-				$userFilter["PROPERTY_MO"] = $filterData["MO"];
-
-			if (!$nav_params['nPageSize'])
-				$nav_params['nPageSize'] = 500;
-
-			if ($arSort['sort']['TIMESTAMP_X'])
-				$arSort['sort']['DATE_CREATE'] = $arSort['sort']['TIMESTAMP_X'];
-			*/
-
 			foreach ($itemsCompany as $key => &$item) {
 				$countObjects = 0;
 
@@ -284,7 +234,7 @@ class MasterObjects extends CBitrixComponent
 
 				// dump($item);
 				if ($item['UF_NAME']) {
-					$column['UF_NAME'] = '<a class="ui-link fs-6" href="' . $item["ID"] . '/">' . $item['UF_NAME'] . '</a>';
+					//$column['UF_NAME'] = '<a class="ui-link fs-6" href="' . $item["ID"] . '/">' . $item['UF_NAME'] . '</a>';
 				}
 
 				if ($item['UF_USER_ID']) {

@@ -323,7 +323,7 @@ $arSite = $rsSites->Fetch();
                 </div>
             </div>
             <? if (!defined('NOT_CONTAINER')): ?>
-                <div class="container page-content page-margin-top-section padding-bottom-100">
+                <div class="container<?= defined('WIDE') ? ' container-xxl' : '' ?> page-content page-margin-top-section padding-bottom-100">
                     <? if (!defined('NOT_MENU') && !defined('ERROR_404')): ?>
                         <div class="row gx-3">
                             <div class="col-12 col-md-3<?= defined('LK') ? ' col-xxl-auto' : '' ?> mb-4">
@@ -358,6 +358,9 @@ $arSite = $rsSites->Fetch();
                                         ),
                                         false
                                     ); ?>
+                                    <? if ($USER->IsAuthorized()): ?>
+                                        <a class="d-flex my-1 ui-btn ui-btn-light-border" href="?logout=yes&<?= bitrix_sessid_get() ?>">Выход</a>
+                                    <? endif; ?>
 
                                 <? else: ?>
                                     <? $APPLICATION->IncludeComponent(

@@ -11,8 +11,5 @@
 					<?= $arItem["TEXT"] ?>
 				</a></li>
 		<? endforeach ?>
-		<? if ($USER->IsAuthorized()): ?>
-			<a class="d-flex my-1 ui-btn ui-btn-light-border" href="?logout=yes&<?= bitrix_sessid_get() ?>">Выход</a>
-		<? endif; ?>
 	</ul>
 <? endif ?>

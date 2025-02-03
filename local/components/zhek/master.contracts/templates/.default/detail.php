@@ -3,6 +3,8 @@
 use Bitrix\Main\Application,
     Bitrix\Main\Web\Uri;
 
+\Bitrix\Main\UI\Extension::load("ui.forms");
+
 if ($arResult['ACCESS']): ?>
     <?
     $request = Application::getInstance()->getContext()->getRequest();
@@ -42,7 +44,26 @@ if ($arResult['ACCESS']): ?>
         {
             return $a['DATE'] <=> $b['DATE'];
         }
+
+        $dateStr = date('Y-m-d', strtotime('-5 months'));
+        $dateEnd = date("Y-m-d", strtotime('+1 month'));
+        $begin = new DateTime($dateStr);
+        $end = new DateTime($dateEnd);
+
+        // dump($periods);
         ?>
+        <div class="ui-ctl ui-ctl-after-icon ui-ctl-dropdown">
+            <div class="ui-ctl-after ui-ctl-icon-angle"></div>
+            <select class="ui-ctl-element">
+                <!-- <option value=""></option> -->
+                <?= LKClass::setMonth('', $begin, $end);
+                ?>
+            </select>
+        </div>
+        <!-- <select class="form-control required select" name="date" id="date">
+
+        </select> -->
+        <? ?>
         <?
         foreach ($arResult['DETAIL']['PROVIDER'] as $key => $provider) : ?>
             <? if ($arResult['SERVICE'][$provider['ID']]['OBJECTS']): ?>
@@ -57,18 +78,18 @@ if ($arResult['ACCESS']): ?>
             <div class="card mb-3 border-<?= $provider['COLOR'] ?>">
                 <div class="card-body">
                     <div class="row gx-2 align-items-center mb-2">
-                        <div class="col-3 pt-2 pb-1">Заказчик:</div>
+                        <div class="col-3 col-xxl-2 pt-2 pb-1">Заказчик:</div>
                         <div class="col-9 text-center pt-2 pb-1 border-bottom">
                             <?= $arResult['DETAIL']['COMPANY_INFO']['NAME'] ?>
                         </div>
                     </div>
                     <div class="row gx-2 align-items-center mb-2">
-                        <div class="col-3 pt-2 pb-1">Юридический адрес:</div>
+                        <div class="col-3 col-xxl-2 pt-2 pb-1">Юридический адрес:</div>
                         <div class="col-9 text-center pt-2 pb-1 border-bottom"><?= $arResult['DETAIL']['COMPANY_INFO']['ADDRESS'] ?>
                         </div>
                     </div>
                     <div class="row gx-2 mb-4">
-                        <div class="col-3 pt-2 pb-1">Номер и дата договора:</div>
+                        <div class="col-3 col-xxl-2 pt-2 pb-1">Номер и дата договора:</div>
                         <div class="col-9 text-center pt-2 pb-1 border-bottom text-<?= $provider['COLOR'] ?>">МК №<?= $arResult['DETAIL']['NUMBER'] ?>/<?= $provider['LITERA'] ?>-<?= $arResult['DETAIL']['YEAR'] ?> от <?= $arResult['DETAIL']['DATE'] ?> г.
                         </div>
                     </div>
@@ -76,70 +97,72 @@ if ($arResult['ACCESS']): ?>
                         <div class="card-body!">
                             <div class="h5 text-center">СПРАВКА № <?= $key + 1 ?> от «<?= FormatDate("j", MakeTimeStamp(time())) ?>» <?= FormatDate("F Y", MakeTimeStamp(time())) ?>г.</div>
                             <? if ($arResult['SERVICE'][$provider['ID']]['OBJECTS']): ?>
-                                <table class="table table-sm!">
-                                    <thead class="small">
-                                        <tr class="text-center">
-                                            <th>№<br>п/п</th>
-                                            <th>Наименование объекта</th>
-                                            <!-- <th>ID</th> -->
-                                            <th width="200">Адрес</th>
-                                            <th>Вид услуги</th>
-                                            <th>ID</th>
-                                            <th>Дата очередной поверки ПУ</th>
-                                            <th>Номер пломбы ПУ</th>
-                                            <th>Ед. изм.</th>
-                                            <th>Предыдущие показания ПУ</th>
-                                            <th>Текущие показания ПУ</th>
-                                            <th>Потребленный объем (разница)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?
-                                        $i = 1;
-
-                                        // dump($arResult['PREV_METERS']);
-                                        foreach ($arResult['SERVICE'][$provider['ID']]['OBJECTS'] as $key => $value): ?>
-                                            <?
-                                            $prevMeters = null;
-                                            $lastMeters = null;
-                                            $potreb = null;
-
-                                            // dump($arResult['PREV_METERS'][$key][$value['COUNTER']['ID']]);
-
-                                            if (is_array($arResult['PREV_METERS'][$key][$value['COUNTER']['ID']])) {
-                                                $prevMeters = $arResult['PREV_METERS'][$key][$value['COUNTER']['ID']][0]['METER'];
-                                            }
-                                            //$prevMeters = array_shift($arResult['PREV_METERS'][$key][$value['COUNTER']['ID']])['METER'];
-
-                                            if (is_array($arResult['LAST_METERS'][$key][$value['COUNTER']['ID']]))
-                                                $lastMeters = array_shift($arResult['LAST_METERS'][$key][$value['COUNTER']['ID']])['METER'];
-
-
-                                            if ($prevMeters && $lastMeters)
-                                                $potreb = $lastMeters - $prevMeters;
-                                            // $meterLast = array_shift($value['METERS']);
-
-                                            // dump($value['LAST_METERS']);
-                                            ?>
-                                            <tr>
-                                                <td><?= $i; ?></td>
-                                                <td><?= $value['INFO']['NAME']; ?></td>
-                                                <!-- <th><?= $key
-                                                            ?></th> -->
-                                                <td><?= $value['INFO']['ADDRESS']; ?></td>
-                                                <td><?= $provider['NAME']; ?></td>
-                                                <td><?= $value['COUNTER']['ID']; ?></td>
-                                                <td><?= $value['COUNTER']['UF_DATE']; ?></td>
-                                                <td><?= $value['COUNTER']['UF_NUMBER']; ?></td>
-                                                <td><?= $provider['UNIT']; ?></td>
-                                                <td><?= $prevMeters; ?></td>
-                                                <td><?= $lastMeters; ?></td>
-                                                <td><?= $potreb ?></td>
+                                <div class="table-responsive">
+                                    <table class="table table-sm!">
+                                        <thead class="small">
+                                            <tr class="text-center">
+                                                <th width="40">№<br>п/п</th>
+                                                <th>Наименование объекта</th>
+                                                <!-- <th>ID</th> -->
+                                                <th width="220">Адрес</th>
+                                                <th>Вид услуги</th>
+                                                <th>ID</th>
+                                                <th>Дата очередной поверки ПУ</th>
+                                                <th>Номер пломбы ПУ</th>
+                                                <th>Ед. изм.</th>
+                                                <th>Предыдущие показания ПУ</th>
+                                                <th>Текущие показания ПУ</th>
+                                                <th>Потребленный объем (разница)</th>
                                             </tr>
-                                            <? $i++; ?>
-                                        <? endforeach ?>
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            <?
+                                            $i = 1;
+
+                                            // dump($arResult['PREV_METERS']);
+                                            foreach ($arResult['SERVICE'][$provider['ID']]['OBJECTS'] as $key => $value): ?>
+                                                <?
+                                                $prevMeters = null;
+                                                $lastMeters = null;
+                                                $potreb = null;
+
+                                                // dump($arResult['PREV_METERS'][$key][$value['COUNTER']['ID']]);
+
+                                                if (is_array($arResult['PREV_METERS'][$key][$value['COUNTER']['ID']])) {
+                                                    $prevMeters = $arResult['PREV_METERS'][$key][$value['COUNTER']['ID']][0]['METER'];
+                                                }
+                                                //$prevMeters = array_shift($arResult['PREV_METERS'][$key][$value['COUNTER']['ID']])['METER'];
+
+                                                if (is_array($arResult['LAST_METERS'][$key][$value['COUNTER']['ID']]))
+                                                    $lastMeters = array_shift($arResult['LAST_METERS'][$key][$value['COUNTER']['ID']])['METER'];
+
+
+                                                if ($prevMeters && $lastMeters)
+                                                    $potreb = $lastMeters - $prevMeters;
+                                                // $meterLast = array_shift($value['METERS']);
+
+                                                // dump($value['LAST_METERS']);
+                                                ?>
+                                                <tr class="text-center">
+                                                    <td><?= $i; ?></td>
+                                                    <td class="text-start"><?= $value['INFO']['NAME']; ?></td>
+                                                    <!-- <th><?= $key
+                                                                ?></th> -->
+                                                    <td class="text-start"><?= $value['INFO']['ADDRESS']; ?></td>
+                                                    <td><?= $provider['NAME']; ?></td>
+                                                    <td><?= $value['COUNTER']['ID']; ?></td>
+                                                    <td><?= $value['COUNTER']['UF_DATE']; ?></td>
+                                                    <td><?= $value['COUNTER']['UF_NUMBER']; ?></td>
+                                                    <td><?= $provider['UNIT']; ?></td>
+                                                    <td><?= $prevMeters; ?></td>
+                                                    <td><?= $lastMeters; ?></td>
+                                                    <td><?= $potreb ?></td>
+                                                </tr>
+                                                <? $i++; ?>
+                                            <? endforeach ?>
+                                        </tbody>
+                                    </table>
+                                </div>
                             <? endif; ?>
                         </div>
                     </div>

@@ -4,8 +4,9 @@ define("LK", true);
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 $APPLICATION->SetTitle("Кабинет");
 ?>
-
-<? $APPLICATION->IncludeComponent(
+<? LocalRedirect("/cabinet/objects/");
+?>
+<?/* $APPLICATION->IncludeComponent(
 	"zhek:cabinet.company",
 	".default",
 	[
@@ -24,6 +25,6 @@ $APPLICATION->SetTitle("Кабинет");
 			'ADMINISTRATOR' => 'ADMIN',
 		]
 	]
-);
+);*/
 ?>
 <? require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php"); ?>

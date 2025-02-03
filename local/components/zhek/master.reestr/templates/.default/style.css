@@ -1,0 +1,74 @@
+form label {
+padding-bottom: 5px;
+}
+
+.modal-content .bootstrap-select .dropdown-toggle:focus, .modal-content .bootstrap-select>select.mobile-device:focus+.dropdown-toggle{
+	outline: none !important;
+}
+
+.main-grid-settings-window-list .main-grid-settings-window-list-item-checkbox {
+	margin: 0 7px;
+}
+
+.ui-ctl-textarea{
+height: unset;
+}
+
+.ui-ctl-textarea, .ui-ctl-textarea textarea.ui-ctl-element{
+	--ui-field-size: 15px;
+}
+
+.main-ui-filter-search {
+	border-color: #c8d1d6 !important;
+	margin: 0!important;
+}
+
+.main-grid .main-grid-cell-content {
+	margin: 15px 7px 10px 5px;
+	font-size: 0.95rem;
+	font-weight: 500;
+}
+
+.main-grid-row .main-grid-cell i {
+	margin-right: 2px;
+}
+
+.main-grid-cell .info_item_date {
+	font-size: 16px;
+}
+
+.main-grid-cell .user_title {
+	font-size: 0.95rem;
+}
+
+.main-grid-cell .info_item_date>span {
+	padding-left: 20px;
+}
+
+.main-grid-cell .info_item_date::before {
+	width: 12px;
+	height: 12px;
+	background-size: cover;
+}
+
+.main-grid-cell .main-grid-cell-content a:hover {
+	text-decoration: none;
+}
+
+.main-grid .main-grid-cell-head-container {
+	padding: 10px 5px 5px;
+}
+
+
+.main-grid .main-grid-cell-head-container .main-grid-head-title {
+	/* font-weight: bold;
+	font-size: 1rem; */
+}
+
+.main-ui-pagination-arrow{
+line-height: 1.5;
+}
+
+.main-ui-pagination-arrows a {
+	color: #2067b0;
+}

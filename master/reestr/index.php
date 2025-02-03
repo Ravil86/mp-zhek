@@ -2,10 +2,10 @@
 define('LK', true);
 define('WIDE', true);
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
-$APPLICATION->SetTitle("Контракты");
+$APPLICATION->SetTitle("Реестр");
 ?>
 <? $APPLICATION->IncludeComponent(
-	"zhek:master.contracts",
+	"zhek:master.reestr",
 	".default",
 	[
 		'SEF_FOLDER' => '/master/contracts/',

@@ -1,11 +1,9 @@
 <? if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
-$APPLICATION->AddHeadScript("//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js");
-$APPLICATION->AddHeadScript("//cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js");
-// $APPLICATION->AddHeadScript("//cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js");
+// $APPLICATION->AddHeadScript("//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js");
+// $APPLICATION->AddHeadScript("//cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js");
+// $APPLICATION->SetAdditionalCSS("//cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css", true);
 
-$APPLICATION->SetAdditionalCSS("//cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css", true);
-// $APPLICATION->SetAdditionalCSS("//cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css", true);
 
 use Bitrix\Main\Grid\Options as GridOptions;
 use Bitrix\Main\Context,
@@ -14,39 +12,32 @@ use Bitrix\Main\Context,
     Bitrix\Iblock;
 use Bitrix\Highloadblock as HL;
 
-function stringToColorCode($str)
-{
-    $code = dechex(crc32($str));
-    $code = substr($code, 0, 6);
-    return $code;
-}
+\Bitrix\Main\UI\Extension::load("ui");
+// \Bitrix\Main\UI\Extension::load('ui.entity-selector');
+\Bitrix\Main\UI\Extension::load("ui.select");
 
-function contrast_color($hex)
-{
-    $hex = trim($hex, ' #');
-
-    $size = strlen($hex);
-    if ($size == 3) {
-        $parts = str_split($hex, 1);
-        $hex = '';
-        foreach ($parts as $row) {
-            $hex .= $row . $row;
-        }
-    }
-
-    $dec = hexdec($hex);
-    $rgb = array(
-        0xFF & ($dec >> 0x10),
-        0xFF & ($dec >> 0x8),
-        0xFF & $dec
-    );
-
-    $contrast = (round($rgb[0] * 299) + round($rgb[1] * 587) + round($rgb[2] * 114)) / 1000;
-    return ($contrast >= 133) ? 'dark' : 'white';
-}
+\Bitrix\Main\UI\Extension::load('ui.entity-selector');
 
 ?>
 <? if ($arResult['ACCESS']): ?>
+    <div class="d-flex">
+        <div class="col">
+            <?
+            $APPLICATION->IncludeComponent('bitrix:main.ui.filter', '', [
+                'FILTER_ID' => 'filter_' . $arResult['GRID_ID'],
+                'GRID_ID' => $arResult['GRID_ID'],
+                // 'FILTER' => [],
+                'FILTER' => $arResult['GRID']['FILTER'],
+                'ENABLE_LIVE_SEARCH' => true,
+                'ENABLE_LABEL' => true,
+            ]);
+
+            ?>
+        </div>
+        <div class="col-auto">
+            <button class="ui-btn ui-btn-primary mt-2 ms-0" data-bs-toggle="modal" data-bs-target="#addContract">Добавить контракт</button>
+        </div>
+    </div>
     <div class="col-md-12">
         <?
         $grid_options = new CGridOptions($arResult["GRID_ID"]);
@@ -63,7 +54,7 @@ function contrast_color($hex)
             ->setPageSize($nav_params['nPageSize'])
             ->initFromUri();
 
-        $APPLICATION->IncludeComponent('bitrix:main.ui.filter', '', [
+        /*$APPLICATION->IncludeComponent('bitrix:main.ui.filter', '', [
             'FILTER_ID' => $arResult['GRID_ID'],
             'GRID_ID' => $arResult['GRID_ID'],
             'FILTER' => $arResult['GRID']['FILTER'],
@@ -87,8 +78,10 @@ function contrast_color($hex)
                     ]
                 ]
             ]
-        ]);
-
+        ]);*/
+        $snippet = new Bitrix\Main\Grid\Panel\Snippet();
+        $controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getEditButton();
+        $controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getRemoveButton();
 
         $gridParams = [
             'GRID_ID' => $arResult['GRID_ID'],
@@ -97,7 +90,7 @@ function contrast_color($hex)
             'FOOTER' => [
                 'TOTAL_ROWS_COUNT' => $arResult['GRID']['COUNT'],
             ],
-            'SHOW_ROW_CHECKBOXES' => false,
+            'SHOW_ROW_CHECKBOXES' => $arResult['ADMIN'] ?: false,
             'NAV_OBJECT' => $nav,
             'AJAX_MODE' => 'Y',
             //'AJAX_ID' => 'AJAX_'.$arResult['GRID_ID'],
@@ -115,16 +108,17 @@ function contrast_color($hex)
             'SHOW_GRID_SETTINGS_MENU' => true,
             'SHOW_NAVIGATION_PANEL' => true,
             'SHOW_PAGINATION' => true,
-            'SHOW_SELECTED_COUNTER' => true,
+            'SHOW_SELECTED_COUNTER' => $arResult['ADMIN'] ?: false,
             'SHOW_TOTAL_COUNTER' => true,
             'SHOW_PAGESIZE' => true,
-            'SHOW_ACTION_PANEL' => false,
+            'SHOW_ACTION_PANEL' => $arResult['ADMIN'] ?: false,
             'ALLOW_COLUMNS_SORT' => true,
             'ALLOW_COLUMNS_RESIZE' => true,
             'ALLOW_HORIZONTAL_SCROLL' => true,
             'ALLOW_SORT' => true,
             'ALLOW_PIN_HEADER' => true,
             'AJAX_OPTION_HISTORY' => 'N',
+            'ACTION_PANEL' => $controlPanel,
             /*'ACTION_PANEL'              => [
         'GROUPS' => [
             'TYPE' => [
@@ -159,7 +153,146 @@ function contrast_color($hex)
         ];
         $APPLICATION->IncludeComponent('bitrix:main.ui.grid', '', $gridParams);
         ?>
+        <div class="modal fade" id="addContract" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <form method="post">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Добавить контракт</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <? //dump($arResult['COMPANY_LIST']);
+                            ?>
+                            <? //dump($arResult['STATUS_LIST']);
+                            ?>
+                            <input class="ui-ctl-element" type="hidden" name="ADD_CONTRACT" value="Y">
+                            <?= bitrix_sessid_post() ?>
+                            <div class="row gx-2">
+                                <div class="col-12 col-md">
+                                    <label>Организация</label>
+                                    <div id="org"></div>
+                                    <!-- <div class="ui-ctl ui-ctl-textarea ui-ctl-resize-y ui-ctl-w100">
+                                        <textarea class="ui-ctl-element" name="FIELDS[UF_NAME]" placeholder="Наименование организации"></textarea>
+                                    </div> -->
+                                </div>
+                            </div>
+                            <div class="row gx-2 mt-3">
+                                <div class="col-12 col-md-4">
+                                    <label>Дата</label>
+                                    <div class="ui-ctl ui-ctl-after-icon ui-ctl-date">
+                                        <div class="ui-ctl-after ui-ctl-icon-calendar"></div>
+                                        <input type="text" id="" class="ui-ctl-element" name="UF_DATE" value="<?= date('d.m.Y'); ?>">
+                                    </div>
+                                    <!-- <div class="ui-ctl ui-ctl-textarea ui-ctl-lg! ui-ctl-w100">
+                                        <textarea class="ui-ctl-element" name="FIELDS[UF_ADDRESS]" placeholder="Адрес"></textarea>
+                                    </div> -->
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <label>Номер</label>
+                                    <div class="ui-ctl ui-ctl-textbox ui-ctl-lg! ui-ctl-w50">
+                                        <input class="ui-ctl-element" type="text" name="FIELDS[UF_INN]" placeholder="ИНН">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <label>Услуги</label>
+                                    <div class="ui-ctl ui-ctl-textbox ui-ctl-lg! ui-ctl-w100">
+                                        <input class="ui-ctl-element" type="text" name="FIELDS[UF_INN]" placeholder="ИНН">
+                                        <div id="service"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="ui-btn ui-btn-success">Сохранить</button>
+                            <button type="button" class="ui-btn ui-btn-link" data-bs-dismiss="modal">Закрыть</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
     </div>
+    <script>
+        (function() {
+            const options = <?= \Bitrix\Main\Web\Json::encode($arResult['COMPANY_JSON']); ?>;
+            // console.log('options', options);
+
+            const selectOrg = new BX.Ui.Select({
+                options,
+                value: '',
+                isSearchable: true,
+                placeholder: 'Выберите организацию',
+                containerClassname: '',
+            });
+            selectOrg.subscribe('update', (e) => {
+                // console.log('e', e);
+                // console.log(this);
+
+            });
+            selectOrg.renderTo(document.getElementById('org'));
+
+            const selectService = new BX.Ui.Select({
+                options,
+                value: '',
+                isSearchable: true,
+                multi: true,
+                placeholder: 'Выберите организацию',
+                containerClassname: '',
+            });
+            selectService.subscribe('update', (e) => {
+                // console.log('e', e);
+                // console.log(this);
+
+            });
+            selectService.renderTo(document.getElementById('service'));
+
+            const input = document.querySelector(`input[name="UF_DATE"]`);
+
+            const button = input.closest(".ui-ctl-date")
+            // const button = input.previousElementSibling;
+            console.log("button", button);
+            // const button = input.nextElementSibling;
+            let picker = null;
+            const getPicker = () => {
+                if (picker === null) {
+                    picker = new BX.UI.DatePicker.DatePicker({
+                        targetNode: input,
+                        inputField: input,
+                        enableTime: false,
+                        useInputEvents: false,
+                    });
+                }
+
+                return picker;
+            };
+
+            BX.Event.bind(button, "click", () => getPicker().show());
+        })();
+
+        /* BX.ready(function() {
+             const button = document.getElementById('companySelectButtonNode');
+
+             let dialog = new BX.UI.EntitySelector.Dialog({
+                 targetNode: button,
+                 context: 'MY_PAGE_CONTEXT',
+                 enableSearch: true,
+                 searchOptions: {
+                     allowCreateItem: false
+                 },
+                 multiple: false,
+                 entities: [{
+                     id: 'company',
+                     dynamicLoad: true,
+                     dynamicSearch: true
+                 }, ],
+             });
+
+             button.addEventListener('click', () => {
+                 dialog.show();
+             });
+        });*/
+    </script>
 <? else: ?>
     <font class="errortext">нет доступа</font>
 <? endif; ?>

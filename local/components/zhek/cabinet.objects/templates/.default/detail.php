@@ -118,7 +118,7 @@ if ($arResult['ACCESS']): ?>
         <div class="col">
         </div>
         <div class="col-auto">
-            <a class="ui-btn ui-btn-primary-dark" href="/cabinet/counters/<?= $arResult['DETAIL']['OBJECT']['ID'] ?>/">внести показания</a>
+            <a class="ui-btn ui-btn-primary-dark" href="/cabinet/counters/<?= $arResult['DETAIL']['OBJECT']['ID'] ?>/">Перейти "ввод показаний"</a>
         </div>
 
     </div>

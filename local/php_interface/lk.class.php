@@ -355,6 +355,12 @@ class LKClass
         return $result;
     }
 
+    public static function saveContract($contractID, $data)
+    {
+        $classHL = \HLWrap::init(self::$_HL_Contracts);
+        $classHL::update($contractID, $data);
+    }
+
     public static function getYears()
     {
         HLWrap::init(self::$_HL_Contracts);
@@ -379,6 +385,70 @@ class LKClass
 
         return $result;
     }
+
+    /* месяц по году */
+    public static function setMonth($setDate = '', $begin, $end)
+    {
+        // $year = date("Y");
+        // $months = array('Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь');
+
+        // $dateStr = date('Y-m-d', strtotime('-5 months'));
+        // $dateEnd = date('Y-m-d');
+        // $dateEnd = date('Y-m-d', strtotime('+1 months'));
+
+        // $end = (new DateTime($dateEnd));
+        // $begin = (new DateTime($dateStr));
+        $periods = new DatePeriod($begin, new \DateInterval('P1M'), $end);
+        $result = '';
+        foreach (array_reverse(iterator_to_array($periods)) as $period) {
+
+            $num = $period->format("n");
+            $year = $period->format('Y');
+            $month = FormatDate("f", strtotime($year . "-" . $num . "-01"));
+            //$select = ((date('Y-m', strtotime($year . "-" . $month . "-01")) == $setDate) ? 'selected="selected"' : '');
+            //$month = $months[$num - 1];
+            $result .= "<option value='{$num}-{$year}'>{$month} {$year}</option>";
+        }
+
+        /*$month = date("m", strtotime("+1 month"));
+        // $month = date("m");
+
+        $count = 6; //кол-во месяцев в списке
+        $coll = 12;
+
+        if ($allYears) {
+            $year--;
+            $coll = 24;
+        }
+
+        $result = '<optgroup label="' . $year . '">';
+        $c = 1;
+        for ($coll; $i = 0; $i++) {
+            //for ($i = 0; $i <= $coll; $i++) {
+            if (!$allYears && $c > $count) {
+                break;
+            }
+            if ($month > 11) {
+                $month = 1;
+                $year--;
+                // $year++;
+                $result .= '</optgroup><optgroup label="' . $year . '">';
+            }
+            $value = date('Y-m', strtotime($year . "-" . $month . "-01"));
+            //$select = ((date('Y-m', strtotime($year."-".$month."-01"))==$_REQUEST['PROPERTY']['DATA'])?'selected="selected"':'');
+            $select = ((date('Y-m', strtotime($year . "-" . $month . "-01")) == $setDate) ? 'selected="selected"' : '');
+
+            $mounth = FormatDate("f", strtotime($year . "-" . $month . "-01"));
+
+            $result .= '<option value="' . $value . '" ' . $select . '>' . $mounth . '</option>';
+            $month++;
+            $c++;
+        }
+        $result .= '</optgroup>';*/
+
+        return $result;
+    }
+
 
     /**
      * getUserFields

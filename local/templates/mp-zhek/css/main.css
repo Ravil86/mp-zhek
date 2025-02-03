@@ -105,12 +105,14 @@ pre {
 	font-family: 'Courier new';
 	font-size: 14px;
 	line-height: 1.71429;
-	background: linear-gradient(#f0f0f0 50%, transparent 50%) repeat scroll 0 0 / 100% 48px;
+	background: linear-gradient(to bottom, #f0f0f0 50%, transparent 80%);
+	/* background: linear-gradient(#f0f0f0 50%, transparent 50%) repeat scroll 0 0 / 100% 48px; */
 	text-shadow: 0 1px 0 #FFF;
 	zoom: 1;
 	filter: dropshadow(color=#ffffff, offx=0, offy=1);
 	padding: 0 5px;
-	margin: 0;
+	margin-bottom: 3px;
+	/* margin: 0; */
 	overflow: auto;
 }
 
