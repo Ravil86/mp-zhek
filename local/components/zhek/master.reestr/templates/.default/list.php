@@ -72,14 +72,31 @@ use Bitrix\Highloadblock as HL;
             'SHOW_TOTAL_COUNTER' => true,
             'SHOW_PAGESIZE' => true,
             'SHOW_ACTION_PANEL' => true,
-            'ALLOW_COLUMNS_SORT' => true,
-            'ALLOW_COLUMNS_RESIZE' => true,
+            'ALLOW_COLUMNS_SORT' => false,  //Разрешает сортировку колонок перетаскиванием.
+            'ALLOW_COLUMNS_RESIZE' => true, //Разрешает изменение размера колонок.
             'ALLOW_HORIZONTAL_SCROLL' => true,
             'ALLOW_SORT' => true,
             'ALLOW_PIN_HEADER' => true,
             'AJAX_OPTION_JUMP' => 'N',
             'AJAX_OPTION_HISTORY' => 'N',
+            'ENABLE_COLLAPSIBLE_ROWS' => true,  //групировка строк с разворачиванием
+            'ALLOW_STICKED_COLUMNS' => false, //Разрешает закрепление колонок с параметром sticked при горизонтальной прокрутке
+            // 'ROW_LAYOUT' => [
+            //     [
+            //         ['column' => 'col_0', 'rowspan' => 2],
+            //         ['column' => 'col_1'],
+            //         ['column' => 'col_2'],
+            //         ['column' => 'col_3']
+            //     ],
+            //     [
+            //         ['data' => 'data_field_5', 'colspan' => 3],
+            //     ],
+            // ],
             // 'ACTION_PANEL' => $controlPanel,
+            // 'SHOW_MORE_BUTTON' => true, //передавать false, если CURRENT_PAGE = последняя страница
+            // 'ENABLE_NEXT_PAGE' => true,
+            // 'NAV_PARAM_NAME' => 'SHOW_MORE', //параметр приходит в $_REQUEST, нужно передать в свой компонент и обработать для выборки данных
+            // 'CURRENT_PAGE' => $nav->getCurrentPage(),
         ];
         $APPLICATION->IncludeComponent('bitrix:main.ui.grid', '', $gridParams);
         ?>

@@ -15,8 +15,7 @@ class MasterContracts extends CBitrixComponent
 {
 
 	protected static $_HL_Reference = "Contracts"; // HL Контракты
-	protected static $_HL_Objects = "Objects"; // HL общий реестр
-	protected static $_HL_Company = "Company"; // HL категории курсов
+
 
 	var $serviceList = [];
 	var $statusList = [];
@@ -269,12 +268,12 @@ class MasterContracts extends CBitrixComponent
 				$data['SERVICE'] = array_values($item['UF_SERVICE']);
 				$data['STATUS'] = $item['UF_STATUS'];
 
-				$number = '№ ' . $item['NUMBER'] . '-' . $item['YEAR'] . ' от ' . $item['DATE'];
-				$item["FULL_NUMBER"] = $number;
+				// $number = '№ ' . $item['NUMBER'] . '-' . $item['YEAR'] . ' от ' . $item['DATE'];
+				// $item["FULL_NUMBER"] = $number;
 				// $item['COMPANY'] = $item['COMPANY']['NAME'];
 
 				$status = '<a class="d-flex!" href="' . $item["ID"] . '/">';
-				$status .= '<div class="btn btn-' . $item['STATUS']['CODE'] . ' px-3 py-1 text-center opacity-75"><small>' . $item['STATUS']['VALUE'] . '</small></div>';
+				$status .= '<div class="btn btn-' . $item['STATUS']['CODE'] . ' px-3 py-1 text-center opacity-75 text-nowrap"><small>' . $item['STATUS']['VALUE'] . '</small></div>';
 				$status .= '</a>';
 				$item["STATUS"] = $status;
 
@@ -412,37 +411,41 @@ class MasterContracts extends CBitrixComponent
 		$getCompany = [];
 		$arCompany = [];
 
+		// $getContracts = LKClass::getContracts($arCompany['ID']);
+
 		// $filter = [];
 		// gg($userFilter);
 		if (isset($userFilter['USER_ID'])) {
 			$arCompany = LKClass::getCompany($userFilter['USER_ID']);
 			if ($arCompany && isset($arCompany['ID']))
-				$itemList = $this->getContracts($arCompany['ID']);
+				$itemList = LKClass::getContracts($arCompany['ID']);
+				// $itemList = $this->getContracts($arCompany['ID']);
 		} else {
 			$getCompany = $this->companyList;
+			$itemList = LKClass::getContracts();
 			// $getCompany = LKClass::getCompany();
-			$itemList = $this->getContracts();
+			// $itemList = $this->getContracts();
 		}
 
 		// $serviceList = LKClass::getService();
 
-		$yearList = LKClass::getYears();
-
+		// $yearList = LKClass::getYears();
 		// $statusList = LKClass::getStatus();
 
 		foreach ($itemList as &$value) {
 
-			$value['NUMBER'] = $value['UF_NUMBER'] < 10 ? '0' . $value['UF_NUMBER'] : $value['UF_NUMBER'];
+			// $value['NUMBER'] = $value['UF_NUMBER'] < 10 ? '0' . $value['UF_NUMBER'] : $value['UF_NUMBER'];
 
 			$value['COMPANY_ID'] = $value['COMPANY'];
 			if ($getCompany)
 				$arCompany = $getCompany[$value['COMPANY']];
 
-			if ($value['UF_YEAR']) {
-				$value['YEAR'] = $yearList[$value['UF_YEAR']];
-			}
+			// if ($value['UF_YEAR']) {
+			// 	$value['YEAR'] = $yearList[$value['UF_YEAR']];
+			// }
+			dump($value);
 
-			$value['STATUS'] = $this->statusList[$value['UF_STATUS']];
+			// $value['STATUS'] = $this->statusList[$value['UF_STATUS']];
 
 			if ($arCompany) {
 				$value['COMPANY'] = $arCompany['UF_NAME'];
@@ -569,51 +572,6 @@ class MasterContracts extends CBitrixComponent
 			return 0;
 		}
 		return ($a['SORT'] < $b['SORT']) ? -1 : 1;
-	}
-
-
-	/*
-    Список данных из HLblock c данными документИД/пользователь/статус
-    */
-	private function getContracts($orgID = [])
-	{
-
-		$classsDocs = \HLWrap::init(self::$_HL_Reference);
-
-		// $getStatusList = self::getStatusList();
-
-		$filter = [];
-		if ($orgID)
-			$filter['UF_COMPANY'] = $orgID;
-
-		$rsDocs = $classsDocs::getList(
-			array(
-				'order'	=> ['UF_DATE' => 'desc'],
-				'select' => array('*'),
-				'filter' => $filter,
-			)
-		);
-
-		while ($arDoc = $rsDocs->Fetch()) {
-
-			$arFields = [
-				'ID' => $arDoc['ID'],
-				'UF_NUMBER' => $arDoc['UF_NUMBER'],
-				// 'NUMBER' => $arDoc['UF_NUMBER'],
-				'COMPANY' => $arDoc['UF_COMPANY'],
-				'UF_DATE' => $arDoc['UF_DATE'],
-				'UF_STATUS' => $arDoc['UF_STATUS'],
-				'UF_SERVICE' => $arDoc['UF_SERVICE'],
-				'UF_YEAR' => $arDoc['UF_YEAR'],
-				'DATE' => ConvertDateTime($arDoc['UF_DATE'], "DD.MM.Y", "ru"),
-				'FORMAT_DATE' => FormatDate("j F Y", MakeTimeStamp($arDoc['UF_DATE'])),
-				// 'DATE' => ConvertDateTime($arDoc['UF_DATE'], "DD.MM.Y GG:MI:SS", "ru")
-				//'UF_STATUS' => $getStatusList[$arStatus['UF_STATUS']],
-			];
-			$result[$arDoc['ID']] = $arFields;
-		}
-		// dump($result);
-		return $result;
 	}
 
 

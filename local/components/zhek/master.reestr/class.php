@@ -11,13 +11,8 @@ use Bitrix\Main\Context,
 	Bitrix\Main\Application,
 	Bitrix\Main\Web\Uri;
 
-class MasterObjects extends CBitrixComponent
+class MasterReestr extends CBitrixComponent
 {
-
-	protected static $_HL_Reference = "ReferenceCustomer"; // HL общий реестр
-	protected static $_HL_Objects = "Objects"; // HL общий реестр
-	protected static $_HL_Company = "Company"; // HL категории курсов
-
 
 	public function onPrepareComponentParams($arParams)
 	{
@@ -63,6 +58,19 @@ class MasterObjects extends CBitrixComponent
 		$serviceList = LKClass::getService();
 		$this->arResult['SERVICE_LIST'] = $serviceList;
 
+		$contracts = LKClass::getContracts();
+		$this->arResult['CONTRACTS'] = $contracts;
+
+		foreach ($contracts as $contr) {
+			// dump($contr);
+			$orgContracts[$contr['COMPANY']][] = [
+				'NUMBER' => $contr['FULL_NUMBER'],
+				'STATUS' => $contr['STATUS'],
+				// 'DATE' => $contr['DATE'],
+			];
+		}
+		// dump($orgContracts);
+
 		$arItems = LKClass::getCompany();
 
 		if (is_array($arItems))
@@ -74,7 +82,7 @@ class MasterObjects extends CBitrixComponent
 			$arObjects[$value['ORG']][] = $value;
 		}
 
-		if ($this->arResult['VARIABLES']) {
+		/*if ($this->arResult['VARIABLES']) {
 
 			$orgID = $this->arResult['VARIABLES']['DETAIL_ID'];
 
@@ -160,32 +168,7 @@ class MasterObjects extends CBitrixComponent
 
 			$this->arResult['ITEMS'] = $objectList;
 		} else {
-
-			$result = \Bitrix\Main\UserGroupTable::getList(array(
-				'order' => array('USER.LAST_LOGIN' => 'DESC'),
-				'filter' => array(
-					// 'USER.ACTIVE' => 'Y',
-					'GROUP_ID' => [8, 1],
-				),
-				'select' => array(
-					'ID' => 'USER.ID',
-					'LOGIN' => 'USER.LOGIN',
-					// 'PERSONAL_GENDER' => 'USER.PERSONAL_GENDER',
-					'NAME' => 'USER.NAME',
-					'LAST_NAME' => 'USER.LAST_NAME',
-					// 'PERSONAL_CITY' => 'USER.PERSONAL_CITY',
-					'UF_COMPANY' => 'USER.UF_COMPANY',
-					'UF_PASSWORD' => 'USER.UF_PASSWORD'
-				),
-			));
-
-			while ($user = $result->fetch()) {
-
-				$user['SHORT_NAME'] = ($user['LAST_NAME'] ? $user['LAST_NAME'] . ' ' : '') . $user['NAME'];
-
-				$userList[$user['ID']] = $user;
-				$userItems[$user['ID']] = $user['SHORT_NAME'];
-			}
+*/
 
 			$grid_options = new CGridOptions($this->arResult["GRID_ID"]);
 			$nav_params = $grid_options->GetNavParams(array("nPageSize" => $this->arResult['PAGE_SIZE']));
@@ -207,13 +190,14 @@ class MasterObjects extends CBitrixComponent
 			//какую сортировку сохранил пользователь (передаем то, что по умолчанию)
 			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
 			$this->arResult['GRID']['COLUMNS'] = [
-				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
-				['id' => 'UF_NAME', 'name' => 'Организация', /*'sort' => 'NAME', */ 'default' => true, 'width' => 300,  'editable' => true],
+			['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 50, 'resizeable' => false],
+			// ['id' => 'COUNTER', 'name' => '', 'default' => true],
+			['id' => 'UF_NAME', 'name' => 'Организация', /*'sort' => 'NAME', */ 'default' => true, 'width' => 250,  'editable' => false, 'sticked' => true, 'resizeable' => true],
 				['id' => 'UF_ADDRESS', 'name' => 'Адрес организации', /*'sort' => 'ADDRESS', */ 'default' => false],
 				['id' => 'UF_INN', 'name' => 'ИНН',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => false],
 				['id' => 'DOGOVOR', 'name' => 'Текущий контракт', 'default' => true],
 				['id' => 'OBJECT', 'name' => 'Объект', 'default' => true],
-				['id' => 'METER', 'name' => 'Показания', 'default' => true],
+			['id' => 'METER', 'name' => 'Показания', 'default' => true, 'color' => '#ddd'],
 				['id' => 'UF_TYPE', 'name' => 'Тип организации', 'default' => false, "editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]],
 			];
 
@@ -227,27 +211,59 @@ class MasterObjects extends CBitrixComponent
 
 			$itemsCompany = LKClass::getCompany(null, $filter, $navParams);
 
-			foreach ($itemsCompany as $key => &$item) {
+		$i = 0;
+
+		// dump($orgContracts);
+
+		// foreach ($orgContracts as $orgID => &$item) {	// записи по контрактам
+		foreach ($itemsCompany as $key => &$item) {		// записи по всем организации
 				$countObjects = 0;
 
-				$column = $item;
+			$column = $item;
+			// if ($itemsCompany[$orgID])
+			// 	$column['UF_NAME'] = $itemsCompany[$orgID]['UF_NAME'];
 
-				// dump($item);
-				if ($item['UF_NAME']) {
-					//$column['UF_NAME'] = '<a class="ui-link fs-6" href="' . $item["ID"] . '/">' . $item['UF_NAME'] . '</a>';
+
+			// dump($itemsCompany[$orgID]);
+			// if ($item['UF_NAME']) {
+			//$column['UF_NAME'] = '<a class="ui-link fs-6" href="' . $item["ID"] . '/">' . $item['UF_NAME'] . '</a>';
+			// }
+
+			// if ($item['UF_USER_ID']) {
+			// 	$orgUser = $userList[$item['UF_USER_ID']];
+			// 	$item['UF_USER'] = '[' . $orgUser['ID'] . '] ' . $orgUser['SHORT_NAME'];
+			// }
+			if ($getDogovOrg = $orgContracts[$item['ID']]) {
+
+				$dogovor = '<div class="text-' . $getDogovOrg[0]['STATUS']['CODE'] . ' px-3 py-1 text-center"><small>' . $getDogovOrg[0]['NUMBER'] . '</small></div>';
+				$column["DOGOVOR"] = $dogovor;
+			}
+			// $column['DOGOVOR'] = var_export($getDogovOrg[0], 1);
+
+			// $orgObjects = $arObjects[$orgID];
+			$orgObjects = $arObjects[$item['ID']];
+
+			// $column['OBJECT'] = var_export($orgObjects, 1);
+			if ($orgObjects) {
+				$column['COUNTS'] = count($orgObjects);
+				$column['OBJECT'] = '';
+				foreach ($orgObjects as $object) {
+					$rowKey = $object['ID'];
+					// dump($object);
+
+					$column['OBJECT'] = $object;
+					//$column['OBJECT'] = var_export($orgObjects, 1);
+					// $i++;
+					$this->arResult['GRID']['ROWS'][$rowKey] = [
+						'columns'	=> $column,
+					];
 				}
+			}
 
-				if ($item['UF_USER_ID']) {
-					$orgUser = $userList[$item['UF_USER_ID']];
-					$item['UF_USER'] = '[' . $orgUser['ID'] . '] ' . $orgUser['SHORT_NAME'];
-				}
 
-				if ($arObjects[$item['ID']])
-					$countObjects = count($arObjects[$item['ID']]);
+			// $item['COMPANY'] = $item['COMPANY']['NAME'];
 
-				// $item['COMPANY'] = $item['COMPANY']['NAME'];
-
-				$status = '<a class="d-flex!" href="' . $item["ID"] . '/">';
+			/*$status = '<a class="d-flex!" href="' . $item["ID"] . '/">';
 
 				$status .= '<div class="ui-btn ui-btn-secondary ui-btn-sm px-3 py-1 text-center opacity-75">Объектов ';
 				//if ($countObjects) {
@@ -258,16 +274,29 @@ class MasterObjects extends CBitrixComponent
 				//}
 				$status .= '</div>';
 				$status .= '</a>';
-				$item["DETAIL"] = $status;
+				$item["DETAIL"] = $status;*/
 
-				// dump($item);
+			// dump($item);
 
-				$this->arResult['GRID']['ROWS'][] = [
-					'data' => $item,			//для редактирования
-					'columns'	=> $column		//отображение
-				];
-			}
+
+			/*$this->arResult['GRID']['ROWS'][$i] = [
+				// 'data'	=> $item,			//для редактирования
+				'columns'	=> $column,		//отображение
+				// 'counters' => [
+				// 	'COUNTER' => [
+				// 		'type' => \Bitrix\Main\Grid\Counter\Type::LEFT,
+				// 		'value' => 2,
+				// 		'color' => 'counter-color-css-class',
+				// 		'size' => 'counter-size-css-class',
+				// 		'class' => 'counter-custom-css-class',
+				// 	],
+				// ]
+				];*/
+			$i++;
 		}
+		// }
+
+		gg($this->arResult['GRID']['ROWS']);
 
 		//return $componentPage;
 		return $this->arResult;

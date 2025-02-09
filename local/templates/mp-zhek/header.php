@@ -193,7 +193,7 @@ $arSite = $rsSites->Fetch();
         ?>
 
         <header>
-            <div class="header-container sticky navbar">
+            <div class="header-container<?= !defined('LK') ? ' sticky' : '' ?> navbar">
                 <div class="header container clearfix">
                     <div class="logo d-flex justify-content-around justify-content-lg-start col col-md-12 col-lg pe-3">
                         <h1>

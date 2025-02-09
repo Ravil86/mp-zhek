@@ -355,6 +355,64 @@ class LKClass
         return $result;
     }
 
+    /*
+    Список данных из HLblock c данными контрактов
+    */
+    public static function getContracts($orgID = [])
+    {
+
+        $classsDocs = \HLWrap::init(self::$_HL_Contracts);
+
+        $yearList = self::getYears();
+
+        $statusList = LKClass::getStatus();
+
+        $filter = [];
+        if ($orgID)
+            $filter['UF_COMPANY'] = $orgID;
+
+        $rsDocs = $classsDocs::getList(
+            array(
+                'order'    => ['UF_DATE' => 'desc'],
+                'select' => array('*'),
+                'filter' => $filter,
+            )
+        );
+
+        while ($arDoc = $rsDocs->Fetch()) {
+
+            $date = ConvertDateTime($arDoc['UF_DATE'], "DD.MM.Y", "ru");
+
+            if ($arDoc['UF_YEAR'])
+            $arDoc['YEAR'] = $yearList[$arDoc['UF_YEAR']];
+
+            $arDoc['NUMBER'] = ($arDoc['UF_NUMBER'] < 10 ? '0' : '') . $arDoc['UF_NUMBER'];
+
+            $arFields = [
+                'ID' => $arDoc['ID'],
+                'UF_NUMBER' => $arDoc['UF_NUMBER'],
+                // 'NUMBER' => $arDoc['UF_NUMBER'],
+                'COMPANY' => $arDoc['UF_COMPANY'],
+                'UF_DATE' => $arDoc['UF_DATE'],
+                'UF_STATUS' => $arDoc['UF_STATUS'],
+                'STATUS' => $statusList[$arDoc['UF_STATUS']],
+                'UF_SERVICE' => $arDoc['UF_SERVICE'],
+                'UF_YEAR' => $arDoc['UF_YEAR'],
+                'YEAR' => $arDoc['YEAR'],
+                'DATE' => $date,
+                'FORMAT_DATE' => FormatDate("j F Y", MakeTimeStamp($arDoc['UF_DATE'])),
+                'NUMBER' => $arDoc['NUMBER'],
+                'FULL_NUMBER' =>  $arDoc['NUMBER'] . '-' . $arDoc['YEAR'] . ' от ' . $date,   //'№ '.
+                // 'DATE' => ConvertDateTime($arDoc['UF_DATE'], "DD.MM.Y GG:MI:SS", "ru")
+                //'UF_STATUS' => $getStatusList[$arStatus['UF_STATUS']],
+            ];
+            $result[$arDoc['ID']] = $arFields;
+        }
+        // dump($result);
+        return $result;
+    }
+
+
     public static function saveContract($contractID, $data)
     {
         $classHL = \HLWrap::init(self::$_HL_Contracts);

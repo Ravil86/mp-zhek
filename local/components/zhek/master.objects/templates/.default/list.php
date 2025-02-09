@@ -43,6 +43,7 @@ use Bitrix\Highloadblock as HL;
         $snippet = new Bitrix\Main\Grid\Panel\Snippet();
         $controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getEditButton();
         $controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getRemoveButton();
+    // $controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getForAllCheckbox();
 
         $gridParams = [
             'GRID_ID' => $arResult['GRID_ID'],
@@ -80,6 +81,11 @@ use Bitrix\Highloadblock as HL;
             'AJAX_OPTION_JUMP' => 'N',
             'AJAX_OPTION_HISTORY' => 'N',
             'ACTION_PANEL' => $controlPanel,
+            // 'SHOW_SELECT_ALL_RECORDS_CHECKBOX' => true
+            // 'SHOW_MORE_BUTTON' => true, //передавать false, если CURRENT_PAGE = последняя страница
+            // 'ENABLE_NEXT_PAGE' => true,
+            // 'NAV_PARAM_NAME' => 'SHOW_MORE', //параметр приходит в $_REQUEST, нужно передать в свой компонент и обработать для выборки данных
+            // 'CURRENT_PAGE' => $nav->getCurrentPage(),
         ];
         $APPLICATION->IncludeComponent('bitrix:main.ui.grid', '', $gridParams);
         ?>
