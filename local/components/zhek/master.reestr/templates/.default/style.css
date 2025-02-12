@@ -72,3 +72,8 @@ line-height: 1.5;
 .main-ui-pagination-arrows a {
 	color: #2067b0;
 }
+
+.main-grid-cell{
+border-width: 3px;
+border-color: black;
+}

@@ -13,15 +13,14 @@ use Bitrix\Highloadblock as HL;
     <div class="d-flex">
         <div class="col">
             <?
-            $APPLICATION->IncludeComponent('bitrix:main.ui.filter', '', [
-                'FILTER_ID' => 'filter_' . $arResult['GRID_ID'],
-                'GRID_ID' => $arResult['GRID_ID'],
-                // 'FILTER' => [],
-                'FILTER' => $arResult['GRID']['FILTER'],
-                'ENABLE_LIVE_SEARCH' => true,
-                'ENABLE_LABEL' => true,
-            ]);
-
+            // $APPLICATION->IncludeComponent('bitrix:main.ui.filter', '', [
+            //     'FILTER_ID' => 'filter_' . $arResult['GRID_ID'],
+            //     'GRID_ID' => $arResult['GRID_ID'],
+            //     // 'FILTER' => [],
+            //     'FILTER' => $arResult['GRID']['FILTER'],
+            //     'ENABLE_LIVE_SEARCH' => true,
+            //     'ENABLE_LABEL' => true,
+            // ]);
             ?>
         </div>
         <div class="col-auto">
@@ -43,6 +42,8 @@ use Bitrix\Highloadblock as HL;
         $snippet = new Bitrix\Main\Grid\Panel\Snippet();
         $controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getEditButton();
         $controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getRemoveButton();
+
+        // dump($arResult['GRID']['ROWS']);
 
         $gridParams = [
             'GRID_ID' => $arResult['GRID_ID'],
@@ -69,122 +70,99 @@ use Bitrix\Highloadblock as HL;
             'SHOW_NAVIGATION_PANEL' => true,
             'SHOW_PAGINATION' => true,
             'SHOW_SELECTED_COUNTER' => false,
-            'SHOW_TOTAL_COUNTER' => true,
+            'SHOW_TOTAL_COUNTER' => false,
             'SHOW_PAGESIZE' => true,
-            'SHOW_ACTION_PANEL' => true,
+            'SHOW_ACTION_PANEL' => false,
             'ALLOW_COLUMNS_SORT' => false,  //Разрешает сортировку колонок перетаскиванием.
-            'ALLOW_COLUMNS_RESIZE' => true, //Разрешает изменение размера колонок.
+            'ALLOW_COLUMNS_RESIZE' => false, //Разрешает изменение размера колонок.
             'ALLOW_HORIZONTAL_SCROLL' => true,
-            'ALLOW_SORT' => true,
-            'ALLOW_PIN_HEADER' => true,
+            'ALLOW_SORT' => false,
+            'ALLOW_PIN_HEADER' => false,
             'AJAX_OPTION_JUMP' => 'N',
             'AJAX_OPTION_HISTORY' => 'N',
-            'ENABLE_COLLAPSIBLE_ROWS' => true,  //групировка строк с разворачиванием
+            'ENABLE_COLLAPSIBLE_ROWS' => false,  //групировка строк с разворачиванием
             'ALLOW_STICKED_COLUMNS' => false, //Разрешает закрепление колонок с параметром sticked при горизонтальной прокрутке
-            // 'ROW_LAYOUT' => [
-            //     [
-            //         ['column' => 'col_0', 'rowspan' => 2],
-            //         ['column' => 'col_1'],
-            //         ['column' => 'col_2'],
-            //         ['column' => 'col_3']
-            //     ],
-            //     [
-            //         ['data' => 'data_field_5', 'colspan' => 3],
-            //     ],
-            // ],
+            'ROW_LAYOUT' => $arResult['GRID']['ROW_LAYOUT'],
+            /*'ROW_LAYOUT' => [
+                [
+                    // ['column' => 'UF_NAME', 'rowspan' => 2],
+                    // ['column' => 'UF_ADDRESS'],
+                    // ['column' => 'col_2'],
+                    // ['column' => 'col_3']
+                ],
+                [
+                    ['data' => 'data_field_5', 'colspan' => 3],
+                ],
+            ],*/
             // 'ACTION_PANEL' => $controlPanel,
             // 'SHOW_MORE_BUTTON' => true, //передавать false, если CURRENT_PAGE = последняя страница
             // 'ENABLE_NEXT_PAGE' => true,
             // 'NAV_PARAM_NAME' => 'SHOW_MORE', //параметр приходит в $_REQUEST, нужно передать в свой компонент и обработать для выборки данных
             // 'CURRENT_PAGE' => $nav->getCurrentPage(),
         ];
-        $APPLICATION->IncludeComponent('bitrix:main.ui.grid', '', $gridParams);
+        //$APPLICATION->IncludeComponent('bitrix:main.ui.grid', '', $gridParams);
+
+        // gg($arResult['GRID']['ROW_LAYOUT']);
         ?>
-    </div>
-    <div class="modal fade" id="addCompany" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <form method="post">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Добавить организацию</h4>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <input class="ui-ctl-element" type="hidden" name="ADD_COMPANY" value="Y">
-                        <?= bitrix_sessid_post() ?>
-                        <div class="row gx-2">
-                            <div class="col-12 col-md">
-                                <label>Наименование</label>
-                                <div class="ui-ctl ui-ctl-textarea ui-ctl-resize-y ui-ctl-w100">
-                                    <textarea class="ui-ctl-element" name="FIELDS[UF_NAME]" placeholder="Наименование организации"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row gx-2 mt-3">
-                            <div class="col-12 col-md">
-                                <label>Адрес</label>
-                                <div class="ui-ctl ui-ctl-textarea ui-ctl-lg! ui-ctl-w100">
-                                    <textarea class="ui-ctl-element" name="FIELDS[UF_ADDRESS]" placeholder="Адрес"></textarea>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md">
-                                <label>ИНН</label>
-                                <div class="ui-ctl ui-ctl-textbox ui-ctl-lg! ui-ctl-w100">
-                                    <input class="ui-ctl-element" type="text" name="FIELDS[UF_INN]" placeholder="ИНН">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="ui-btn ui-btn-success">Сохранить</button>
-                        <button type="button" class="ui-btn ui-btn-link" data-bs-dismiss="modal">Закрыть</button>
-                    </div>
-                </form>
-            </div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped! table-hover!">
+                <thead class="table-light text-center">
+                    <tr>
+                        <?
+                        foreach ($arResult['GRID']['COLUMNS'] as $key => $head): ?>
+                            <?
+                            if (isset($head['colspan']) && $head['colspan'] == 0)
+                                continue;
+                            ?>
+                            <th scope='col' <?= $head['colspan'] ? 'colspan="' . $head['colspan'] . '"' : 'rowspan="2"' ?>><?= $head['text'] ?? $head['name'] ?></th>
+                            <?
+                            //endif;
+                            //echo "<th scope='col'>{$head['name']}</th>";
+                            ?>
+                        <? endforeach
+                        ?>
+                    </tr>
+                    <tr>
+                        <?
+                        foreach ($arResult['GRID']['COLUMNS'] as $key => $head): ?>
+                            <?
+                            if (!isset($head['colspan']))
+                                continue;
+                            ?>
+                            <th scope='col'><?= $head['name'] ?></th>
+                            <? //echo "<th scope='col'>{$head['name']}</th>";
+                            ?>
+                        <? endforeach
+                        ?>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?
+                    foreach ($arResult['GRID']['ROWS'] as $rKey => $row) {
+                        // gg($arResult['GRID']['ROW_LAYOUT'][$rKey]);
+                        echo '<tr>';
+                        // gg($row);
+                        foreach ($arResult['GRID']['COLUMNS'] as $cKey => $col) : ?>
+                            <?
+                            $layout =  $arResult['GRID']['ROW_LAYOUT'][$rKey][$cKey];
 
-        </div>
-    </div>
-    <div class="modal fade" id="addUser" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <form method="post">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Добавить пользователя</h4>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <input class="ui-ctl-element" type="hidden" name="ADD_COMPANY" value="Y">
-                        <?= bitrix_sessid_post() ?>
-                        <div class="row gx-2">
-                            <div class="col-12 col-md">
-                                <label>ФИО</label>
-                                <div class="ui-ctl ui-ctl-textarea ui-ctl-resize-y ui-ctl-w100">
-                                    <textarea class="ui-ctl-element" name="FIELDS[UF_NAME]" placeholder="ФИО"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row gx-2 mt-3">
-                            <div class="col-12 col-md">
-                                <label>Адрес</label>
-                                <div class="ui-ctl ui-ctl-textarea ui-ctl-lg! ui-ctl-w100">
-                                    <textarea class="ui-ctl-element" name="FIELDS[UF_ADDRESS]" placeholder="Адрес"></textarea>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md">
-                                <label>ИНН</label>
-                                <div class="ui-ctl ui-ctl-textbox ui-ctl-lg! ui-ctl-w100">
-                                    <input class="ui-ctl-element" type="text" name="FIELDS[UF_INN]" placeholder="ИНН">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="ui-btn ui-btn-success">Сохранить</button>
-                        <button type="button" class="ui-btn ui-btn-link" data-bs-dismiss="modal">Закрыть</button>
-                    </div>
-                </form>
-            </div>
-
+                            if ($layout['column'] == $col['id']):
+                            ?>
+                                <td scope="row" <?= $layout['rowspan'] ? 'rowspan="' . $layout['rowspan'] . '"' : '' ?>>
+                                    <? // gg($layout['number']);
+                                    ?>
+                                    <? // dump($row['columns'][$col['id']]);
+                                    ?>
+                                    <?= $row['columns'][$col['id']]; ?>
+                                </td>
+                            <? endif; ?>
+                        <? endforeach ?>
+                    <?
+                        echo '</tr>';
+                    }
+                    ?>
+                </tbody>
+            </table>
         </div>
     </div>
 <? else: ?>

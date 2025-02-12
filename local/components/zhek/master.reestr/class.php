@@ -82,94 +82,6 @@ class MasterReestr extends CBitrixComponent
 			$arObjects[$value['ORG']][] = $value;
 		}
 
-		/*if ($this->arResult['VARIABLES']) {
-
-			$orgID = $this->arResult['VARIABLES']['DETAIL_ID'];
-
-			$this->arResult['DETAIL']['ORG'] =  $arItems[$orgID];
-
-			$this->arResult['DETAIL']['GRID'] =  $this->arResult['GRID_ID'] . '_detail';
-			$arResult['DETAIL']['GRID'] = $this->arResult['DETAIL']['GRID'];
-
-			$objectList = $arObjects[$orgID];
-			// dump($objectList);
-
-			$grid_options = new CGridOptions($this->arResult['DETAIL']['GRID']);
-			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
-
-			// dump($serviceList);
-			foreach ($serviceList as $key => $value) {
-				$serviceItems[$value['ID']] = $value['NAME'];
-			}
-
-			$this->arResult['DETAIL']['COLUMNS'] = [
-				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
-				['id' => 'UF_NAME', 'name' => 'Наименование cчетчика', 'default' => true, 'width' => 250, 'editable' => true],
-				['id' => 'UF_NUMBER', 'name' => 'Номер cчетчика', 'default' => true, 'width' => 250, 'editable' => true],
-				['id' => 'SERVICE', 'name' => 'Тип счетчика', 'default' => true, 'width' => 200, "editable" => ['TYPE' => 'MULTISELECT', 'items' => $serviceItems]],
-				['id' => 'UF_DATE', 'name' => 'Дата очередной поверки', 'default' => true, 'width' => 200, "editable" => ['TYPE' => 'DATE']],
-				// ['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => '130'],
-			];
-
-			$snippet = new Bitrix\Main\Grid\Panel\Snippet();
-
-			foreach ($objectList as $key => &$item) {
-
-				$objectID = $item['ID'];
-
-				$countersObject = LKClass::getCounters($objectID);
-
-				foreach ($countersObject as $key => $counter) {
-
-					$types = [];
-
-					foreach ($counter['UF_TYPE'] as $value) {
-						$typeItem = $serviceList[$value];
-						$types[] = '<div><img class="mb-1@" src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'] . '</span></div>';
-						// $types[] = '<img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/>';
-					}
-					$counter['SERVICE'] = '<div class="row gy-1">' . implode('', $types) . '</div>';
-
-					$data = $counter;
-					if ($counter['UF_DATE']) {
-						$objDateTime = new DateTime($counter['UF_DATE']);
-						$data['UF_DATE'] = $objDateTime->format("d.m.Y");
-					}
-
-					$item['ROWS'][$key] = [
-						'columns' => $counter,
-						'data' => $data,		//Данные для инлайн-редактирования
-
-						//'actions' => [ //Действия над ними
-						// [
-						// 	'text'    => 'Редактировать',
-						// 	'onclick' => 'document.location.href="/accountant/reports/1/edit/"'
-						// ],
-						// 	[
-						// 		'text'    => 'Удалить',
-						// 		'onclick' => 'document.location.href="/accountant/reports/1/delete/"'
-						// 	]
-						// ],
-					];
-				}
-
-				// $item['ROWS'] = $countersObject;
-
-				// $item['ROWS'][$objectID] = [
-				// 	'data' => $countersObject
-				// ];
-
-				// $this->arResult['ITEMS'][$objectID]['ROWS'][] = [
-				// 	'data' => $item
-				// ];
-
-				// $this->arResult['DETAIL']
-			}
-
-			$this->arResult['ITEMS'] = $objectList;
-		} else {
-*/
-
 			$grid_options = new CGridOptions($this->arResult["GRID_ID"]);
 			$nav_params = $grid_options->GetNavParams(array("nPageSize" => $this->arResult['PAGE_SIZE']));
 			$nav = new Bitrix\Main\UI\PageNavigation($this->arResult["GRID_ID"]);
@@ -183,22 +95,24 @@ class MasterReestr extends CBitrixComponent
 				$nav_params['iNumPage'] = $nav->getCurrentPage();
 
 			$rsEnum = HLWrap::getEnumProp('UF_TYPE');
-			while ($arEnum = $rsEnum->Fetch()) {
-				//dump($arEnum);
-			}
+			// while ($arEnum = $rsEnum->Fetch()) {
+			// 	//dump($arEnum);
+			// }
 
 			//какую сортировку сохранил пользователь (передаем то, что по умолчанию)
 			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
 			$this->arResult['GRID']['COLUMNS'] = [
-			['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 50, 'resizeable' => false],
+			['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 50, 'resizeable' => false, 'rowspan' => true],
 			// ['id' => 'COUNTER', 'name' => '', 'default' => true],
-			['id' => 'UF_NAME', 'name' => 'Организация', /*'sort' => 'NAME', */ 'default' => true, 'width' => 250,  'editable' => false, 'sticked' => true, 'resizeable' => true],
-				['id' => 'UF_ADDRESS', 'name' => 'Адрес организации', /*'sort' => 'ADDRESS', */ 'default' => false],
-				['id' => 'UF_INN', 'name' => 'ИНН',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => false],
-				['id' => 'DOGOVOR', 'name' => 'Текущий контракт', 'default' => true],
-				['id' => 'OBJECT', 'name' => 'Объект', 'default' => true],
-			['id' => 'METER', 'name' => 'Показания', 'default' => true, 'color' => '#ddd'],
-				['id' => 'UF_TYPE', 'name' => 'Тип организации', 'default' => false, "editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]],
+			['id' => 'UF_NAME', 'name' => 'Организация', /*'sort' => 'NAME', */ 'default' => true, 'rowspan' => true /*'sticked' => true, 'resizeable' => true*/],
+			// ['id' => 'UF_ADDRESS', 'name' => 'Адрес организации', /*'sort' => 'ADDRESS', */ 'default' => false],
+			// ['id' => 'UF_INN', 'name' => 'ИНН',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => false, 'rowspan' => true],
+			['id' => 'DOGOVOR', 'name' => 'Текущий контракт', 'default' => true, 'rowspan' => true],
+			['id' => 'OBJECT', 'name' => 'Объект', 'default' => true],
+			['id' => 'COUNTER', 'name' => 'ПУ', 'default' => true],
+			['id' => 'METER_LAST', 'name' => 'Текущие показания', 'default' => true, 'colspan' => 2, 'text' => 'Показания', 'color' => '#ddd'],
+			['id' => 'METER_ALL', 'name' => 'Предыдущие показания', 'default' => true, 'colspan' => 0, 'color' => '#ddd'],
+			// ['id' => 'UF_TYPE', 'name' => 'Тип организации', 'default' => false, 'rowspan' => true /*"editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]*/],
 			];
 
 			$filterOption = new Bitrix\Main\UI\Filter\Options("filter_" . $this->arResult["GRID_ID"]);
@@ -211,92 +125,230 @@ class MasterReestr extends CBitrixComponent
 
 			$itemsCompany = LKClass::getCompany(null, $filter, $navParams);
 
+
+		$orgObjects = null;
+		foreach ($itemsCompany as &$item) {
+
+			if ($orgObjects = $arObjects[$item['ID']])
+			foreach ($orgObjects as $object) {
+				$item['OBJECTS'][$object['ID']] = $object;		//заполняем обьектами организации для сортировки
+			}
+
+
+			if ($getDogovOrg = $orgContracts[$item['ID']])	//заполняем контрактами для сортировки
+			$item['CONTRACTS'] = $getDogovOrg;
+		}
+
+		function sortObjects($a, $b)
+		{
+
+			if (isset($a['OBJECTS']) == isset($b['OBJECTS'])) {
+				return 0;
+			}
+			return ($a['OBJECTS'] > $b['OBJECTS']) ? -1 : 1;
+
+			// return ($a['OBJECTS'] < $b['OBJECTS']) ? -1 : 1;
+		}
+		usort($itemsCompany, "sortObjects");
+
+		function sortContract($a, $b)
+		{
+			if (isset($a['CONTRACTS']) == isset($b['CONTRACTS'])) {
+				return 0;
+			}
+			return ($a['CONTRACTS'] > $b['CONTRACTS']) ? -1 : 1;
+		}
+		usort($itemsCompany, "sortContract");
+
+
+		// $columns[0] = 'ID';
+		$p = 1;
+		foreach ($this->arResult['GRID']['COLUMNS'] as $key => $value) {
+			$columns[$key] = $value['id'];
+			// $columns[$p] = $value['id'];
+			// $columns[$key]['column'] = $value['id'];
+
+			$p++;
+		}
+		// array_push($columns, 'END');
+
 		$i = 0;
-
-		// dump($orgContracts);
-
 		// foreach ($orgContracts as $orgID => &$item) {	// записи по контрактам
 		foreach ($itemsCompany as $key => &$item) {		// записи по всем организации
 				$countObjects = 0;
+
+
 
 			$column = $item;
 			// if ($itemsCompany[$orgID])
 			// 	$column['UF_NAME'] = $itemsCompany[$orgID]['UF_NAME'];
 
-
-			// dump($itemsCompany[$orgID]);
-			// if ($item['UF_NAME']) {
-			//$column['UF_NAME'] = '<a class="ui-link fs-6" href="' . $item["ID"] . '/">' . $item['UF_NAME'] . '</a>';
-			// }
-
-			// if ($item['UF_USER_ID']) {
-			// 	$orgUser = $userList[$item['UF_USER_ID']];
-			// 	$item['UF_USER'] = '[' . $orgUser['ID'] . '] ' . $orgUser['SHORT_NAME'];
-			// }
-			if ($getDogovOrg = $orgContracts[$item['ID']]) {
-
-				$dogovor = '<div class="text-' . $getDogovOrg[0]['STATUS']['CODE'] . ' px-3 py-1 text-center"><small>' . $getDogovOrg[0]['NUMBER'] . '</small></div>';
+			if ($item['CONTRACTS']) {
+				$dogovor = '<div class="text-' . $item['CONTRACTS'][0]['STATUS']['CODE'] . ' px-3 py-1 text-center"><small>' . $item['CONTRACTS'][0]['NUMBER'] . '</small></div>';
 				$column["DOGOVOR"] = $dogovor;
 			}
-			// $column['DOGOVOR'] = var_export($getDogovOrg[0], 1);
 
-			// $orgObjects = $arObjects[$orgID];
-			$orgObjects = $arObjects[$item['ID']];
+			if ($item['OBJECTS']) {
 
+				$countObjects = count($item['OBJECTS']);
+				$colRow['COUNTS'] = $countObjects;
+				$colRow['ROWSPAN'] = $countObjects > 1 ?: false;
+
+				$g = 0;
+
+				$arService = LKClass::getService();
+
+				// dump($arService);
+
+				foreach ($item['OBJECTS'] as $key => $object) {
+
+					$servicesLast = [];
+					$servicesAll = [];
+					$lastIconType = '';
+					$allIconType = '';
+
+					$column['OBJECT'] = '#' . $object['ID'] . ' ' . $object['NAME'];
+
+					$counterObjects = LKClass::getCounters($object['ID']);
+
+					// gg($counterObjects);
+
+					//последние показания
+					$arType = null;
+					$curentLast = current(LKClass::meters($object['ID'], 1));
+					$curentCounterLast = $counterObjects[$curentLast['COUNTER']];
+
+					if ($curentCounterLast['UF_TYPE']) {
+						foreach ($curentCounterLast['UF_TYPE'] as $type) {
+							$arType = $arService[$type];
+							$servicesLast[] = '<img src="' . $arType['ICON'] . '" width="20"/>';
+							// $servicesLast[] = $arType['LITERA'] . '<img class="ps-1" src="' . $arType['ICON'] . '" width="20"/>';
+						}
+						$lastIconType = implode('/', $servicesLast);
+						unset($arType);
+					}
+					$column['METER_LAST'] =  $lastIconType . ' ' . $curentLast['METER'];		//только последние данные
+
+
+					$curentCounterAll = [];
+
+					//все показания
+					$arType = null;
+					$curentAll = current(LKClass::meters($object['ID']));
+					$curentCounterAll = $counterObjects[$curentAll['COUNTER']];
+
+					if ($curentCounterAll['UF_TYPE']) {
+						// dump($curentCounterAll['UF_TYPE']);
+						foreach ($curentCounterAll['UF_TYPE'] as $type) {
+
+							$arType = $arService[$type];
+
+							$servicesAll[] = '<img src="' . $arType['ICON'] . '" width="20"/> ';
+							//$servicesAll[] = $arType['LITERA'] . '<img class="ps-1" src="' . $arType['ICON'] . '" width="20"/> ';
+						}
+						// dump($servicesAll);
+						$allIconType = implode('', $servicesAll);
+					}
+					$column['METER_ALL'] =  $allIconType . ' ' . $curentAll['METER']; //все данные
+					// $column['METER_ALL'] =  $curentAll;
+					//$column['OBJECT'] = $object['NAME'];
+
+					if ($g > 0)
+					$colRow['ROWSPAN'] = false;
+
+					$this->arResult['GRID']['ROWS'][$i] = [
+						'columns'	=> $column,
+					];
+					$this->arResult['ROWS_COLUMNS'][$i] = $colRow;
+
+					$i++;
+					$g++;
+				}
+			}
+
+			/*$orgObjects = $arObjects[$item['ID']];
 			// $column['OBJECT'] = var_export($orgObjects, 1);
 			if ($orgObjects) {
 				$column['COUNTS'] = count($orgObjects);
 				$column['OBJECT'] = '';
+
 				foreach ($orgObjects as $object) {
 					$rowKey = $object['ID'];
-					// dump($object);
 
 					$column['OBJECT'] = $object;
-					//$column['OBJECT'] = var_export($orgObjects, 1);
-					// $i++;
-					$this->arResult['GRID']['ROWS'][$rowKey] = [
+
+					$this->arResult['GRID']['ROWS'][$i] = [
 						'columns'	=> $column,
 					];
+					$i++;
 				}
-			}
-
-
-			// $item['COMPANY'] = $item['COMPANY']['NAME'];
-
-			/*$status = '<a class="d-flex!" href="' . $item["ID"] . '/">';
-
-				$status .= '<div class="ui-btn ui-btn-secondary ui-btn-sm px-3 py-1 text-center opacity-75">Объектов ';
-				//if ($countObjects) {
-				$status .= '<div class="ui-counter ui-counter-' . ($countObjects ? 'primary gray!' : 'dark') . ' ms-2">
-									<div class="ui-counter-inner">' . $countObjects . '</div>
-								</div>';
-				//$status .= '<i class="ui-btn-counter ui-counter-primary ms-2">' . $countObjects . '</i>';
-				//}
-				$status .= '</div>';
-				$status .= '</a>';
-				$item["DETAIL"] = $status;*/
-
-			// dump($item);
-
+			}*/
 
 			/*$this->arResult['GRID']['ROWS'][$i] = [
 				// 'data'	=> $item,			//для редактирования
 				'columns'	=> $column,		//отображение
-				// 'counters' => [
-				// 	'COUNTER' => [
-				// 		'type' => \Bitrix\Main\Grid\Counter\Type::LEFT,
-				// 		'value' => 2,
-				// 		'color' => 'counter-color-css-class',
-				// 		'size' => 'counter-size-css-class',
-				// 		'class' => 'counter-custom-css-class',
-				// 	],
-				// ]
 				];*/
-			$i++;
+			if (!$item['OBJECTS'])
+				$i++;
 		}
 		// }
 
-		gg($this->arResult['GRID']['ROWS']);
+		// dump($this->arResult['GRID']['ROWS']);
+
+		// $this->arResult['GRID']['ROW_LAYOUT'][0] = ['data' => 'data_field_1', 'colspan' => 3];
+		// $this->arResult['GRID']['ROW_LAYOUT'][1] = $columns;
+
+		// $rowColumns = ['ID', 'UF_NAME'/*, 'END'*/];
+		$i = 1;
+		foreach ($this->arResult['ROWS_COLUMNS'] as $key => $value) {
+
+			// $this->arResult['GRID']['ROW_LAYOUT'][$key] = $columns;
+
+			// dump($value);
+			$c = 0;
+
+			foreach ($this->arResult['GRID']['COLUMNS'] as $col) {
+
+				if (
+					$value['COUNTS'] > 1 && !$col['rowspan']
+				) {
+					$this->arResult['GRID']['ROW_LAYOUT'][$key][$c]['number'] = $i;
+				}
+
+				// foreach ($columns as $col) {
+
+				if (!$value['ROWSPAN']) {
+					// $c = 0;
+					// dump($col['rowspan']);
+
+					if (!$col['rowspan'] || $value['COUNTS'] == 1) {
+						//if (!in_array($col, $rowColumns) || $value['COUNTS'] == 1)
+						$this->arResult['GRID']['ROW_LAYOUT'][$key][$c]['column'] = $col['id'];
+					}
+				} else {
+					// $c++;
+					$this->arResult['GRID']['ROW_LAYOUT'][$key][$c]['column'] = $col['id'];
+
+					if ($col['rowspan'])
+						// if (in_array($col, $rowColumns))
+						$this->arResult['GRID']['ROW_LAYOUT'][$key][$c]['rowspan'] = $value['COUNTS'];
+				}
+
+				$c++;
+			}
+
+			$i++;
+
+
+			// foreach ($this->arResult['GRID']['ROW_LAYOUT'] as $key => $value) {
+			// 	asort($value);
+			// }
+
+			// $this->arResult['GRID']['ROW_LAYOUT'][$key] = $columns;
+		}
+		// dump($this->arResult['ROWS_COLUMNS']);
+		// dump($this->arResult['GRID']['ROW_LAYOUT']);
+		// dump($this->arResult['GRID']['ROWS']);
 
 		//return $componentPage;
 		return $this->arResult;
@@ -326,15 +378,6 @@ class MasterReestr extends CBitrixComponent
 		}
 		return false;
 	}
-
-	private function arraySort($a, $b)
-	{
-		if ($a['SORT'] == $b['SORT']) {
-			return 0;
-		}
-		return ($a['SORT'] < $b['SORT']) ? -1 : 1;
-	}
-
 
 	public function getRequest()
 	{

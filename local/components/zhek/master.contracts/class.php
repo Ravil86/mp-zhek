@@ -443,7 +443,7 @@ class MasterContracts extends CBitrixComponent
 			// if ($value['UF_YEAR']) {
 			// 	$value['YEAR'] = $yearList[$value['UF_YEAR']];
 			// }
-			dump($value);
+			// dump($value);
 
 			// $value['STATUS'] = $this->statusList[$value['UF_STATUS']];
 
