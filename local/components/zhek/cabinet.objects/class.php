@@ -86,10 +86,11 @@ class CabinetObjects extends CBitrixComponent
 
 			$this->arResult['DETAIL']['COLUMNS'] = [
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 70],
-				['id' => 'UF_NAME', 'name' => 'Наименование cчетчика', 'default' => true, 'width' => 250],
-				['id' => 'UF_NUMBER', 'name' => 'Номер cчетчика', 'default' => true, 'width' => 250],
-				['id' => 'SERVICE', 'name' => 'Тип счетчика', 'default' => true, 'width' => 200],
-				['id' => 'UF_DATE', 'name' => 'Сл. дата поверки', 'default' => true, 'width' => 200],
+				['id' => 'UF_NAME', 'name' => 'Наименование', 'default' => true, 'width' => 220],
+				['id' => 'UF_NUMBER', 'name' => 'Номер cчетчика', 'default' => true, 'width' => 230],
+				['id' => 'UF_DATE', 'name' => 'Дата установки', 'default' => true],
+				['id' => 'SERVICE', 'name' => 'Тип счетчика', 'default' => true, 'width' => 230],
+				['id' => 'UF_CHECK', 'name' => 'Сл. дата поверки', 'default' => true],
 				// ['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => '130'],
 			];
 

@@ -103,15 +103,15 @@ class MasterReestr extends CBitrixComponent
 			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
 			$this->arResult['GRID']['COLUMNS'] = [
 			['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 50, 'resizeable' => false, 'rowspan' => true],
-			// ['id' => 'COUNTER', 'name' => '', 'default' => true],
 			['id' => 'UF_NAME', 'name' => 'Организация', /*'sort' => 'NAME', */ 'default' => true, 'rowspan' => true /*'sticked' => true, 'resizeable' => true*/],
 			// ['id' => 'UF_ADDRESS', 'name' => 'Адрес организации', /*'sort' => 'ADDRESS', */ 'default' => false],
 			// ['id' => 'UF_INN', 'name' => 'ИНН',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => false, 'rowspan' => true],
 			['id' => 'DOGOVOR', 'name' => 'Текущий контракт', 'default' => true, 'rowspan' => true],
 			['id' => 'OBJECT', 'name' => 'Объект', 'default' => true],
 			['id' => 'COUNTER', 'name' => 'ПУ', 'default' => true],
-			['id' => 'METER_LAST', 'name' => 'Текущие показания', 'default' => true, 'colspan' => 2, 'text' => 'Показания', 'color' => '#ddd'],
-			['id' => 'METER_ALL', 'name' => 'Предыдущие показания', 'default' => true, 'colspan' => 0, 'color' => '#ddd'],
+			['id' => 'METER_LAST', 'name' => 'Текущие', 'default' => true, 'colspan' => 3, 'text' => 'Показания', 'color' => '#ddd'],
+			['id' => 'METER_ALL', 'name' => 'Предыдущие', 'default' => true, 'colspan' => 0, 'color' => '#ddd'],
+			['id' => 'METER_RAZNOST', 'name' => 'Разность', 'default' => true, 'colspan' => 0],
 			// ['id' => 'UF_TYPE', 'name' => 'Тип организации', 'default' => false, 'rowspan' => true /*"editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]*/],
 			];
 
@@ -173,11 +173,10 @@ class MasterReestr extends CBitrixComponent
 		// array_push($columns, 'END');
 
 		$i = 0;
+
 		// foreach ($orgContracts as $orgID => &$item) {	// записи по контрактам
 		foreach ($itemsCompany as $key => &$item) {		// записи по всем организации
 				$countObjects = 0;
-
-
 
 			$column = $item;
 			// if ($itemsCompany[$orgID])
@@ -198,60 +197,123 @@ class MasterReestr extends CBitrixComponent
 
 				$arService = LKClass::getService();
 
-				// dump($arService);
-
 				foreach ($item['OBJECTS'] as $key => $object) {
 
-					$servicesLast = [];
 					$servicesAll = [];
 					$lastIconType = '';
-					$allIconType = '';
+
+					$iconType = '';
 
 					$column['OBJECT'] = '#' . $object['ID'] . ' ' . $object['NAME'];
 
 					$counterObjects = LKClass::getCounters($object['ID']);
 
-					// gg($counterObjects);
+					$column['COUNTER'] = [];
+					$countersObject = [];
+					$arType = null;
+					foreach ($counterObjects as $key => $value) {
+
+						$servicesImage = [];
+						if ($value['UF_TYPE']) {
+							foreach ($value['UF_TYPE'] as $type) {
+								$arType = $arService[$type];
+								$servicesImage[] = '<img src="' . $arType['ICON'] . '" width="18"/>';
+							}
+							$iconType = implode(' ', $servicesImage);
+							unset($arType);
+						}
+
+						$countersObject[$value['ID']] = $iconType . ' <small>' . ($value['UF_NUMBER'] ?: $value['UF_NAME']) . '</small>';
+					}
+					$column['COUNTER'] = $countersObject;
+
 
 					//последние показания
-					$arType = null;
-					$curentLast = current(LKClass::meters($object['ID'], 1));
-					$curentCounterLast = $counterObjects[$curentLast['COUNTER']];
+					$metersLast = LKClass::meters($object['ID'], 1);
+					if ($metersLast) {
+						foreach ($metersLast as $key => $meter) {
+							// gg($meter);
+							$lastObjMeters[$meter['OBJECT']][$meter['COUNTER']] = $meter['METER'];
+						}
+					}
 
-					if ($curentCounterLast['UF_TYPE']) {
+					//все показания
+					$metersAll = LKClass::meters($object['ID']);
+					// dump($metersAll);
+					if ($metersAll) {
+						foreach ($metersAll as $key => $meter) {
+							// gg($meter);
+							$allObjMeters[$meter['OBJECT']][$meter['COUNTER']][] = $meter['METER'];
+						}
+					}
+
+					$column['METER_LAST'] = [];
+					$column['METER_ALL'] = [];
+					$column['METER_RAZNOST'] = [];
+					// $lastMeter = null;
+					// $allMeters = null;
+
+					foreach ($countersObject as $key => $value) {
+						$curentAllMeter = '';
+
+						$lastMeter = $lastObjMeters[$object['ID']][$key];
+						$column['METER_LAST'][$key] =  $lastMeter ?: '-';
+
+						$allMeters =  $allObjMeters[$object['ID']][$key];
+						if ($allMeters)
+							$curentAllMeter = current($allMeters);
+						$column['METER_ALL'][$key] =  $curentAllMeter ?? '-';
+
+						$column['METER_RAZNOST'][$key] = $lastMeter && $curentAllMeter ? ($lastMeter - $curentAllMeter) : '-';
+					}
+
+
+					//$curentLast = current(LKClass::meters($object['ID'], 1));
+					//$curentCounterLast = $counterObjects[$curentLast['COUNTER']];
+					/*if ($curentCounterLast['UF_TYPE']) {
 						foreach ($curentCounterLast['UF_TYPE'] as $type) {
 							$arType = $arService[$type];
-							$servicesLast[] = '<img src="' . $arType['ICON'] . '" width="20"/>';
+							$servicesLast[] = '<img src="' . $arType['ICON'] . '" width="18"/>';
 							// $servicesLast[] = $arType['LITERA'] . '<img class="ps-1" src="' . $arType['ICON'] . '" width="20"/>';
 						}
 						$lastIconType = implode('/', $servicesLast);
 						unset($arType);
-					}
-					$column['METER_LAST'] =  $lastIconType . ' ' . $curentLast['METER'];		//только последние данные
+					}*/
 
+					//$column['METER_LAST'] =  $lastIconType . ' ' . $curentLast['METER'];		//только последние данные
 
-					$curentCounterAll = [];
+					// $curentCounterAll = [];
 
 					//все показания
-					$arType = null;
-					$curentAll = current(LKClass::meters($object['ID']));
-					$curentCounterAll = $counterObjects[$curentAll['COUNTER']];
 
-					if ($curentCounterAll['UF_TYPE']) {
+					$metersAll = LKClass::meters($object['ID']);
+					// dump($metersAll);
+					if ($metersAll) {
+						foreach ($metersAll as $key => $meter) {
+							// gg($meter);
+							$arObjMeters[$meter['OBJECT']][$meter['COUNTER']][] = $meter['METER'];
+						}
+					}
+					// dump($arObjMeters);
+
+					// $arType = null;
+					// $curentAll = current(LKClass::meters($object['ID']));
+					// $curentCounterAll = $counterObjects[$curentAll['COUNTER']];
+
+					/*if ($curentCounterAll['UF_TYPE']) {
 						// dump($curentCounterAll['UF_TYPE']);
 						foreach ($curentCounterAll['UF_TYPE'] as $type) {
 
 							$arType = $arService[$type];
 
-							$servicesAll[] = '<img src="' . $arType['ICON'] . '" width="20"/> ';
+							$servicesAll[] = '<img src="' . $arType['ICON'] . '" width="18"/> ';
 							//$servicesAll[] = $arType['LITERA'] . '<img class="ps-1" src="' . $arType['ICON'] . '" width="20"/> ';
 						}
 						// dump($servicesAll);
 						$allIconType = implode('', $servicesAll);
-					}
-					$column['METER_ALL'] =  $allIconType . ' ' . $curentAll['METER']; //все данные
-					// $column['METER_ALL'] =  $curentAll;
-					//$column['OBJECT'] = $object['NAME'];
+					}*/
+					//$column['METER_ALL'] =  $allIconType . ' ' . $curentAll['METER']; //все данные
+
 
 					if ($g > 0)
 					$colRow['ROWSPAN'] = false;

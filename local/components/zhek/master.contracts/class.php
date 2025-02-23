@@ -21,6 +21,8 @@ class MasterContracts extends CBitrixComponent
 	var $statusList = [];
 	var $companyList = [];
 
+	var $userInfo = [];
+
 	/*public function onPrepareComponentParams($arParams) {
 
 		$result = [
@@ -86,13 +88,21 @@ class MasterContracts extends CBitrixComponent
 		$this->statusList = LKClass::getStatus();
 		$this->companyList = LKClass::getCompany();
 
+		$this->userInfo = LKClass::curentUserFields();
+
 		$this->arResult['STATUS_LIST'] = $this->statusList;
 		$this->arResult['COMPANY_LIST'] = $this->companyList;
+
+		$this->arResult['USER_INFO'] = $this->userInfo;
 
 		foreach ($this->companyList as $key => $value) {
 			$this->arResult['COMPANY_JSON'][] = [
 				'value' => $value['ID'],
 				'label' => $value['UF_NAME'],
+			];
+			$this->arResult['COMPANY1_JSON'][] = [
+				'VALUE' => $value['ID'],
+				'NAME' => $value['UF_NAME'],
 			];
 		}
 
@@ -308,7 +318,7 @@ class MasterContracts extends CBitrixComponent
 											BX.Event.bind(button, "click", () => getPicker().show());
 										})();
 									</script>';
-
+				// gg($data);
 				$this->arResult['GRID']['ROWS'][] = [
 					'columns' => $item,
 					'data' => $data			//Данные для инлайн-редактирования
@@ -552,9 +562,13 @@ class MasterContracts extends CBitrixComponent
 			while ($arGroup = $rsGroups->GetNext()) {
 
 				// gg(LKClass::isOperator());
-
-				if ($arGroup['GROUP_ID'] == 1 || $arGroup['STRING_ID'] === $arParams['GROUP_CODES']['ADMINISTRATOR']) {
+				if ($arGroup['GROUP_ID'] == 1) {
 					$this->arResult['ADMIN'] = true;
+					return true;
+				} elseif (
+					$arGroup['STRING_ID'] === $arParams['GROUP_CODES']['ADMINISTRATOR']
+				) {
+					$this->arResult['MODERATOR'] = true;
 					return true;
 				}
 				if ($arGroup['STRING_ID'] === $arParams['GROUP_CODES']['OPERATOR']) {
@@ -600,7 +614,8 @@ class MasterContracts extends CBitrixComponent
 
 		if ($this->isPost() && check_bitrix_sessid()) {
 
-			// Bitrix\Main\Diag\Debug::dumpToFile(var_export($arRequest, 1), '$arRequest', 'test.log');
+			Bitrix\Main\Diag\Debug::dumpToFile(var_export($arRequest, 1), '$arRequest', 'test.log');
+
 			$data = [];
 			foreach ($arRequest["FIELDS"] as $contractID => $fields) {
 

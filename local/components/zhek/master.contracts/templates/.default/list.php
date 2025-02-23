@@ -81,7 +81,8 @@ use Bitrix\Highloadblock as HL;
         ]);*/
         $snippet = new Bitrix\Main\Grid\Panel\Snippet();
         $controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getEditButton();
-        $controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getRemoveButton();
+        if ($arResult['ADMIN'])
+            $controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getRemoveButton();
 
         $gridParams = [
             'GRID_ID' => $arResult['GRID_ID'],
@@ -90,7 +91,7 @@ use Bitrix\Highloadblock as HL;
             'FOOTER' => [
                 'TOTAL_ROWS_COUNT' => $arResult['GRID']['COUNT'],
             ],
-            'SHOW_ROW_CHECKBOXES' => $arResult['ADMIN'] ?: false,
+            'SHOW_ROW_CHECKBOXES' => $arResult['ADMIN'] || $arResult['MODERATOR'] ?: false,
             'NAV_OBJECT' => $nav,
             'AJAX_MODE' => 'Y',
             //'AJAX_ID' => 'AJAX_'.$arResult['GRID_ID'],
@@ -108,10 +109,10 @@ use Bitrix\Highloadblock as HL;
             'SHOW_GRID_SETTINGS_MENU' => true,
             'SHOW_NAVIGATION_PANEL' => true,
             'SHOW_PAGINATION' => true,
-            'SHOW_SELECTED_COUNTER' => $arResult['ADMIN'] ?: false,
+            'SHOW_SELECTED_COUNTER' => $arResult['ADMIN'] || $arResult['MODERATOR'] ?: false,
             'SHOW_TOTAL_COUNTER' => true,
             'SHOW_PAGESIZE' => true,
-            'SHOW_ACTION_PANEL' => $arResult['ADMIN'] ?: false,
+            'SHOW_ACTION_PANEL' => $arResult['ADMIN'] || $arResult['MODERATOR'] ?: false,
             'ALLOW_COLUMNS_SORT' => true,
             'ALLOW_COLUMNS_RESIZE' => true,
             'ALLOW_HORIZONTAL_SCROLL' => true,
@@ -172,6 +173,18 @@ use Bitrix\Highloadblock as HL;
                                 <div class="col-12 col-md">
                                     <label>Организация</label>
                                     <div id="org"></div>
+                                    <div data-name="UF_COMPANY" data-type="SELECT" class="main-ui-filter-wield-with-label main-ui-filter-date-group main-ui-control-field-group">
+                                        <span class="main-ui-control-field-label">Одиночный выбор</span>
+                                        <div data-name="UF_COMPANY"
+                                            data-items='<?= \Bitrix\Main\Web\Json::encode($arResult['COMPANY1_JSON']); ?>'
+                                            data-params='<?= \Bitrix\Main\Web\Json::encode(['isMulti' => false]); ?>'
+                                            id="select1" class="main-ui-control main-ui-select">
+                                            <span class="main-ui-select-name">Выберите</span>
+                                            <span class="main-ui-square-search">
+                                                <input type="text" tabindex="2" class="main-ui-square-search-item">
+                                            </span>
+                                        </div>
+                                    </div>
                                     <!-- <div class="ui-ctl ui-ctl-textarea ui-ctl-resize-y ui-ctl-w100">
                                         <textarea class="ui-ctl-element" name="FIELDS[UF_NAME]" placeholder="Наименование организации"></textarea>
                                     </div> -->
@@ -182,7 +195,7 @@ use Bitrix\Highloadblock as HL;
                                     <label>Дата</label>
                                     <div class="ui-ctl ui-ctl-after-icon ui-ctl-date">
                                         <div class="ui-ctl-after ui-ctl-icon-calendar"></div>
-                                        <input type="text" id="" class="ui-ctl-element" name="UF_DATE" value="<?= date('d.m.Y'); ?>">
+                                        <input type="text" id="" class="ui-ctl-element" name="FIELDS[UF_DATE]" value="<?= date('d.m.Y'); ?>">
                                     </div>
                                     <!-- <div class="ui-ctl ui-ctl-textarea ui-ctl-lg! ui-ctl-w100">
                                         <textarea class="ui-ctl-element" name="FIELDS[UF_ADDRESS]" placeholder="Адрес"></textarea>
@@ -191,14 +204,26 @@ use Bitrix\Highloadblock as HL;
                                 <div class="col-12 col-md-4">
                                     <label>Номер</label>
                                     <div class="ui-ctl ui-ctl-textbox ui-ctl-lg! ui-ctl-w50">
-                                        <input class="ui-ctl-element" type="text" name="FIELDS[UF_INN]" placeholder="ИНН">
+                                        <input class="ui-ctl-element" type="text" name="FIELDS[UF_NUMBER]" placeholder="Номер">
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-4">
                                     <label>Услуги</label>
-                                    <div class="ui-ctl ui-ctl-textbox ui-ctl-lg! ui-ctl-w100">
+                                    <!-- <div class="ui-ctl ui-ctl-textbox ui-ctl-lg! ui-ctl-w100">
                                         <input class="ui-ctl-element" type="text" name="FIELDS[UF_INN]" placeholder="ИНН">
                                         <div id="service"></div>
+                                    </div> -->
+                                    <div data-name="SELECT_MULTIPLE" class="main-ui-filter-wield-with-label main-ui-filter-date-group main-ui-control-field-group">
+                                        <span class="main-ui-control-field-label">Множественный выбор</span>
+                                        <div data-name="SELECT_MULTIPLE"
+                                            data-items='<?= \Bitrix\Main\Web\Json::encode($arResult['COMPANY1_JSON']); ?>'
+                                            data-params='<?= \Bitrix\Main\Web\Json::encode(['isMulti' => true, 'isSearch' => true]); ?>'
+                                            id="select2" class="main-ui-control main-ui-multi-select">
+
+                                            <span class="main-ui-square-container"></span>
+                                            <span class="main-ui-square-search"><input type="text" tabindex="2" class="main-ui-square-search-item"></span>
+                                            <span class="main-ui-hide main-ui-control-value-delete"><span class="main-ui-control-value-delete-item"></span></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -221,9 +246,10 @@ use Bitrix\Highloadblock as HL;
             const selectOrg = new BX.Ui.Select({
                 options,
                 value: '',
+                name: 'FIELDS[UF_COMPANY]',
                 isSearchable: true,
                 placeholder: 'Выберите организацию',
-                containerClassname: '',
+                // containerClassname: '',
             });
             selectOrg.subscribe('update', (e) => {
                 // console.log('e', e);
@@ -237,6 +263,7 @@ use Bitrix\Highloadblock as HL;
                 value: '',
                 isSearchable: true,
                 multi: true,
+                name: 'FIELDS[UF_COMPANY]',
                 placeholder: 'Выберите организацию',
                 containerClassname: '',
             });

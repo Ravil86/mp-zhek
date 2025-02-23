@@ -105,7 +105,7 @@ use Bitrix\Highloadblock as HL;
         // gg($arResult['GRID']['ROW_LAYOUT']);
         ?>
         <div class="table-responsive">
-            <table class="table table-bordered table-striped! table-hover!">
+            <table id="table-reestr" class="table table-bordered align-middle">
                 <thead class="table-light text-center">
                     <tr>
                         <?
@@ -148,12 +148,19 @@ use Bitrix\Highloadblock as HL;
 
                             if ($layout['column'] == $col['id']):
                             ?>
-                                <td scope="row" <?= $layout['rowspan'] ? 'rowspan="' . $layout['rowspan'] . '"' : '' ?>>
-                                    <? // gg($layout['number']);
-                                    ?>
-                                    <? // dump($row['columns'][$col['id']]);
-                                    ?>
-                                    <?= $row['columns'][$col['id']]; ?>
+                                <? $valueTD = $row['columns'][$col['id']]; ?>
+                                <td scope="row" <?= $layout['rowspan'] ? 'rowspan="' . $layout['rowspan'] . '"' : '' ?>
+                                    class="<?= is_array($valueTD) ? 'p-0 border-bottom-0 align-baseline!' : '' ?><?= isset($col['colspan']) ? ' text-center' : '' ?>">
+                                    <? if (is_array($valueTD)): ?>
+                                        <div class="table mb-0 d-flex flex-column gy-1 h-100">
+                                            <? foreach ($valueTD as $key => $value): ?>
+                                                <div class="table-row align-items-center! px-2 border-bottom"><?= $value ?></div>
+                                            <? endforeach ?>
+                                        </div>
+                                    <? else: ?>
+
+                                        <?= $valueTD; ?>
+                                    <? endif; ?>
                                 </td>
                             <? endif; ?>
                         <? endforeach ?>

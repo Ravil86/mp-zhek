@@ -5,6 +5,8 @@ include_once 'hl.wrapper.php';
 
 include_once 'lk.class.php';
 
+require 'vendor/autoload.php';
+
 function dump($var, $type = 0)
 {
 	global $USER;

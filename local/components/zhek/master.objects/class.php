@@ -51,7 +51,7 @@ class MasterObjects extends CBitrixComponent
 
 	private function run()
 	{
-
+		//gg(Context::getCurrent()->getRequest()->getRequestUri());
 		$this->arResult['PAGE_SIZE'] = 10;
 
 		$this->arResult['ACCESS'] = $this->checkAccess();
@@ -96,10 +96,12 @@ class MasterObjects extends CBitrixComponent
 
 			$this->arResult['DETAIL']['COLUMNS'] = [
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
-				['id' => 'UF_NAME', 'name' => 'Наименование cчетчика', 'default' => true, 'width' => 250, 'editable' => true],
-				['id' => 'UF_NUMBER', 'name' => 'Номер cчетчика', 'default' => true, 'width' => 250, 'editable' => true],
-				['id' => 'SERVICE', 'name' => 'Тип счетчика', 'default' => true, 'width' => 200, "editable" => ['TYPE' => 'MULTISELECT', 'items' => $serviceItems]],
-				['id' => 'UF_DATE', 'name' => 'Дата очередной поверки', 'default' => true, 'width' => 200, "editable" => ['TYPE' => 'DATE']],
+				['id' => 'NAME', 'name' => 'Наименование cчетчика', 'default' => true, 'width' => 200, 'editable' => true],
+				['id' => 'NUMBER', 'name' => 'Номер cчетчика', 'default' => true, 'width' => 200, 'editable' => true],
+				['id' => 'DATE', 'name' => 'Дата установки', 'default' => true, "editable" => ['TYPE' => 'CUSTOM']],
+				['id' => 'TYPE', 'name' => 'Тип счетчика', 'default' => true, "editable" => ['TYPE' => 'MULTISELECT', 'items' => $serviceItems]],
+				['id' => 'CHECK', 'name' => 'Дата очередной поверки', 'default' => true, "editable" => ['TYPE' => 'CUSTOM']],
+				// ['id' => 'UF_CHECK', 'name' => 'Дата очередной поверки', 'default' => true, "editable" => ['TYPE' => 'DATE']],
 				// ['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => '130'],
 			];
 
@@ -111,25 +113,101 @@ class MasterObjects extends CBitrixComponent
 
 				$countersObject = LKClass::getCounters($objectID);
 
+				$data = [];
 				foreach ($countersObject as $key => $counter) {
 
 					$types = [];
+					// $editTypes = [];
+
+					$column = $counter;
+
+					$column['NAME'] = $counter['UF_NAME'];
+					$column['NUMBER'] = $counter['UF_NUMBER'];
 
 					foreach ($counter['UF_TYPE'] as $value) {
-						$typeItem = $serviceList[$value];
-						$types[] = '<div><img class="mb-1@" src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'] . '</span></div>';
-						// $types[] = '<img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/>';
-					}
-					$counter['SERVICE'] = '<div class="row gy-1">' . implode('', $types) . '</div>';
 
-					$data = $counter;
-					if ($counter['UF_DATE']) {
-						$objDateTime = new DateTime($counter['UF_DATE']);
-						$data['UF_DATE'] = $objDateTime->format("d.m.Y");
+						$typeItem = $serviceList[$value];
+						$types[] = '<div><img class="mb-1@" src="' . $typeItem['ICON'] . '" width="20" height="20" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'] . '</span></div>';
+						// $types[] = '<img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/>';
+						// $editTypes[] = $value;
 					}
+					$column['TYPE'] = '<div class="row gy-1">' . implode('', $types) . '</div>';
+					$data = $column;
+
+					$data['TYPE'] = array_values($counter['UF_TYPE']);
+
+					//if ($counter['UF_CHECK']) {
+					// $objDateTime = new DateTime($counter['UF_CHECK']);
+					// $column['UF_CHECK'] = $objDateTime->format("d.m.Y");
+					//}
+					$column['DATE'] = $counter['UF_DATE'] ?: '';
+					$column['CHECK'] = $counter['UF_CHECK'] ?: '';
+
+					$data['DATE'] = '<div class="ui-ctl ui-ctl-after-icon ui-ctl-date">
+									<a class="ui-ctl-after ui-ctl-icon-calendar"></a>
+									<!--<div class="ui-ctl-element">14.10.2014</div>-->
+								<input type="text" id="" class= "ui-ctl-element" name="UF_DATE" value="' . $column['DATE'] . '">
+								</div>
+									<script>
+										(function() {
+											const input = document.querySelector(`input[name="UF_DATE"]`);
+
+											const button = input.closest(".ui-ctl-date")
+											// const button = input.previousElementSibling;
+											console.log("button",button);
+											// const button = input.nextElementSibling;
+											let picker = null;
+											const getPicker = () => {
+												if (picker === null) {
+													picker = new BX.UI.DatePicker.DatePicker({
+														targetNode: input,
+														inputField: input,
+														enableTime: false,
+														useInputEvents: false,
+													});
+												}
+
+												return picker;
+											};
+
+											BX.Event.bind(button, "click", () => getPicker().show());
+										})();
+									</script>';
+
+					$data['CHECK'] = '<div class="ui-ctl ui-ctl-after-icon ui-ctl-date">
+									<a class="ui-ctl-after ui-ctl-icon-calendar"></a>
+									<!--<div class="ui-ctl-element">14.10.2014</div>-->
+								<input type="text" id="" class= "ui-ctl-element" name="UF_CHECK" value="' . $column['CHECK'] . '">
+								</div>
+									<script>
+										(function() {
+											const input = document.querySelector(`input[name="UF_CHECK"]`);
+
+											const button = input.closest(".ui-ctl-date")
+											// const button = input.previousElementSibling;
+											console.log("button",button);
+											// const button = input.nextElementSibling;
+											let picker = null;
+											const getPicker = () => {
+												if (picker === null) {
+													picker = new BX.UI.DatePicker.DatePicker({
+														targetNode: input,
+														inputField: input,
+														enableTime: false,
+														useInputEvents: false,
+													});
+												}
+
+												return picker;
+											};
+
+											BX.Event.bind(button, "click", () => getPicker().show());
+										})();
+									</script>';
+
 
 					$item['ROWS'][$key] = [
-						'columns' => $counter,
+						'columns' => $column,
 						'data' => $data,		//Данные для инлайн-редактирования
 
 						//'actions' => [ //Действия над ними
@@ -145,20 +223,9 @@ class MasterObjects extends CBitrixComponent
 					];
 				}
 
-				// $item['ROWS'] = $countersObject;
-
-				// $item['ROWS'][$objectID] = [
-				// 	'data' => $countersObject
-				// ];
-
-				// $this->arResult['ITEMS'][$objectID]['ROWS'][] = [
-				// 	'data' => $item
-				// ];
-
-				// $this->arResult['DETAIL']
+				$this->arResult['ITEMS'][] = $item;
 			}
 
-			$this->arResult['ITEMS'] = $objectList;
 		} else {
 
 			$result = \Bitrix\Main\UserGroupTable::getList(array(
@@ -336,8 +403,11 @@ class MasterObjects extends CBitrixComponent
 		if ($USER->IsAuthorized()) {
 			$rsGroups = \CUser::GetUserGroupEx($USER->GetID());
 			while ($arGroup = $rsGroups->GetNext()) {
-				if ($arGroup['GROUP_ID'] == 1 || $arGroup['STRING_ID'] === $arParams['GROUP_CODES']['ADMINISTRATOR']) {
+				if ($arGroup['GROUP_ID'] == 1) {
 					$this->arResult['ADMIN'] = true;
+					return true;
+				} elseif ($arGroup['STRING_ID'] === $arParams['GROUP_CODES']['ADMINISTRATOR']) {
+					$this->arResult['MODERATOR'] = true;
 					return true;
 				}
 				if ($arGroup['STRING_ID'] === $arParams['GROUP_CODES']['ORGANIZATION']) {
@@ -383,6 +453,7 @@ class MasterObjects extends CBitrixComponent
 		if ($this->isPost() && check_bitrix_sessid()) {
 
 			// dump($arRequest);
+			Bitrix\Main\Diag\Debug::dumpToFile(var_export($arRequest, 1), '$arRequest', 'test.log');
 
 			if ($arRequest["ADD_OBJECT"] == 'Y') {
 				LKClass::addObject($arRequest["FIELDS"]);
@@ -391,13 +462,32 @@ class MasterObjects extends CBitrixComponent
 			} elseif ($arRequest["ADD_COMPANY"] == 'Y') {
 				LKClass::addCompany($arRequest["FIELDS"]);
 			} elseif ($arRequest["grid_id"] == 'zhek_master_objects') {
-				Bitrix\Main\Diag\Debug::dumpToFile(var_export($arRequest, 1), '$arRequest', 'test.log');
+
 				foreach ($arRequest["FIELDS"] as $companyID => $fields) {
 					LKClass::saveCompany($companyID, $fields);
 				}
 			} else {
+
+				if (isset($arRequest["ID"])) {
+					foreach ($arRequest["ID"] as $counterID) {
+						LKClass::deleteCounter($counterID);
+					}
+				} else {
 				foreach ($arRequest["FIELDS"] as $counterID => $fields) {
-					LKClass::saveCounter($counterID, $fields);
+
+						foreach ($fields as $key => $value) {
+							if ($key == 'TYPE' && is_array($value)) {
+								foreach ($value as $val) {
+									$arVal[] = $val['VALUE'];
+								}
+								$data['UF_' . $key] = $arVal;
+							} else {
+								$data['UF_' . $key] = $value;
+							}
+						}
+						LKClass::updateCounter($counterID, $data);
+						//LKClass::updateCounter($counterID, $fields);
+					}
 				}
 			}
 
@@ -410,8 +500,11 @@ class MasterObjects extends CBitrixComponent
 
 			// }
 
-			if (!isset($arRequest["AJAX_CALL"]))
+			// if (!isset($arRequest["AJAX_CALL"])) {
+			// 	self::run();
 				LocalRedirect(Context::getCurrent()->getRequest()->getRequestUri());
+			// }
+
 		}
 	}
 

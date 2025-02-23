@@ -1,3 +1,4 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <?
 
 use Bitrix\Main\Application,
@@ -13,8 +14,6 @@ if ($arResult['ACCESS']): ?>
     $isArhive = $request->getQuery('arhive');
     $uri->addParams(array("arhive" => "Y"));
     $arhiveUrl = $uri->getUri();
-
-    // dump($arResult['DETAIL']);
     ?>
     <div id='contracts' class="content">
         <?/*<div class="py-3">
@@ -63,118 +62,194 @@ if ($arResult['ACCESS']): ?>
         <!-- <select class="form-control required select" name="date" id="date">
 
         </select> -->
-        <? ?>
-        <?
-        foreach ($arResult['DETAIL']['PROVIDER'] as $key => $provider) : ?>
-            <? if ($arResult['SERVICE'][$provider['ID']]['OBJECTS']): ?>
+        <div class="row mb-1 ">
+            <div class="col">
+            </div>
+            <div class="col-auto me-2">
+                <a class="ui-btn ui-btn-primary-dark" onclick="saveButton()">Скачать справки</a>
+            </div>
+        </div>
+        <div id="reestr">
+            <?
+            $count = $arResult['DETAIL']['PROVIDER'] ? count($arResult['DETAIL']['PROVIDER']) : 0;
+            foreach ($arResult['DETAIL']['PROVIDER'] as $k => $provider) : ?>
+                <?/* if ($arResult['SERVICE'][$provider['ID']]['OBJECTS']): ?>
                 <div class="row mb-1">
                     <div class="col">
                     </div>
                     <div class="col-auto">
-                        <a class="ui-btn ui-btn-primary-dark" href="#">скачать справку</a>
+                        <a class="ui-btn ui-btn-primary-dark" onclick="saveButton(<?= $provider['ID'] ?>)">скачать справку</a>
                     </div>
                 </div>
-            <? endif; ?>
-            <div class="card mb-3 border-<?= $provider['COLOR'] ?>">
-                <div class="card-body">
-                    <div class="row gx-2 align-items-center mb-2">
-                        <div class="col-3 col-xxl-2 pt-2 pb-1">Заказчик:</div>
-                        <div class="col-9 text-center pt-2 pb-1 border-bottom">
-                            <?= $arResult['DETAIL']['COMPANY_INFO']['NAME'] ?>
+            <? endif; */ ?>
+                <div class="reestr card me-2 border-<?= $provider['COLOR'] ?><?= $k + 1 < $count ? ' pageBreak mb-3' : '' ?>" id="ref<?= $provider['ID'] ?>">
+                    <div class="card-body">
+                        <div class="row gx-2 align-items-center mb-2">
+                            <div class="col-3 col-xxl-2 pt-2 pb-1">Заказчик:</div>
+                            <div class="col-9 text-center pt-2 pb-1 border-bottom">
+                                <?= $arResult['DETAIL']['COMPANY_INFO']['NAME'] ?>, <?= $arResult['DETAIL']['COMPANY_INFO']['INN'] ?>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row gx-2 align-items-center mb-2">
-                        <div class="col-3 col-xxl-2 pt-2 pb-1">Юридический адрес:</div>
-                        <div class="col-9 text-center pt-2 pb-1 border-bottom"><?= $arResult['DETAIL']['COMPANY_INFO']['ADDRESS'] ?>
+                        <div class="row gx-2 align-items-center mb-2">
+                            <div class="col-3 col-xxl-2 pt-2 pb-1">Юридический адрес:</div>
+                            <div class="col-9 text-center pt-2 pb-1 border-bottom"><?= $arResult['DETAIL']['COMPANY_INFO']['ADDRESS'] ?>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row gx-2 mb-4">
-                        <div class="col-3 col-xxl-2 pt-2 pb-1">Номер и дата договора:</div>
-                        <div class="col-9 text-center pt-2 pb-1 border-bottom text-<?= $provider['COLOR'] ?>">МК №<?= $arResult['DETAIL']['NUMBER'] ?>/<?= $provider['LITERA'] ?>-<?= $arResult['DETAIL']['YEAR'] ?> от <?= $arResult['DETAIL']['DATE'] ?> г.
+                        <div class="row gx-2 mb-4">
+                            <div class="col-3 col-xxl-2 pt-2 pb-1">Номер и дата договора:</div>
+                            <div class="col-9 text-center pt-2 pb-1 border-bottom text-<?= $provider['COLOR'] ?>">МК №<?= $arResult['DETAIL']['NUMBER'] ?>/<?= $provider['LITERA'] ?>-<?= $arResult['DETAIL']['YEAR'] ?> от <?= $arResult['DETAIL']['DATE'] ?> г.
+                            </div>
                         </div>
-                    </div>
-                    <div class="card! mt-4">
-                        <div class="card-body!">
-                            <div class="h5 text-center">СПРАВКА № <?= $key + 1 ?> от «<?= FormatDate("j", MakeTimeStamp(time())) ?>» <?= FormatDate("F Y", MakeTimeStamp(time())) ?>г.</div>
-                            <? if ($arResult['SERVICE'][$provider['ID']]['OBJECTS']): ?>
-                                <div class="table-responsive">
-                                    <table class="table table-sm!">
-                                        <thead class="small">
-                                            <tr class="text-center">
-                                                <th width="40">№<br>п/п</th>
-                                                <th>Наименование объекта</th>
-                                                <!-- <th>ID</th> -->
-                                                <th width="220">Адрес</th>
-                                                <th>Вид услуги</th>
-                                                <th>ID</th>
-                                                <th>Дата очередной поверки ПУ</th>
-                                                <th>Номер пломбы ПУ</th>
-                                                <th>Ед. изм.</th>
-                                                <th>Предыдущие показания ПУ</th>
-                                                <th>Текущие показания ПУ</th>
-                                                <th>Потребленный объем (разница)</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?
-                                            $i = 1;
-
-                                            // dump($arResult['PREV_METERS']);
-                                            foreach ($arResult['SERVICE'][$provider['ID']]['OBJECTS'] as $key => $value): ?>
-                                                <?
-                                                $prevMeters = null;
-                                                $lastMeters = null;
-                                                $potreb = null;
-
-                                                // dump($arResult['PREV_METERS'][$key][$value['COUNTER']['ID']]);
-
-                                                if (is_array($arResult['PREV_METERS'][$key][$value['COUNTER']['ID']])) {
-                                                    $prevMeters = $arResult['PREV_METERS'][$key][$value['COUNTER']['ID']][0]['METER'];
-                                                }
-                                                //$prevMeters = array_shift($arResult['PREV_METERS'][$key][$value['COUNTER']['ID']])['METER'];
-
-                                                if (is_array($arResult['LAST_METERS'][$key][$value['COUNTER']['ID']]))
-                                                    $lastMeters = array_shift($arResult['LAST_METERS'][$key][$value['COUNTER']['ID']])['METER'];
-
-
-                                                if ($prevMeters && $lastMeters)
-                                                    $potreb = $lastMeters - $prevMeters;
-                                                // $meterLast = array_shift($value['METERS']);
-
-                                                // dump($value['LAST_METERS']);
-                                                ?>
+                        <div class="card! mt-4 mb-1">
+                            <div class="card-body!">
+                                <div class="h5 text-center">СПРАВКА № <?= $k + 1 ?> от «<?= FormatDate("j", MakeTimeStamp(time())) ?>» <?= FormatDate("F Y", MakeTimeStamp(time())) ?>г.</div>
+                                <? if ($arResult['SERVICE'][$provider['ID']]['OBJECTS']): ?>
+                                    <div class="table-responsive!">
+                                        <table class="table table-sm! mb-1">
+                                            <thead class="small">
                                                 <tr class="text-center">
-                                                    <td><?= $i; ?></td>
-                                                    <td class="text-start"><?= $value['INFO']['NAME']; ?></td>
-                                                    <!-- <th><?= $key
-                                                                ?></th> -->
-                                                    <td class="text-start"><?= $value['INFO']['ADDRESS']; ?></td>
-                                                    <td><?= $provider['NAME']; ?></td>
-                                                    <td><?= $value['COUNTER']['ID']; ?></td>
-                                                    <td><?= $value['COUNTER']['UF_DATE']; ?></td>
-                                                    <td><?= $value['COUNTER']['UF_NUMBER']; ?></td>
-                                                    <td><?= $provider['UNIT']; ?></td>
-                                                    <td><?= $prevMeters; ?></td>
-                                                    <td><?= $lastMeters; ?></td>
-                                                    <td><?= $potreb ?></td>
+                                                    <th width="40">№<br>п/п</th>
+                                                    <th>Наименование объекта</th>
+                                                    <!-- <th>ID</th> -->
+                                                    <th width="220">Адрес</th>
+                                                    <th>Вид услуги</th>
+                                                    <th>ID</th>
+                                                    <th>Дата очередной поверки ПУ</th>
+                                                    <th>Номер пломбы ПУ</th>
+                                                    <th>Ед. изм.</th>
+                                                    <th>Предыдущие показания ПУ</th>
+                                                    <th>Текущие показания ПУ</th>
+                                                    <th>Потребленный объем (разница)</th>
                                                 </tr>
-                                                <? $i++; ?>
-                                            <? endforeach ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            <? endif; ?>
+                                            </thead>
+                                            <tbody>
+                                                <?
+                                                $i = 1;
+
+                                                // dump($arResult['PREV_METERS']);
+                                                foreach ($arResult['SERVICE'][$provider['ID']]['OBJECTS'] as $key => $value): ?>
+                                                    <?
+                                                    $prevMeters = null;
+                                                    $lastMeters = null;
+                                                    $potreb = null;
+
+                                                    // dump($arResult['PREV_METERS'][$key][$value['COUNTER']['ID']]);
+
+                                                    if (is_array($arResult['PREV_METERS'][$key][$value['COUNTER']['ID']])) {
+                                                        $prevMeters = $arResult['PREV_METERS'][$key][$value['COUNTER']['ID']][0]['METER'];
+                                                    }
+                                                    //$prevMeters = array_shift($arResult['PREV_METERS'][$key][$value['COUNTER']['ID']])['METER'];
+
+                                                    if (is_array($arResult['LAST_METERS'][$key][$value['COUNTER']['ID']]))
+                                                        $lastMeters = array_shift($arResult['LAST_METERS'][$key][$value['COUNTER']['ID']])['METER'];
+
+
+                                                    if ($prevMeters && $lastMeters)
+                                                        $potreb = $lastMeters - $prevMeters;
+                                                    // $meterLast = array_shift($value['METERS']);
+
+                                                    // dump($value['LAST_METERS']);
+                                                    ?>
+                                                    <tr class="text-center">
+                                                        <td><?= $i; ?></td>
+                                                        <td class="text-start"><?= $value['INFO']['NAME']; ?></td>
+                                                        <!-- <th><?= $key
+                                                                    ?></th> -->
+                                                        <td class="text-start"><?= $value['INFO']['ADDRESS']; ?></td>
+                                                        <td><?= $provider['NAME']; ?></td>
+                                                        <td><?= $value['COUNTER']['ID']; ?></td>
+                                                        <td><?= $value['COUNTER']['UF_CHECK']; ?></td>
+                                                        <td><?= $value['COUNTER']['UF_NUMBER']; ?></td>
+                                                        <td><?= $provider['UNIT']; ?></td>
+                                                        <td><?= $prevMeters; ?></td>
+                                                        <td><?= $lastMeters; ?></td>
+                                                        <td><?= $potreb ?></td>
+                                                    </tr>
+                                                    <? $i++; ?>
+                                                <? endforeach ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                <? endif; ?>
+                            </div>
                         </div>
+                        <div class="row gx-2 my-0">
+                            <div class="col-3 col-xxl-2 pt-2 pb-1">Потребитель:</div>
+                            <div class="col-9"></div>
+                        </div>
+                        <table class="table table-borderless mb-0">
+                            <tr class="text-center">
+                                <td width="40"></td>
+                                <td width="400" class="border-bottom text-start"><?= $arResult['USER_INFO']['WORK_POSITION'] ?></td>
+                                <td width="20"></td>
+                                <td class="border-bottom" width="300"></td>
+                                <td width="20"></td>
+                                <td class="border-bottom" width="300"><?= $arResult['USER_INFO']['FULL_NAME'] ?></td>
+                                <td></td>
+                            </tr>
+                            <tr class="text-center small">
+                                <td width="40"></td>
+                                <td width="400"><sup>Должность ответственного лица</sup></td>
+                                <td width="20"></td>
+                                <td width="300"></td>
+                                <td width="20"></td>
+                                <td width="300"><sup>ФИО ответственного лица</sup></td>
+                                <td></td>
+                            </tr>
+                            <tr class="text-center">
+                                <td colspan="3"></td>
+                                <td class="pb-0">"___" __________________ <?= date('Y') ?>г.</td>
+                                <td colspan="3"></td>
+                            </tr>
+                            <tr class="text-center small">
+                                <td colspan="3"></td>
+                                <td><sup>МП</sup></td>
+                                <td colspan="3"></td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
-            </div>
-        <? endforeach; ?>
+                <?/* if ($k + 1 < $count): ?>
+                    <div id="pageBreak"></div>
+                <? endif;*/ ?>
+            <? endforeach; ?>
+        </div>
     </div>
-
 <? else: ?>
     <font class="errortext">нет доступа</font>
 <? endif; ?>
 <?
+// $html = <<<HTML
+// 	<!DOCTYPE html>
+// 	<html>
+// 		<head>
+// 			<meta charset="utf-8">
+// 			<title>Test Page</title>
+// 		</head>
+// 		<body>
+// 			<p>Привет, <span style="color: green">Мир</span>!</p>
+// 		</body>
+// 	</html>
+// HTML;
+// reference the Dompdf namespace
+
+// use Dompdf\Dompdf;
+
+// $dompdf = new Dompdf();
+// $dompdf->set_option('isRemoteEnabled', TRUE);
+// $dompdf->setPaper('A4', 'portrait');
+// $dompdf->loadHtml($html, 'UTF-8');
+// $dompdf->render();
+
+// Вывод файла в браузер:
+// $dompdf->stream();
+
+// Или сохранение на сервере:
+// $pdf = $dompdf->output();
+// file_put_contents(__DIR__ . '/schet.pdf', $pdf);
+
+
+
 function templateItems($docVal, $useCheck, $admin = false)
 {
     $result = '<div class="card col-12 col-sm-6 col-md-4 col-lg mt-4 mt-md-0">';
@@ -233,7 +308,47 @@ function templateItems($docVal, $useCheck, $admin = false)
 $url = $templateFolder . '/ajax.php';
 ?>
 <script>
-    /* var url = <?= json_encode($url) ?>;
+    function saveButton(event) {
+
+        element = document.getElementById('reestr');
+        // var element = document.getElementById('ref' + event);
+        console.log(element);
+        var opt = {
+            margin: 7,
+            filename: 'myfile.pdf',
+            // image: {
+            //     type: 'jpeg',
+            //     quality: 0.98
+            // },
+            html2canvas: {
+                scale: 2,
+                // width: 1150,
+                // height: 500,
+            },
+            jsPDF: {
+                // format: 'a4',
+                orientation: 'landscape'
+            },
+            pagebreak: {
+                // mode: 'avoid-all',
+                // mode: ['avoid-all', 'css', 'legacy'],
+                after: '.pageBreak',
+                // after: '#pageBreak',
+                // before: '#page2el'
+            }
+        };
+
+        // New Promise-based usage:
+        html2pdf().set(opt).from(element).save();
+
+        // // Old monolithic-style usage:
+        // html2pdf(element, opt);
+
+    }
+
+
+    /* var url = <? //= json_encode($url)
+                    ?>;
     //var idIblock = <? //=$arResult['ID_STATUS']
                         ?>;
     function refresh() {

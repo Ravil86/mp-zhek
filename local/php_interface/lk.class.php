@@ -138,29 +138,21 @@ class LKClass
 
         $classHL = \HLWrap::init(self::$_HL_Counters);
         $classHL::add($data);
-        // $classHL::update($counterID, $data);
-        // $filter = ['ID' => $objectID];
-
-        // $params = array(
-        //     "order" => array(
-        //         "ID" => "asc"
-        //     ),
-        //     "filter" => $filter,
-        // );
-        // $rsVoice = $classHL::getList($params);
-
-        // if ($arVoice = $rsVoice->Fetch()) {
-
-        //     $classHL::update($arVoice["ID"], $value);
-        // } else {
-        //     $classHL::add($value);
-        // }
     }
 
-    public static function saveCounter($counterID, $data)
+    public static function deleteCounter($data)
     {
 
         $classHL = \HLWrap::init(self::$_HL_Counters);
+        $classHL::delete($data);
+    }
+
+    public static function updateCounter($counterID, $data)
+    {
+
+        $classHL = \HLWrap::init(self::$_HL_Counters);
+
+        $data['UF_DATE'] = new DateTime(date('d.m.Y'));
 
         $classHL::update($counterID, $data);
 
@@ -521,10 +513,12 @@ class LKClass
 
         $result = \Bitrix\Main\UserTable::getList(array(
             'filter' => array('=ID' => $userId),
-            'select' => array('ID', 'EMAIL', 'LOGIN', 'NAME', 'LAST_NAME', 'SECOND_NAME', 'UF_*'),
+            'select' => array('ID', 'EMAIL', 'LOGIN', 'NAME', 'LAST_NAME', 'SECOND_NAME', 'WORK_POSITION', 'UF_*'),
             'order' => array('ID' => 'ASC'),
         ));
         $arUser = $result->Fetch();
+
+        $arUser['FULL_NAME'] = ($arUser["LAST_NAME"] ? $arUser["LAST_NAME"] . ' ' : '') . $arUser["NAME"] . ($arUser['SECOND_NAME'] ? ' ' . $arUser['SECOND_NAME'] : '');
 
         return $arUser;
     }

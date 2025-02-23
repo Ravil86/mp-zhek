@@ -77,3 +77,37 @@ line-height: 1.5;
 border-width: 3px;
 border-color: black;
 }
+
+#table-reestr>:not(caption)>*>*{
+padding-top: .35rem;
+padding-bottom: .35rem;
+padding-left: .4rem;
+padding-right: .4rem;
+}
+#table-reestr tr td {
+font-size: 15px;
+}
+
+#table-reestr .table tr td{
+font-size: 14px;
+padding-top: .45rem;
+padding-bottom: .45rem;
+}
+
+#table-reestr .table .table-row img{
+	padding-right: 1px;
+}
+
+#table-reestr .table .table-row:last-child{
+border-bottom: none!important;
+}
+
+#table-reestr .table .table-row:nth-child(even) {
+    background-color: rgba(var(--bs-emphasis-color-rgb), 0.05);
+}
+
+#table-reestr .table .table-row{
+padding-top: .35rem;
+padding-bottom: .35rem;
+min-height: 30px;
+}
