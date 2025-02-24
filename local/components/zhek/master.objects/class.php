@@ -276,9 +276,9 @@ class MasterObjects extends CBitrixComponent
 			$this->arResult['GRID']['COLUMNS'] = [
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
 				['id' => 'UF_NAME', 'name' => 'Организация', /*'sort' => 'NAME', */ 'default' => true, 'width' => 300,  'editable' => true],
-				['id' => 'UF_ADDRESS', 'name' => 'Адрес организации', /*'sort' => 'ADDRESS', */ 'default' => false, 'editable' => true],
+				['id' => 'UF_ADDRESS', 'name' => 'Адрес организации', 'width' => 200, 'default' => false, 'editable' => true],
 				['id' => 'UF_INN', 'name' => 'ИНН',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => true, 'editable' => true],
-				['id' => 'DOGOVOR', 'name' => 'Текущий договор', 'default' => false],
+				// ['id' => 'DOGOVOR', 'name' => 'Текущий договор', 'default' => false],
 				['id' => 'UF_USER', 'name' => 'Оператор', 'default' => true, "editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]],
 				['id' => 'UF_TYPE', 'name' => 'Тип организации', 'default' => false, "editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]],
 				['id' => 'DETAIL', 'name' => 'Объектов', 'default' => true],

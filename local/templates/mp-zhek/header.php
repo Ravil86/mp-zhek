@@ -79,6 +79,10 @@ $arSite = $rsSites->Fetch();
 
         // '//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/2.0.0-beta1/css/bootstrap-select.min.css',
         SITE_TEMPLATE_PATH . '/lib/bootstrap-select/css/bootstrap-select.min.css',
+
+        //select2
+        // '//cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css',
+        // '//cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css'
     );
 
     foreach ($arCss as $key => $css) {

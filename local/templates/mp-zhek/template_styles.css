@@ -2064,6 +2064,8 @@ button:focus-visible {
 	transition: none !important;
 }
 
+
+/* LK */
 .ui-btn.ui-btn-dropdown:after {
 	border: none;
 }
@@ -2102,4 +2104,8 @@ border-radius: var(--ui-border-radius-2xs);
 
 .site-container .ui-ctl-element.form-control:focus{
 box-shadow: none;
+}
+
+.bootstrap-select .dropdown-toggle .filter-option{
+height: unset;
 }

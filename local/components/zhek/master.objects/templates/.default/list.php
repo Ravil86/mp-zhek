@@ -43,7 +43,7 @@ use Bitrix\Highloadblock as HL;
         $snippet = new Bitrix\Main\Grid\Panel\Snippet();
         $controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getEditButton();
         $controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getRemoveButton();
-    // $controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getForAllCheckbox();
+        // $controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getForAllCheckbox();
 
         $gridParams = [
             'GRID_ID' => $arResult['GRID_ID'],
@@ -154,15 +154,15 @@ use Bitrix\Highloadblock as HL;
                         </div>
                         <div class="row gx-2 mt-3">
                             <div class="col-12 col-md">
-                                <label>Адрес</label>
-                                <div class="ui-ctl ui-ctl-textarea ui-ctl-lg! ui-ctl-w100">
-                                    <textarea class="ui-ctl-element" name="FIELDS[UF_ADDRESS]" placeholder="Адрес"></textarea>
+                                <label>E-mail</label>
+                                <div class="ui-ctl ui-ctl-textbox ui-ctl-lg! ui-ctl-w100">
+                                    <input class="ui-ctl-element" type="text" name="FIELDS[EMAIL]" placeholder="E-mail">
                                 </div>
                             </div>
                             <div class="col-12 col-md">
-                                <label>ИНН</label>
+                                <label>Должность</label>
                                 <div class="ui-ctl ui-ctl-textbox ui-ctl-lg! ui-ctl-w100">
-                                    <input class="ui-ctl-element" type="text" name="FIELDS[UF_INN]" placeholder="ИНН">
+                                    <input class="ui-ctl-element" type="text" name="FIELDS[WORK_POST]" placeholder="Должность">
                                 </div>
                             </div>
                         </div>

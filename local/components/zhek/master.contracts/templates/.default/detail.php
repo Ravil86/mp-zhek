@@ -49,7 +49,7 @@ if ($arResult['ACCESS']): ?>
         $begin = new DateTime($dateStr);
         $end = new DateTime($dateEnd);
 
-        // dump($periods);
+        // dump($arResult);
         ?>
         <div class="ui-ctl ui-ctl-after-icon ui-ctl-dropdown">
             <div class="ui-ctl-after ui-ctl-icon-angle"></div>
@@ -66,7 +66,7 @@ if ($arResult['ACCESS']): ?>
             <div class="col">
             </div>
             <div class="col-auto me-2">
-                <a class="ui-btn ui-btn-primary-dark" onclick="saveButton()">Скачать справки</a>
+                <a class="ui-btn ui-btn-primary-dark" onclick="saveButton('<?= date('m') ?>')">Скачать справки</a>
             </div>
         </div>
         <div id="reestr">
@@ -249,84 +249,31 @@ if ($arResult['ACCESS']): ?>
 // file_put_contents(__DIR__ . '/schet.pdf', $pdf);
 
 
-
-function templateItems($docVal, $useCheck, $admin = false)
-{
-    $result = '<div class="card col-12 col-sm-6 col-md-4 col-lg mt-4 mt-md-0">';
-    /*$result = '<div class="col-12 col-sm-6 col-md-4 col-lg mt-4 mt-md-0">
-		<div class="row"><div class="col doc_title small!">' . ($docVal['DESC'] ?: TruncateText($docVal['NAME'], 28)) . '</div></div>';
-        if (!$docVal['STATUS']) {
-            $result .= '<div class="row">
-				<span class="col">не загружен</span>
-			</div>';
-        } else {
-            $docStatus = $docVal['STATUS'];
-            $result .= '<div class="row g-2" >
-				<div class="col-auto">';
-            $result .= '<a class="mb-2 pt-2 btn btn-sm icon_file border-' . $docStatus['UF_CODE'] . ' text-' . $docStatus['UF_CODE'] . '" data-fancybox ' . ($Format == 'pdf' ? 'data-type="iframe" data-options=\'{"iframe\" : {\"preload\" : true, \"css\" : {\"height\" : \"80%\"}}}\'' : '') . ' data-src="' . $docVal['SRC'] . '" href="javascript:;">
-							<i class="bi bi bi-file-earmark-' . $docStatus['UF_XML_ID'] . ' image text-' . $docStatus['UF_CODE'] . '"></i><div class="small"><small><small>' . TruncateText($docStatus['UF_NAME'], 8) . '</small></small></div>
-						</a>
-					</div>
-					<div class="col-8" id="' . $docVal['ID'] . '">';
-
-            $result .= '<div class="mt-1 mb-2 text-muted">';
-            $result .= '<div class=""><span>' . TruncateText($docVal['FILE_NAME'], 35) . '</span></div>';
-            //$result .= '<div class="text-'.$docStatus['UF_CODE'].'"><i class="bi bi-file-earmark-'.$docStatus['UF_XML_ID'].'" style="font-size: 1.3rem;"></i><span>'.$docStatus['UF_NAME'].'</span></div>';
-            $result .= '<div class="info_status_inner info_item_date mt-1 pl-0"><span class="">' . $docVal['DATE'] . '</span></div>';
-            if ($docStatus['ID'] == 3 && $docVal['INFO']):
-                $result .= '<div class="mt-1 ms-1 info_status_note"><div class="ps-3">' . $docVal['INFO'] . '</div></div>';
-            endif;
-            $result .= '</div>
-
-					</div>
-			</div>';
-            if ($admin && $docVal['ID'] || $useCheck && $docStatus['ID'] == 1): ?>
-    <?
-                $textCheck = !$admin ? 'Одобрить' : 'load';
-                $textRefuse = !$admin ? 'Отказать' : 'deny';
-                $result .= '<div class="btn_status">
-								<a class="btn_yes btn button-outline mb-1' . ($admin ? ' w-auto' : '') . '" data-id="' . $docVal['ID'] . '">
-								<i class="bi bi-check2' . (!$admin ? ' fs-6' : '') . '"></i>
-									' . $textCheck . '</a>
-								<a class="btn_no open_popup btn button-outline mb-1' . ($admin ? ' w-auto' : '') . '" data-id="' . $docVal['ID'] . '">
-									<i class="bi bi-x' . (!$admin ? ' fs-6' : '') . '"></i>
-									' . $textRefuse . '</a>';
-                if ($admin) {
-                    $result .= '<a class="btn_load btn button-outline ms-1 mb-1' . ($admin ? ' w-auto' : '') . '" data-id="' . $docVal['ID'] . '">
-							<i class="bi bi-arrow-down"></i></a>';
-                }
-                //<!--button class="btn_no open_popup" data-id="'.$docVal['VALUE'].'">Отказать</!--button-->
-                $result .= '</div><!--btn-status-->';
-            endif;
-        }*/
-    $result .= '</div>';
-    return $result;
-}
-
-
-
 $url = $templateFolder . '/ajax.php';
 ?>
 <script>
-    function saveButton(event) {
+    function saveButton(month) {
+
+        console.log('month', month);
+
+
+        var filename = month + '_<?= $arResult['DETAIL']['FULL_NUMBER'] ?>_<?= $arResult['DETAIL']['COMPANY_INFO']['INN'] ?>.pdf'
 
         element = document.getElementById('reestr');
         // var element = document.getElementById('ref' + event);
         console.log(element);
         var opt = {
             margin: 7,
-            filename: 'myfile.pdf',
+            filename: filename,
             // image: {
             //     type: 'jpeg',
             //     quality: 0.98
             // },
             html2canvas: {
-                scale: 2,
-                // width: 1150,
-                // height: 500,
+                scale: 2
             },
             jsPDF: {
-                // format: 'a4',
+                format: 'a4',
                 orientation: 'landscape'
             },
             pagebreak: {
@@ -343,9 +290,7 @@ $url = $templateFolder . '/ajax.php';
 
         // // Old monolithic-style usage:
         // html2pdf(element, opt);
-
     }
-
 
     /* var url = <? //= json_encode($url)
                     ?>;

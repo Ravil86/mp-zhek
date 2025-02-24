@@ -404,6 +404,11 @@ class LKClass
         return $result;
     }
 
+    public static function addContract($data)
+    {
+        $classHL = \HLWrap::init(self::$_HL_Contracts);
+        $classHL::add($data);
+    }
 
     public static function saveContract($contractID, $data)
     {
@@ -411,12 +416,24 @@ class LKClass
         $classHL::update($contractID, $data);
     }
 
-    public static function getYears()
+    public static function deleteContract($data)
+    {
+        $classHL = \HLWrap::init(self::$_HL_Contracts);
+        $classHL::delete($data);
+    }
+
+    public static function getYears($full = false)
     {
         HLWrap::init(self::$_HL_Contracts);
         $rsFields = HLWrap::getEnumProp('UF_YEAR');
         while ($field = $rsFields->Fetch()) {
-            $result[$field['ID']] = $field['VALUE'];
+            if ($full)
+                $result[$field['ID']] = [
+                    'VALUE' => $field['VALUE'],
+                    'CODE' => $field['XML_ID'],
+                ];
+            else
+                $result[$field['ID']] = $field['VALUE'];
         }
 
         return $result;

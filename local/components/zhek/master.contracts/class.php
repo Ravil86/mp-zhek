@@ -20,8 +20,8 @@ class MasterContracts extends CBitrixComponent
 	var $serviceList = [];
 	var $statusList = [];
 	var $companyList = [];
-
 	var $userInfo = [];
+	var $yearList = [];
 
 	/*public function onPrepareComponentParams($arParams) {
 
@@ -84,16 +84,18 @@ class MasterContracts extends CBitrixComponent
 		$arResult['GRID_ID'] = $this->arResult['GRID_ID'];
 
 		$this->serviceList = LKClass::getService();
-
 		$this->statusList = LKClass::getStatus();
 		$this->companyList = LKClass::getCompany();
-
 		$this->userInfo = LKClass::curentUserFields();
+		$this->yearList = LKClass::getYears(1);
 
+		$this->arResult['SERVICE_LIST'] = $this->serviceList;
 		$this->arResult['STATUS_LIST'] = $this->statusList;
 		$this->arResult['COMPANY_LIST'] = $this->companyList;
-
+		$this->arResult['YEAR_LIST'] = $this->yearList;
 		$this->arResult['USER_INFO'] = $this->userInfo;
+
+		// gg($this->arResult['YEAR_LIST']);
 
 		foreach ($this->companyList as $key => $value) {
 			$this->arResult['COMPANY_JSON'][] = [
@@ -103,6 +105,13 @@ class MasterContracts extends CBitrixComponent
 			$this->arResult['COMPANY1_JSON'][] = [
 				'VALUE' => $value['ID'],
 				'NAME' => $value['UF_NAME'],
+			];
+		}
+
+		foreach ($this->serviceList as $key => $value) {
+			$this->arResult['SERVICE_JSON'][] = [
+				'value' => $value['ID'],
+				'label' => $value['NAME'],
 			];
 		}
 
@@ -209,13 +218,16 @@ class MasterContracts extends CBitrixComponent
 				$arStatus[$key] = $stat['VALUE'];
 			}
 
+			$arYears = LKClass::getYears();
+
 			//какую сортировку сохранил пользователь (передаем то, что по умолчанию)
 			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
 			$this->arResult['GRID']['COLUMNS'] = [
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 60],
-				['id' => 'DATE', 'name' => 'Дата', /*'sort' => 'TIMESTAMP_X',*/ 'default' => true,  "editable" => ['TYPE' => 'CUSTOM']],
+				['id' => 'DATE', 'name' => 'Дата', 'width' => 100, 'default' => true,  "editable" => ['TYPE' => 'CUSTOM']],
 				// ['id' => 'DATE', 'name' => 'Дата', /*'sort' => 'TIMESTAMP_X',*/ 'default' => true, 'width' => 100, "editable" => ['TYPE' => 'DATE']],
 				['id' => 'NUMBER', 'name' => '№', /*'sort' => 'NUMBER',*/ 'default' => true, 'width' => 70, 'editable' => true],
+				['id' => 'YEAR', 'name' => 'Год', 'default' => true, 'width' => 80, 'editable' => ['TYPE' => 'DROPDOWN', 'items' => $arYears]],
 				['id' => 'COMPANY', 'name' => 'Наименование организации', 'sort' => 'COMPANY', 'default' => true],
 				['id' => 'FULL_NUMBER', 'name' => 'Номер', 'sort' => '', 'default' => true, 'width' => 150],
 				['id' => 'SERVICE', 'name' => 'Услуги', 'default' => true, "editable" => ['TYPE' => 'MULTISELECT', 'items' => $arService]],
@@ -278,6 +290,8 @@ class MasterContracts extends CBitrixComponent
 				$data['SERVICE'] = array_values($item['UF_SERVICE']);
 				$data['STATUS'] = $item['UF_STATUS'];
 
+				$data['YEAR'] = $item['UF_YEAR'];
+
 				// $number = '№ ' . $item['NUMBER'] . '-' . $item['YEAR'] . ' от ' . $item['DATE'];
 				// $item["FULL_NUMBER"] = $number;
 				// $item['COMPANY'] = $item['COMPANY']['NAME'];
@@ -324,8 +338,8 @@ class MasterContracts extends CBitrixComponent
 					'data' => $data			//Данные для инлайн-редактирования
 				];
 			}
-
-			$this->arResult['LIST'] = $arItems['ITEMS'];
+			// gg($arItems['ITEMS']);
+			// $this->arResult['LIST'] = $arItems['ITEMS'];
 
 			$this->arResult['GRID']["COUNT"] = $arItems['COUNT'];
 
@@ -439,7 +453,7 @@ class MasterContracts extends CBitrixComponent
 
 		// $serviceList = LKClass::getService();
 
-		// $yearList = LKClass::getYears();
+
 		// $statusList = LKClass::getStatus();
 
 		foreach ($itemList as &$value) {
@@ -616,24 +630,35 @@ class MasterContracts extends CBitrixComponent
 
 			Bitrix\Main\Diag\Debug::dumpToFile(var_export($arRequest, 1), '$arRequest', 'test.log');
 
-			$data = [];
-			foreach ($arRequest["FIELDS"] as $contractID => $fields) {
+			if ($arRequest["ADD_CONTRACT"] == 'Y') {
+				// Bitrix\Main\Diag\Debug::dumpToFile(var_export($arRequest, 1), '$data', 'test.log');
+				LKClass::addContract($arRequest["FIELDS"]);
+			} else {
+				if (isset($arRequest["ID"])) {
+					foreach ($arRequest["ID"] as $contract) {
+						LKClass::deleteContract($contract);
+					}
+				} else {
+					$data = [];
+					foreach ($arRequest["FIELDS"] as $contractID => $fields) {
 
-				foreach ($fields as $key => $value) {
-					// Bitrix\Main\Diag\Debug::dumpToFile(var_export($value, 1), '$$value', 'test.log');
+						foreach ($fields as $key => $value) {
+							// Bitrix\Main\Diag\Debug::dumpToFile(var_export($value, 1), '$$value', 'test.log');
 
-					if ($key == 'SERVICE' && is_array($value)) {
-						foreach ($value as $val) {
-							$arVal[] = $val['VALUE'];
+							if ($key == 'SERVICE' && is_array($value)) {
+								foreach ($value as $val) {
+									$arVal[] = $val['VALUE'];
+								}
+								$data['UF_' . $key] = $arVal;
+							} else {
+								$data['UF_' . $key] = $value;
+							}
 						}
-						$data['UF_' . $key] = $arVal;
-					} else {
-						$data['UF_' . $key] = $value;
+						// Bitrix\Main\Diag\Debug::dumpToFile(var_export($data, 1), '$data', 'test.log');
+
+						LKClass::saveContract($contractID, $data);
 					}
 				}
-				// Bitrix\Main\Diag\Debug::dumpToFile(var_export($data, 1), '$data', 'test.log');
-
-				LKClass::saveContract($contractID, $data);
 			}
 
 			if (!isset($arRequest["AJAX_CALL"]))
