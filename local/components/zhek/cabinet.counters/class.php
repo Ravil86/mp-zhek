@@ -75,9 +75,10 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 		$myCompany = LKClass::myCompany();
 
-
-		if ($myCompany)
-			$arObjects = LKClass::getObjects($myCompany['ID']);
+		// if ($this->arResult['ADMIN'] || $this->arResult['MODERATOR'])
+		// 	$arObjects = LKClass::getObjects();
+		// else if ($myCompany)
+		$arObjects = LKClass::getObjects($myCompany['ID']);
 
 		if ($this->arResult['VARIABLES']) {
 
@@ -263,13 +264,28 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 		if ($USER->IsAuthorized()) {
 			$rsGroups = \CUser::GetUserGroupEx($USER->GetID());
 			while ($arGroup = $rsGroups->GetNext()) {
-				if ($arGroup['GROUP_ID'] == 1 || $arGroup['STRING_ID'] === $arParams['GROUP_CODES']['ADMINISTRATOR']) {
+
+				if ($arGroup['GROUP_ID'] == 1) {
 					$this->arResult['ADMIN'] = true;
+					return true;
+				} elseif (
+					$arGroup['STRING_ID'] === $arParams['GROUP_CODES']['ADMINISTRATOR']
+				) {
+					$this->arResult['MODERATOR'] = true;
 					return true;
 				}
 				if ($arGroup['STRING_ID'] === $arParams['GROUP_CODES']['ORGANIZATION']) {
 					return true;
 				}
+
+				// if ($arGroup['GROUP_ID'] == 1 || $arGroup['STRING_ID'] === $arParams['GROUP_CODES']['ADMINISTRATOR']) {
+				// 	$this->arResult['ADMIN'] = true;
+				// 	return true;
+				// }
+				// if ($arGroup['STRING_ID'] === $arParams['GROUP_CODES']['ORGANIZATION']) {
+				// 	return true;
+				// }
+
 			}
 		}
 		return false;

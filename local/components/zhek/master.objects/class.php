@@ -98,9 +98,9 @@ class MasterObjects extends CBitrixComponent
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
 				['id' => 'NAME', 'name' => 'Наименование cчетчика', 'default' => true, 'width' => 200, 'editable' => true],
 				['id' => 'NUMBER', 'name' => 'Номер cчетчика', 'default' => true, 'width' => 200, 'editable' => true],
-				['id' => 'DATE', 'name' => 'Дата установки', 'default' => true, "editable" => ['TYPE' => 'CUSTOM']],
-				['id' => 'TYPE', 'name' => 'Тип счетчика', 'default' => true, "editable" => ['TYPE' => 'MULTISELECT', 'items' => $serviceItems]],
-				['id' => 'CHECK', 'name' => 'Дата очередной поверки', 'default' => true, "editable" => ['TYPE' => 'CUSTOM']],
+				['id' => 'DATE', 'name' => 'Дата установки', 'default' => true, 'width' => 150, "editable" => ['TYPE' => 'CUSTOM']],
+				['id' => 'TYPE', 'name' => 'Тип счетчика', 'default' => true, 'width' => 200, "editable" => ['TYPE' => 'MULTISELECT', 'items' => $serviceItems]],
+				['id' => 'CHECK', 'name' => 'Дата оч. поверки', 'default' => true, 'width' => 150, "editable" => ['TYPE' => 'CUSTOM']],
 				// ['id' => 'UF_CHECK', 'name' => 'Дата очередной поверки', 'default' => true, "editable" => ['TYPE' => 'DATE']],
 				// ['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => '130'],
 			];
@@ -127,7 +127,7 @@ class MasterObjects extends CBitrixComponent
 					foreach ($counter['UF_TYPE'] as $value) {
 
 						$typeItem = $serviceList[$value];
-						$types[] = '<div><img class="mb-1@" src="' . $typeItem['ICON'] . '" width="20" height="20" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'] . '</span></div>';
+						$types[] = '<div class="d-flex"><img class="mb-1@" src="' . $typeItem['ICON'] . '" width="20" height="20" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'] . '</span></div>';
 						// $types[] = '<img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/>';
 						// $editTypes[] = $value;
 					}
@@ -266,22 +266,28 @@ class MasterObjects extends CBitrixComponent
 			else
 				$nav_params['iNumPage'] = $nav->getCurrentPage();
 
-			$rsEnum = HLWrap::getEnumProp('UF_TYPE');
-			while ($arEnum = $rsEnum->Fetch()) {
-				//dump($arEnum);
-			}
+			// $rsEnum = HLWrap::getEnumProp('UF_TYPE');
+			// while ($arEnum = $rsEnum->Fetch()) {
+			// 	//dump($arEnum);
+			// }
 
 			//какую сортировку сохранил пользователь (передаем то, что по умолчанию)
 			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
 			$this->arResult['GRID']['COLUMNS'] = [
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
 				['id' => 'UF_NAME', 'name' => 'Организация', /*'sort' => 'NAME', */ 'default' => true, 'width' => 300,  'editable' => true],
+				['id' => 'UF_ACTIVE', 'name' => 'Активность', 'default' => true, 'width' => 105,  'editable' => ['TYPE' => 'CHECKBOX']],
 				['id' => 'UF_ADDRESS', 'name' => 'Адрес организации', 'width' => 200, 'default' => false, 'editable' => true],
 				['id' => 'UF_INN', 'name' => 'ИНН',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => true, 'editable' => true],
 				// ['id' => 'DOGOVOR', 'name' => 'Текущий договор', 'default' => false],
 				['id' => 'UF_USER', 'name' => 'Оператор', 'default' => true, "editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]],
 				['id' => 'UF_TYPE', 'name' => 'Тип организации', 'default' => false, "editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]],
 				['id' => 'DETAIL', 'name' => 'Объектов', 'default' => true],
+			];
+
+			$this->arResult['GRID']["FILTER"] = [
+				['id' => 'UF_ACTIVE', 'name' => 'Активность', 'type' => 'list', 'items' => [1 => 'да', 0 => 'нет'], 'default' => true],
+				//['id' => 'NAME', 'name' => 'ФИО', 'type' => 'text', 'default' => true],
 			];
 
 			$filterOption = new Bitrix\Main\UI\Filter\Options("filter_" . $this->arResult["GRID_ID"]);
@@ -293,7 +299,6 @@ class MasterObjects extends CBitrixComponent
 			];
 
 			$itemsCompany = LKClass::getCompany(null, $filter, $navParams);
-
 
 			// $result = \Bitrix\Main\UserTable::getList(array(
 			// 	'filter' => array('GROUP_ID' => 8),
@@ -350,9 +355,13 @@ class MasterObjects extends CBitrixComponent
 				$column = $item;
 
 				// dump($item);
-				if ($item['UF_NAME']) {
-					$column['UF_NAME'] = '<a class="ui-link fs-6" href="' . $item["ID"] . '/">' . $item['UF_NAME'] . '</a>';
-				}
+
+				if ($item['UF_NAME'])
+					$column['UF_NAME'] = '<a class="ui-link fs-6' . (!$item['UF_ACTIVE'] ? ' ui-link-secondary opacity-75' : '') . '" href="' . $item["ID"] . '/">' . $item['UF_NAME'] . '</a>';
+
+				$column['UF_ACTIVE'] = $item['UF_ACTIVE'] ? 'да' : 'нет';
+				$item['UF_ACTIVE'] = $item['UF_ACTIVE'] ? 'Y' : 'N';
+				// $item['UF_ACTIVE'] = $item['UF_ACTIVE'] == 'Y' ?: false;
 
 				if ($item['UF_USER_ID']) {
 					$orgUser = $userList[$item['UF_USER_ID']];
@@ -366,7 +375,7 @@ class MasterObjects extends CBitrixComponent
 
 				$status = '<a class="d-flex!" href="' . $item["ID"] . '/">';
 
-				$status .= '<div class="ui-btn ui-btn-secondary ui-btn-sm px-3 py-1 text-center opacity-75">Объектов ';
+				$status .= '<div class="ui-btn ui-btn-' . ($item['UF_ACTIVE'] == 'Y' ? 'secondary' : ' opacity-25') . ' opacity-75! ui-btn-sm px-3 py-1 text-center">Объектов ';
 				//if ($countObjects) {
 				$status .= '<div class="ui-counter ui-counter-' . ($countObjects ? 'primary gray!' : 'dark') . ' ms-2">
 									<div class="ui-counter-inner">' . $countObjects . '</div>
@@ -464,6 +473,11 @@ class MasterObjects extends CBitrixComponent
 			} elseif ($arRequest["grid_id"] == 'zhek_master_objects') {
 
 				foreach ($arRequest["FIELDS"] as $companyID => $fields) {
+					foreach ($fields as $key => $value) {
+						if ($key == 'UF_ACTIVE')
+							$fields['UF_ACTIVE'] = $value == 'Y' ? 1 : 0;
+					}
+					Bitrix\Main\Diag\Debug::dumpToFile(var_export($fields, 1), 'saveCompany', 'test.log');
 					LKClass::saveCompany($companyID, $fields);
 				}
 			} else {
@@ -485,6 +499,7 @@ class MasterObjects extends CBitrixComponent
 								$data['UF_' . $key] = $value;
 							}
 						}
+						Bitrix\Main\Diag\Debug::dumpToFile(var_export($data, 1), 'updateCounter', 'test.log');
 						LKClass::updateCounter($counterID, $data);
 						//LKClass::updateCounter($counterID, $fields);
 					}

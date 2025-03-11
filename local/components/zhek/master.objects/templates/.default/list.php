@@ -16,12 +16,20 @@ use Bitrix\Highloadblock as HL;
             $APPLICATION->IncludeComponent('bitrix:main.ui.filter', '', [
                 'FILTER_ID' => 'filter_' . $arResult['GRID_ID'],
                 'GRID_ID' => $arResult['GRID_ID'],
-                // 'FILTER' => [],
                 'FILTER' => $arResult['GRID']['FILTER'],
                 'ENABLE_LIVE_SEARCH' => true,
                 'ENABLE_LABEL' => true,
-            ]);
+                "FILTER_PRESETS" => [
+                    "ACTIVE" => [
+                        "name" => 'Активность',
+                        "default" => true, // если true - пресет по умолчанию
+                        "fields" => [
+                            'UF_ACTIVE' => 1
+                        ]
+                    ]
 
+                ]
+            ]);
             ?>
         </div>
         <div class="col-auto">
@@ -93,7 +101,7 @@ use Bitrix\Highloadblock as HL;
     <div class="modal fade" id="addCompany" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
-                <form method="post">
+                <form method="post" class="add_org needs-validation" novalidate>
                     <div class="modal-header">
                         <h4 class="modal-title">Добавить организацию</h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -105,7 +113,7 @@ use Bitrix\Highloadblock as HL;
                             <div class="col-12 col-md">
                                 <label>Наименование</label>
                                 <div class="ui-ctl ui-ctl-textarea ui-ctl-resize-y ui-ctl-w100">
-                                    <textarea class="ui-ctl-element" name="FIELDS[UF_NAME]" placeholder="Наименование организации"></textarea>
+                                    <textarea class="ui-ctl-element form-control" name="FIELDS[UF_NAME]" placeholder="Наименование организации" required></textarea>
                                 </div>
                             </div>
                         </div>
@@ -113,13 +121,13 @@ use Bitrix\Highloadblock as HL;
                             <div class="col-12 col-md">
                                 <label>Адрес</label>
                                 <div class="ui-ctl ui-ctl-textarea ui-ctl-lg! ui-ctl-w100">
-                                    <textarea class="ui-ctl-element" name="FIELDS[UF_ADDRESS]" placeholder="Адрес"></textarea>
+                                    <textarea class="ui-ctl-element form-control" name="FIELDS[UF_ADDRESS]" placeholder="Адрес" required></textarea>
                                 </div>
                             </div>
                             <div class="col-12 col-md">
                                 <label>ИНН</label>
                                 <div class="ui-ctl ui-ctl-textbox ui-ctl-lg! ui-ctl-w100">
-                                    <input class="ui-ctl-element" type="text" name="FIELDS[UF_INN]" placeholder="ИНН">
+                                    <input class="ui-ctl-element form-control" type="text" name="FIELDS[UF_INN]" placeholder="ИНН" required>
                                 </div>
                             </div>
                         </div>

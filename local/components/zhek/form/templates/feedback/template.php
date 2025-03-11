@@ -1,7 +1,7 @@
 <? if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
 } ?>
-<form id="requestForm" class="container feedback-form px-2 needs-validation" novalidate>
+<form id="requestForm" class="container feedback-form px-2" novalidate>
     <div id="response"></div>
     <input type="hidden" name="PARAMS[IBLOCK_ID]" value="<?= $arParams['IBLOCK_ID'] ?>" />
     <input type="hidden" name="PARAMS[EVENT_NAME]" value="<?= $arParams['EVENT_NAME'] ?>" />
@@ -79,7 +79,7 @@
 </form>
 
 <script>
-    //const iblockID = <? //= $arParams['IBLOCK_ID'] 
+    //const iblockID = <? //= $arParams['IBLOCK_ID']
                         ?>;
 
     $(document).ready(function() {
@@ -89,7 +89,7 @@
 
     (function() {
         'use strict'
-        var forms = document.querySelectorAll('.needs-validation')
+        var forms = document.querySelectorAll('.feedback-form')
         Array.prototype.slice.call(forms)
             .forEach(function(form) {
 

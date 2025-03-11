@@ -159,7 +159,7 @@ use Bitrix\Highloadblock as HL;
                 <div class="modal-content">
                     <? // gg($arResult);
                     ?>
-                    <form class="contract_add" method="post" novalidate>
+                    <form class="contract_add needs-validation" method="post" novalidate>
                         <div class="modal-header">
                             <h4 class="modal-title">Добавить контракт</h4>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -355,26 +355,6 @@ use Bitrix\Highloadblock as HL;
                     };
 
                     BX.Event.bind(button, "click", () => getPicker().show());
-
-
-
-                    var forms = document.querySelectorAll('.contract_add')
-                    Array.prototype.slice.call(forms)
-                        .forEach(function(form) {
-                            console.log('form', form);
-
-                            form.addEventListener('submit', function(event) {
-
-                                console.log('checkValidity', form.checkValidity());
-
-                                if (!form.checkValidity()) {
-                                    event.stopPropagation()
-                                    event.preventDefault()
-                                }
-                                form.classList.add('was-validated')
-                            }, false)
-                        })
-
 
                 })
             }

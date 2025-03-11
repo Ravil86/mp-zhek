@@ -206,24 +206,28 @@ class LKClass
         return $result;
     }
 
-    public static function getCompany($userID = null, $search = [], $nav = [])
-    // public static function getCompany($orgID = [], $filter = [], $nav = [])
+    public static function getCompany($userID = null, $filter = [], $nav = [])
     {
 
         $classCompany = \HLWrap::init(self::$_HL_Company);
 
-        if ($userID)
+        if ($userID) {
             $arFilter = ['UF_USER_ID' => $userID];
-        // if ($orgID)
-        //     $arFilter = ['ID' => $orgID];
-        elseif ($search)
-            $arFilter = ['UF_NAME' => '%' . $search['FIND'] . '%'];
+        } elseif ($filter) {
+            if ($filter["FIND"])
+                $arFilter['UF_NAME'] = '%' . $filter['FIND'] . '%';
+            else
+                $arFilter['UF_ACTIVE'] = $filter['UF_ACTIVE'];
+        }
         else
             $arFilter = [];
+
+        // gg($arFilter);
 
         $params =  [
             'filter' => $arFilter,
             'select' => array('*'),
+            'order' => ['UF_ACTIVE' => 'desc', 'ID' => 'asc']
         ];
 
         if ($nav) {

@@ -117,9 +117,9 @@ if (is_array($arResult["SECTION"]["PATH"]))
             $this->AddEditAction($arElement['ID'], $arElement['EDIT_LINK'], CIBlock::GetArrayByID($arElement["IBLOCK_ID"], "ELEMENT_EDIT"));
 			// $this->AddDeleteAction($arElement['ID'], $arElement['DELETE_LINK'], CIBlock::GetArrayByID($arElement["IBLOCK_ID"], "ELEMENT_DELETE"), array("CONFIRM" => GetMessage('CT_BNL_ELEMENT_DELETE_CONFIRM')));
 
-            echo '<li id="'.$this->GetEditAreaId($arElement['ID']).'" class="d-flex align-items-center top-list template-tick-1! template-arrow-horizontal-2 pt-1">';
+            echo '<li class="d-flex align-items-center top-list template-tick-1! template-arrow-horizontal-2 pt-1"><div id="'.$this->GetEditAreaId($arElement['ID']).'" >';
                 echo renderItemLink($arElement);
- 			echo '</li>';
+			echo '</div></li>';
         }
         echo '</ul>';
     }
@@ -203,8 +203,8 @@ if (is_array($arResult["SECTION"]["PATH"]))
                 $this->AddEditAction($arElement['ID'], $arElement['EDIT_LINK'], CIBlock::GetArrayByID($arElement["IBLOCK_ID"], "ELEMENT_EDIT"));
 				//$this->AddDeleteAction($arElement['ID'], $arElement['DELETE_LINK'], CIBlock::GetArrayByID($arItem["IBLOCK_ID"], "ELEMENT_DELETE"), array("CONFIRM" => GetMessage('CT_BNL_ELEMENT_DELETE_CONFIRM')));
                 
-                echo '<li id="'.$this->GetEditAreaId($arElement['ID']).'" 
-                        class="child-list list-group-item my-0 pt-1 ps-1 d-flex align-items-center template-tick-1! template-arrow-horizontal-2 border-bottom-0">';
+                echo '<li class="child-list list-group-item my-0 pt-1 ps-1 d-flex align-items-center template-tick-1! template-arrow-horizontal-2 border-bottom-0">
+						<div id="'.$this->GetEditAreaId($arElement['ID']).'">';
 
                 // dump($arElement);
                 echo renderItemLink($arElement);
@@ -258,7 +258,7 @@ if (is_array($arResult["SECTION"]["PATH"]))
                 else
                     echo '</span>';*/
 
-                echo '</li>';
+				echo '</div></li>';
             }
             echo '</ul>';
         }

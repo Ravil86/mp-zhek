@@ -1,9 +1,11 @@
-<? if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {die();}?>
-<form id="requestForm" class="container feedback-form px-2 needs-validation" novalidate>
+<? if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
+    die();
+} ?>
+<form id="requestForm" class="container feedback-form book-form px-2" novalidate>
     <div id="response"></div>
-    <input type="hidden" name="PARAMS[IBLOCK_ID]" value="<?=$arParams['IBLOCK_ID']?>" />
-    <input type="hidden" name="PARAMS[EVENT_NAME]" value="<?=$arParams['EVENT_NAME']?>" />
-    <input type="hidden" name="DATA[DOG]" value="<?=$arParams['DOG']?>" />
+    <input type="hidden" name="PARAMS[IBLOCK_ID]" value="<?= $arParams['IBLOCK_ID'] ?>" />
+    <input type="hidden" name="PARAMS[EVENT_NAME]" value="<?= $arParams['EVENT_NAME'] ?>" />
+    <input type="hidden" name="DATA[DOG]" value="<?= $arParams['DOG'] ?>" />
     <!-- <input type="hidden" name="action" value="contact_form" /> -->
     <div class="row">
         <div class="col-12 row flex-box gx-4 gy-2 mt-2">
@@ -26,8 +28,8 @@
 
             <fieldset class="col col-12">
                 <label>Телефон*</label>
-               <input name="DATA[PHONE]" class="text-input form-control phone" type="text" placeholder="" required>
-               <div class="invalid-feedback">
+                <input name="DATA[PHONE]" class="text-input form-control phone" type="text" placeholder="" required>
+                <div class="invalid-feedback">
                     Введите Телефон
                 </div>
             </fieldset>
@@ -59,34 +61,34 @@
                     </div>
                 </div>
             </div>
-        </div>*/?>
+        </div>*/ ?>
     </div>
 
     <div class="row gx-4 gy-2 mt-2 justify-content-center ">
-            <div class="margin-top-15 padding-bottom-16 align-center">
-                <button class="more submit-contact-form w-75" type="submit">Отправить</button>
-                  <!-- <a class="more submit-contact-form" href="#" title="Send message">Отправить</a> -->
-            </div>
+        <div class="margin-top-15 padding-bottom-16 align-center">
+            <button class="more submit-contact-form w-75" type="submit">Отправить</button>
+            <!-- <a class="more submit-contact-form" href="#" title="Send message">Отправить</a> -->
+        </div>
         <!--  -->
     </div>
 
 </form>
 
 <script>
-    const iblockID = <?=$arParams['IBLOCK_ID']?>;
+    const iblockID = <?= $arParams['IBLOCK_ID'] ?>;
 
-    $(document).ready(function () {
+    $(document).ready(function() {
         $('.phone').mask('+7(999)999-99-99');
         // $("#validationPhone").mask("+7(999)999-99-99");
     });
 
-    (function () {
+    (function() {
         'use strict'
-        var forms = document.querySelectorAll('.needs-validation')
+        var forms = document.querySelectorAll('.book-form')
         Array.prototype.slice.call(forms)
-            .forEach(function (form) {
+            .forEach(function(form) {
 
-                form.addEventListener('submit', function (event) {
+                form.addEventListener('submit', function(event) {
 
                     event.preventDefault()
 
@@ -108,8 +110,8 @@
                         BX.ajax.runComponentAction("zhek:form", 'request', {
                             mode: "class",
                             data: form_data,
-                        }).then(function (response) {
-                            console.log('response',response);
+                        }).then(function(response) {
+                            console.log('response', response);
                             $('#response').html('<span class="text-success">Ваше сообщение принято на рассмотрение</span>');
                             // form.reset()
                         })
@@ -118,5 +120,4 @@
                 }, false)
             })
     })()
-
 </script>

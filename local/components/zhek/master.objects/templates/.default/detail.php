@@ -185,7 +185,7 @@ if ($arResult['ACCESS']): ?>
         <div class="modal counter-modal fade" id="counterModal<?= $value['ID']; ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-id="<?= $value['ID']; ?>">
             <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content">
-                    <form class="counter_add" method="post" novalidate>
+                    <form class="counter_add needs-validation" method="post" novalidate>
                         <div class="modal-header">
                             <div class="modal-title">Добавить счётчик для
                                 <h4 class="modal-title"><?= $value['NAME']; ?></h4>
@@ -214,7 +214,7 @@ if ($arResult['ACCESS']): ?>
                                 </div>
                             </div>
                             <div class="row gx-2 mt-3">
-                                <div class="col-12 col-md-6">
+                                <div class="col-12 col-md-4">
                                     <label>Тип счетчика</label>
                                     <? // dump($arResult['SERVICE_LIST'])
                                     ?>
@@ -227,11 +227,25 @@ if ($arResult['ACCESS']): ?>
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-12 col-md">
-                                    <label>Сл. дата поверки</label>
-                                    <div class="ui-ctl ui-ctl-textbox ui-ctl-lg! ui-ctl-w100">
-                                        <input class="ui-ctl-element form-control" type="date" name="FIELDS[UF_CHECK]" placeholder="Сл. дата поверки" required>
+                                <div class="col-12 col-md-4">
+                                    <label>Дата установки</label>
+                                    <div class="ui-ctl ui-ctl-after-icon ui-ctl-date ui-ctl-w100">
+                                        <div class="ui-ctl-after ui-ctl-icon-calendar"></div>
+                                        <input type="text" class="ui-ctl-element form-control" name="FIELDS[UF_DATE]" value="<?= date('d.m.Y'); ?>" required>
                                     </div>
+                                    <!-- <div class="ui-ctl ui-ctl-textbox ui-ctl-lg! ui-ctl-w100">
+                                        <input class="ui-ctl-element form-control" type="date" name="FIELDS[UF_CHECK]" placeholder="Сл. дата поверки" required>
+                                    </div> -->
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <label>Дата очередной поверки</label>
+                                    <div class="ui-ctl ui-ctl-after-icon ui-ctl-date ui-ctl-w100">
+                                        <div class="ui-ctl-after ui-ctl-icon-calendar"></div>
+                                        <input type="text" class="ui-ctl-element form-control" name="FIELDS[UF_CHECK]" placeholder="Сл. дата поверки" required>
+                                    </div>
+                                    <!-- <div class="ui-ctl ui-ctl-textbox ui-ctl-lg! ui-ctl-w100">
+                                        <input class="ui-ctl-element form-control" type="date" name="FIELDS[UF_CHECK]" placeholder="Сл. дата поверки" required>
+                                    </div> -->
                                 </div>
                             </div>
                         </div>
@@ -249,7 +263,7 @@ if ($arResult['ACCESS']): ?>
     <div class="modal fade" id="addObject" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
-                <form class="objects_add" method="post" novalidate>
+                <form class="objects_add needs-validation" method="post" novalidate>
                     <div class="modal-header">
                         <div class="modal-title">Добавить объект для
                             <h4 class="modal-title"><?= $arResult['DETAIL']['ORG']['UF_NAME']; ?></h4>
@@ -310,13 +324,47 @@ if ($arResult['ACCESS']): ?>
 
         listArray.forEach(element => {
             // console.log(element.id);
-            const exampleModal = document.getElementById(element.id)
+            const objectsModal = document.getElementById(element.id)
             // console.log(exampleModal);
-            if (exampleModal) {
-                exampleModal.addEventListener('show.bs.modal', e => {
+            if (objectsModal) {
+                // console.log('objectsModal', objectsModal);
 
-                    var id = exampleModal.getAttribute('data-id')
-                    var form = exampleModal.querySelector('form')
+                objectsModal.addEventListener('show.bs.modal', event => {
+
+                    // console.log('event', event.target);
+
+                    var div_list = event.target.querySelectorAll('.ui-ctl-date'); // returns NodeList
+
+                    var div_array = [...div_list]; // converts NodeList to Array
+                    div_array.forEach(div => {
+                        // do something awesome with each div
+
+                        const input = div.querySelector('input');
+                        // console.log('input', input);
+
+                        const button = input.closest(".ui-ctl-date")
+                        // console.log('button', button);
+
+                        let picker = null;
+                        const getPicker = () => {
+                            if (picker === null) {
+                                picker = new BX.UI.DatePicker.DatePicker({
+                                    targetNode: input,
+                                    inputField: input,
+                                    enableTime: false,
+                                    useInputEvents: false,
+                                });
+                            }
+
+                            return picker;
+                        };
+
+                        BX.Event.bind(button, "click", () => getPicker().show());
+                    });
+
+
+                    var id = objectsModal.getAttribute('data-id')
+                    var form = objectsModal.querySelector('form')
 
                     form.addEventListener('submit', function(event) {
 
@@ -342,20 +390,20 @@ if ($arResult['ACCESS']): ?>
 
 
 
-        var forms = document.querySelectorAll('.objects_add')
-        Array.prototype.slice.call(forms)
-            .forEach(function(form) {
+        // var forms = document.querySelectorAll('.objects_add')
+        // Array.prototype.slice.call(forms)
+        //     .forEach(function(form) {
 
-                form.addEventListener('submit', function(event) {
+        //         form.addEventListener('submit', function(event) {
 
-                    event.preventDefault()
+        //             event.preventDefault()
 
-                    if (!form.checkValidity()) {
-                        event.stopPropagation()
-                    }
-                    form.classList.add('was-validated')
-                }, false)
-            })
+        //             if (!form.checkValidity()) {
+        //                 event.stopPropagation()
+        //             }
+        //             form.classList.add('was-validated')
+        //         }, false)
+        //     })
 
 
     })()

@@ -1,58 +1,58 @@
-<?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();?>
+<? if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die(); ?>
 
-<?if($GLOBALS["PAGE"]):?>
-<?if(!defined('NOT_MENU')):?>
-</div>
-</div>
-<?endif?>
-</div>
-<?endif?>
+<? if ($GLOBALS["PAGE"]): ?>
+	<? if (!defined('NOT_MENU')): ?>
+		</div>
+		</div>
+	<? endif ?>
+	</div>
+<? endif ?>
 <div class="container-fluid row! bg-dark footer-row full-width! padding-top-30">
-    <div class="container">
+	<div class="container">
 
-        <div class="row padding-bottom-25">
-            <div class="col-12 col-md-3 column">
-                <ul class="contact-details-list">
-                    <li class="features-phone">
-                        <label>Телефон приемной</label>
-                        <?
-				$APPLICATION->IncludeFile(SITE_DIR."includes/inc_phone_1.php", Array(), Array(
-					"MODE"      => "html",                                           // будет редактировать в веб-редакторе
-					"NAME"      => '«Телефон приемной»',      // текст всплывающей подсказки на иконке
-				));
-				?>
-                    </li>
-                </ul>
-            </div>
-            <div class="col-12 col-md-5 column">
-                <ul class="contact-details-list">
-                    <li class="features-map">
-                        <label>628011, Тюменская область, ХМАО-Югра</label>
-                        <div class="p">
-                            <?$APPLICATION->IncludeFile(SITE_DIR."includes/inc_adress.php", Array(), Array("MODE" => "html","NAME" => '«Адрес»'));?>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-            <div class="col-12 col-md-3 column">
-                <ul class="contact-details-list">
-                    <li class="features-phone">
-                        <!-- <li class="features-wallet"> -->
-                        <label>Телефон диспетчера</label>
-                        <?$APPLICATION->IncludeFile(SITE_DIR."includes/inc_phone_2.php", Array(), Array(
-								"MODE"      => "html",                                           // будет редактировать в веб-редакторе
-								"NAME"      => '«Телефон приемной»',      // текст всплывающей подсказки на иконке
-							));
-							?>
-                    </li>
-                </ul>
-            </div>
-        </div>
+		<div class="row padding-bottom-25">
+			<div class="col-12 col-md-3 column">
+				<ul class="contact-details-list">
+					<li class="features-phone">
+						<label>Телефон приемной</label>
+						<?
+						$APPLICATION->IncludeFile(SITE_DIR . "includes/inc_phone_1.php", array(), array(
+							"MODE"      => "html",                                           // будет редактировать в веб-редакторе
+							"NAME"      => '«Телефон приемной»',      // текст всплывающей подсказки на иконке
+						));
+						?>
+					</li>
+				</ul>
+			</div>
+			<div class="col-12 col-md-5 column">
+				<ul class="contact-details-list">
+					<li class="features-map">
+						<label>628011, Тюменская область, ХМАО-Югра</label>
+						<div class="p">
+							<? $APPLICATION->IncludeFile(SITE_DIR . "includes/inc_adress.php", array(), array("MODE" => "html", "NAME" => '«Адрес»')); ?>
+						</div>
+					</li>
+				</ul>
+			</div>
+			<div class="col-12 col-md-3 column">
+				<ul class="contact-details-list">
+					<li class="features-phone">
+						<!-- <li class="features-wallet"> -->
+						<label>Телефон диспетчера</label>
+						<? $APPLICATION->IncludeFile(SITE_DIR . "includes/inc_phone_2.php", array(), array(
+							"MODE"      => "html",                                           // будет редактировать в веб-редакторе
+							"NAME"      => '«Телефон приемной»',      // текст всплывающей подсказки на иконке
+						));
+						?>
+					</li>
+				</ul>
+			</div>
+		</div>
 
-    </div>
+	</div>
 </div>
 <div class="row! container-fluid bg-dark-gray footer-row full-width! padding-top-61! padding-bottom-25">
-    <!-- <div class="row row-4-4">
+	<!-- <div class="row row-4-4">
 					<div class="column column-1-4">
 						<h6>ABOUT US</h6>
 						<p class="margin-top-23">Founded in 1995 Cleanmate quickly built a reputation as one of the leading providers of residential and commercial cleaning solutions.</p>
@@ -102,8 +102,8 @@
 						</ul>
 					</div>
 				</div> -->
-    <div class="row! page-padding-top!">
-        <!-- <ul class="social-icons align-center">
+	<div class="row! page-padding-top!">
+		<!-- <ul class="social-icons align-center">
 						<li>
 							<a target="_blank" href="https://twitter.com/QuanticaLabs" class="social-twitter" title="twitter"></a>
 						</li>
@@ -114,52 +114,70 @@
 							<a target="_blank" href="https://facebook.com/QuanticaLabs" class="social-facebook" title="facebook"></a>
 						</li>
 					</ul> -->
-    </div>
-    <div class="row! align-center pt-3 padding-top-30!">
-        <span class="copyright">© Все права защищены. 2024
-            <?//<a href="https://themeforest.net/item/cleanmate-cleaning-company-maid-gardening-template/20493947?ref=QuanticaLabs" title="Cleanmate Template" target="_blank">Cleanmate Template</a> by <a href="http://quanticalabs.com" title="QuanticaLabs" target="_blank">QuanticaLabs</a>?>
-        </span>
-    </div>
+	</div>
+	<div class="row! align-center pt-3 padding-top-30!">
+		<span class="copyright">© Все права защищены. 2024
+			<? //<a href="https://themeforest.net/item/cleanmate-cleaning-company-maid-gardening-template/20493947?ref=QuanticaLabs" title="Cleanmate Template" target="_blank">Cleanmate Template</a> by <a href="http://quanticalabs.com" title="QuanticaLabs" target="_blank">QuanticaLabs</a>
+			?>
+		</span>
+	</div>
 </div>
 </main>
 <a href="#top" class="scroll-top animated-element template-arrow-vertical-3" title="Scroll to top"></a>
 <div class="background-overlay"></div>
 <?/*php if($_GET["page"]=="contact" || $_GET["page"]=="contact_2" || $_GET["page"]=="contact_3"):?>
 <script type="text/javascript" src="//maps.google.com/maps/api/js?key=YOUR_API_KEY"></script>
-<?php endif; */?>
+<?php endif; */ ?>
 <?php
-		require($_SERVER['DOCUMENT_ROOT'].'/includes/modal_feedback.php');
+require($_SERVER['DOCUMENT_ROOT'] . '/includes/modal_feedback.php');
 
-		//require_once("style_selector/style_selector.php");
-		?>
+//require_once("style_selector/style_selector.php");
+?>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
-(function(m, e, t, r, i, k, a) {
-    m[i] = m[i] || function() {
-        (m[i].a = m[i].a || []).push(arguments)
-    };
-    m[i].l = 1 * new Date();
-    for (var j = 0; j < document.scripts.length; j++) {
-        if (document.scripts[j].src === r) {
-            return;
-        }
-    }
-    k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k,
-        a)
-})(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-ym(97609520, "init", {
-    clickmap: true,
-    trackLinks: true,
-    accurateTrackBounce: true,
-    webvisor: true
-});
+	(function(m, e, t, r, i, k, a) {
+		m[i] = m[i] || function() {
+			(m[i].a = m[i].a || []).push(arguments)
+		};
+		m[i].l = 1 * new Date();
+		for (var j = 0; j < document.scripts.length; j++) {
+			if (document.scripts[j].src === r) {
+				return;
+			}
+		}
+		k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k,
+			a)
+	})(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+	ym(97609520, "init", {
+		clickmap: true,
+		trackLinks: true,
+		accurateTrackBounce: true,
+		webvisor: true
+	});
 </script> <noscript>
-    <div><img src="https://mc.yandex.ru/watch/97609520" style="position:absolute; left:-9999px;" alt="" /></div>
+	<div><img src="https://mc.yandex.ru/watch/97609520" style="position:absolute; left:-9999px;" alt="" /></div>
 </noscript> <!-- /Yandex.Metrika counter -->
 <script>
-Fancybox.bind("[data-fancybox]", {
-    // Your custom options
-});
+	Fancybox.bind("[data-fancybox]", {
+		// Your custom options
+	});
+
+	var forms = document.querySelectorAll('.needs-validation')
+	Array.prototype.slice.call(forms)
+		.forEach(function(form) {
+			// console.log('form', form);
+
+			form.addEventListener('submit', function(event) {
+
+				console.log('checkValidity', form.checkValidity());
+
+				if (!form.checkValidity()) {
+					event.stopPropagation()
+					event.preventDefault()
+				}
+				form.classList.add('was-validated')
+			}, false)
+		})
 </script>
 </body>
 

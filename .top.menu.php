@@ -8,6 +8,13 @@ $aMenuLinks = Array(
 		"" 
 	),
 	Array(
+		"Тарифы", 
+		"/tarify/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
 		"Абонентам", 
 		"/abonentam/", 
 		Array(), 

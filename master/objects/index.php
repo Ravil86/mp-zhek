@@ -1,6 +1,7 @@
 <?
 define("NEED_AUTH", true);
 define('LK', true);
+define('WIDE', true);
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 $APPLICATION->SetTitle("Объекты");
 ?>

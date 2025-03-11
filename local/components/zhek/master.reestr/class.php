@@ -46,7 +46,7 @@ class MasterReestr extends CBitrixComponent
 
 	private function run()
 	{
-
+		$arParams = $this->arParams;
 		$this->arResult['PAGE_SIZE'] = 20;
 
 		$this->arResult['ACCESS'] = $this->checkAccess();
@@ -69,12 +69,10 @@ class MasterReestr extends CBitrixComponent
 				// 'DATE' => $contr['DATE'],
 			];
 		}
-		// dump($orgContracts);
 
-		$arItems = LKClass::getCompany();
-
-		if (is_array($arItems))
-			$this->arResult['GRID']['COUNT'] = count($arItems);
+		// $arItems = LKClass::getCompany();
+		// if (is_array($arItems))
+		// 	$this->arResult['GRID']['COUNT'] = count($arItems);
 
 		// if ($myCompany)
 		$getObjects = LKClass::getObjects();
@@ -108,23 +106,29 @@ class MasterReestr extends CBitrixComponent
 			// ['id' => 'UF_INN', 'name' => 'ИНН',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => false, 'rowspan' => true],
 			['id' => 'DOGOVOR', 'name' => 'Текущий контракт', 'default' => true, 'rowspan' => true],
 			['id' => 'OBJECT', 'name' => 'Объект', 'default' => true],
+			['id' => 'EDIT', 'name' => '', 'default' => true],
 			['id' => 'COUNTER', 'name' => 'ПУ', 'default' => true],
-			['id' => 'METER_LAST', 'name' => 'Текущие', 'default' => true, 'colspan' => 3, 'text' => 'Показания', 'color' => '#ddd'],
+			['id' => 'METER_LAST', 'name' => 'Текущие', 'default' => true, 'colspan' => 4, 'text' => 'Показания', 'color' => '#ddd'],
 			['id' => 'METER_ALL', 'name' => 'Предыдущие', 'default' => true, 'colspan' => 0, 'color' => '#ddd'],
 			['id' => 'METER_RAZNOST', 'name' => 'Разность', 'default' => true, 'colspan' => 0],
+
 			// ['id' => 'UF_TYPE', 'name' => 'Тип организации', 'default' => false, 'rowspan' => true /*"editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]*/],
-			];
+		];
 
-			$filterOption = new Bitrix\Main\UI\Filter\Options("filter_" . $this->arResult["GRID_ID"]);
-			$filter = $filterOption->GetFilter();
+		// $filterOption = new Bitrix\Main\UI\Filter\Options("filter_" . $this->arResult["GRID_ID"]);
+		// $filter = $filterOption->GetFilter();
 
-			$navParams = [
-				'offset' => $nav->getOffset(),
-				'limit' => $nav->getLimit(),
-			];
+		// $navParams = [
+		// 	'offset' => $nav->getOffset(),
+		// 	'limit' => $nav->getLimit(),
+		// ];
+		if ($arParams['ALL_ORG'] != 'Y')
+			$filter['UF_ACTIVE'] = 1;
 
-			$itemsCompany = LKClass::getCompany(null, $filter, $navParams);
+		// gg($filter);
 
+		$itemsCompany = LKClass::getCompany(null, $filter);
+		// $itemsCompany = LKClass::getCompany(null, $filter, $navParams);
 
 		$orgObjects = null;
 		foreach ($itemsCompany as &$item) {
@@ -139,18 +143,21 @@ class MasterReestr extends CBitrixComponent
 			$item['CONTRACTS'] = $getDogovOrg;
 		}
 
-		function sortObjects($a, $b)
-		{
+		if (!function_exists('sortObjects')) {
+			function sortObjects($a, $b)
+			{
 
-			if (isset($a['OBJECTS']) == isset($b['OBJECTS'])) {
-				return 0;
+				if (isset($a['OBJECTS']) == isset($b['OBJECTS'])) {
+					return 0;
+				}
+				return ($a['OBJECTS'] > $b['OBJECTS']) ? -1 : 1;
+
+				// return ($a['OBJECTS'] < $b['OBJECTS']) ? -1 : 1;
 			}
-			return ($a['OBJECTS'] > $b['OBJECTS']) ? -1 : 1;
-
-			// return ($a['OBJECTS'] < $b['OBJECTS']) ? -1 : 1;
 		}
 		usort($itemsCompany, "sortObjects");
 
+		if (!function_exists('sortContract')) {
 		function sortContract($a, $b)
 		{
 			if (isset($a['CONTRACTS']) == isset($b['CONTRACTS'])) {
@@ -158,8 +165,8 @@ class MasterReestr extends CBitrixComponent
 			}
 			return ($a['CONTRACTS'] > $b['CONTRACTS']) ? -1 : 1;
 		}
+		}
 		usort($itemsCompany, "sortContract");
-
 
 		// $columns[0] = 'ID';
 		$p = 1;
@@ -206,6 +213,8 @@ class MasterReestr extends CBitrixComponent
 
 					$column['OBJECT'] = '#' . $object['ID'] . ' ' . $object['NAME'];
 
+					$column['EDIT'] = '<a href="/master/counter/' . $object['ID'] . '" target="_blank">i</a><i class="bi bi-pencil"></i>';
+
 					$counterObjects = LKClass::getCounters($object['ID']);
 
 					$column['COUNTER'] = [];
@@ -250,6 +259,7 @@ class MasterReestr extends CBitrixComponent
 					$column['METER_LAST'] = [];
 					$column['METER_ALL'] = [];
 					$column['METER_RAZNOST'] = [];
+
 					// $lastMeter = null;
 					// $allMeters = null;
 
@@ -265,8 +275,9 @@ class MasterReestr extends CBitrixComponent
 						$column['METER_ALL'][$key] =  $curentAllMeter ?? '-';
 
 						$column['METER_RAZNOST'][$key] = $lastMeter && $curentAllMeter ? ($lastMeter - $curentAllMeter) : '-';
-					}
 
+						// $column['EDIT'][$key] = '<a href="/master/counter/' . $key . '" target="_blank">i</a><i class="bi bi-pencil"></i>';
+					}
 
 					//$curentLast = current(LKClass::meters($object['ID'], 1));
 					//$curentCounterLast = $counterObjects[$curentLast['COUNTER']];
@@ -481,7 +492,8 @@ class MasterReestr extends CBitrixComponent
 				}
 			} else {
 				foreach ($arRequest["FIELDS"] as $counterID => $fields) {
-					LKClass::saveCounter($counterID, $fields);
+					LKClass::updateCounter($counterID, $fields);
+					// LKClass::saveCounter($counterID, $fields);
 				}
 			}
 
