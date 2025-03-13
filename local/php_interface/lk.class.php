@@ -213,7 +213,7 @@ class LKClass
 
         if ($userID) {
             $arFilter = ['UF_USER_ID' => $userID];
-        } elseif ($filter) {
+        } elseif (!empty($filter)) {
             if ($filter["FIND"])
                 $arFilter['UF_NAME'] = '%' . $filter['FIND'] . '%';
             else

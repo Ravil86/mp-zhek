@@ -64,26 +64,45 @@ use Bitrix\Highloadblock as HL;
                 <tbody>
                     <?
                     foreach ($arResult['GRID']['ROWS'] as $rKey => $row) {
+
+                        // if (empty($row['columns']['COUNTER']))
+                        //     continue;
                         // gg($arResult['GRID']['ROW_LAYOUT'][$rKey]);
+
                         echo '<tr>';
-                        // gg($row);
+
                         foreach ($arResult['GRID']['COLUMNS'] as $cKey => $col) : ?>
                             <?
                             $layout =  $arResult['GRID']['ROW_LAYOUT'][$rKey][$cKey];
+
+                            // gg($row['columns']['ALERT']);
 
                             if ($layout['column'] == $col['id']):
                             ?>
                                 <? $valueTD = $row['columns'][$col['id']]; ?>
                                 <td scope="row" <?= $layout['rowspan'] ? 'rowspan="' . $layout['rowspan'] . '"' : '' ?>
-                                    class="<?= is_array($valueTD) ? 'p-0 border-bottom-0 align-baseline!' : '' ?><?= isset($col['colspan']) ? ' text-center' : '' ?>">
+                                    class="<?= is_array($valueTD) ? 'p-0 border-bottom-0 align-baseline!' : '' ?><?= isset($col['colspan']) || $col['center'] ? ' text-center' : '' ?>">
                                     <? if (is_array($valueTD)): ?>
                                         <div class="table mb-0 d-flex flex-column gy-1 h-100">
                                             <? foreach ($valueTD as $key => $value): ?>
-                                                <div class="table-row align-items-center! px-2 border-bottom"><?= $value ?></div>
+                                                <div class="table-row w-100! px-2 border-bottom<?= $row['columns']['ALERT'][$key] && $arParams['CLEAR_DATA'] == 'Y' ? ' text-bg-danger' : '' ?>"><?= $value ?></div>
                                             <? endforeach ?>
                                         </div>
                                     <? else: ?>
-                                        <?= $valueTD; ?>
+                                        <?
+                                        $empty = false;
+                                        if ($col['id'] == 'EDIT') {
+                                            foreach ($row['columns']['ALERT'] as $alert) {
+                                                if ($alert)
+                                                    $empty = true;
+                                            }
+                                        }
+                                        // && count($row['columns']['ALERT']) > 1
+                                        if ($col['id'] == 'EDIT' && $empty && $row['columns']['ALERT'])
+                                            continue;
+                                        ?>
+                                        <?= $valueTD;
+                                        ?>
                                     <? endif; ?>
                                 </td>
                             <? endif; ?>

@@ -16,232 +16,284 @@ if ($arResult['ACCESS']):
             <a class="ui-btn ui-btn-sm ui-btn-no-caps" href="<?= $arResult['FOLDER'] ?>">вернуться назад</a>
         </div>
     </div>
-    <div class="row align-items-end text-center mt-2 px-1 gx-2 gy-3">
-        <div class="py-2 small col-3">Примечание</div>
-        <div class="py-2 small col">Участвует в расчете услуг</div>
-        <div class="py-2 small col">Показания на начало месяца</div>
-        <div class="py-2 small col">Разность за текущий месяц</div>
-        <div class="py-2 small col">Конечные показания</div>
-        <div class="py-2 col-4 text-center bg-info-subtle rounded-top">
-            <div class="fs-5 mt-1">Ввод показаний</div>
-            <div class="row gx-2 mt-3">
-                <div class="col small">Нулевой расход</div>
-                <div class="col small">Текущие показания</div>
-                <div class="col small">Разность</div>
+    <? // dump($arResult['DETAIL'])
+    if ($arResult['WRONG']): ?>
+        <div class="alert alert-danger mt-2 d-inline" role="alert">
+            Ошибка доступа ввода показаний приборов учёта
+        </div>
+    <? else: ?>
+        <div class="row align-items-end text-center mt-2 px-1 gx-2 gy-3">
+            <div class="py-2 small col-3">Примечание</div>
+            <div class="py-2 small col">Участвует в расчете услуг</div>
+            <div class="py-2 small col">Показания на начало месяца</div>
+            <div class="py-2 small col">Разность за текущий месяц</div>
+            <div class="py-2 small col">Конечные показания</div>
+            <div class="py-2 col-4 text-center bg-info-subtle rounded-top">
+                <div class="fs-5 mt-1">Ввод показаний</div>
+                <div class="row gx-2 mt-3">
+                    <div class="col small">Нулевой расход</div>
+                    <div class="col small">Текущие показания</div>
+                    <div class="col small">Разность</div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="container row!">
-        <?
-        // $lastMeter = 0;
-        // $prevMeter = 0;
-
-        ?>
-        <? // dump($arResult['DETAIL'])
-        ?>
-        <form id="objectMeter">
-            <input type="hidden" name="OBJECT" value="<?= $arResult['DETAIL']['OBJECT']['ID'] ?>">
-            <? foreach ($arResult['DETAIL']['LIST'] as $key => $item): ?>
+        <div class="container row!">
+            <form id="objectMeter">
+                <input type="hidden" name="OBJECT" value="<?= $arResult['OBJECT_ID'] ?>">
                 <?
-                $raznost = 0;
+                $userSend = false;
+                foreach ($arResult['DETAIL']['LIST'] as $key => $item): ?>
+                    <?
+                    // gg($item);
+                    $raznost = 0;
 
-                if (is_array($arResult['DETAIL']['PREV_METERS'][$item['ID']]))
-                    $prevMeter = array_shift($arResult['DETAIL']['PREV_METERS'][$item['ID']]);
+                    if (is_array($arResult['DETAIL']['PREV_METERS'][$item['ID']]))
+                        $prevMeter = array_shift($arResult['DETAIL']['PREV_METERS'][$item['ID']]);
 
-                //$prevMeter = $arResult['DETAIL']['PREV_METERS'][$item['ID']];
-                $lastMeter = $arResult['DETAIL']['LAST_METERS'][$item['ID']];
+                    //$prevMeter = $arResult['DETAIL']['PREV_METERS'][$item['ID']];
+                    $lastMeter = $arResult['DETAIL']['LAST_METERS'][$item['ID']];
 
-                if ($lastMeter && $prevMeter)
-                    $raznost = $lastMeter - $prevMeter;
+                    if ($lastMeter && $prevMeter)
+                        $raznost = $lastMeter - $prevMeter;
 
-                $prevMeterFormat = number_format($prevMeter, 4, '.', '');
-                $lastMeterFormat = number_format($lastMeter, 4, '.', '');
-                $raznostFormat = number_format($raznost, 4, '.', '');
-                ?>
-                <div class="row card">
-                    <div class="card-body ps-2 pe-1 py-0">
-                        <div class="row gx-2 align-items-stretch">
-                            <div class="col-3 py-3 d-flex align-items-center"><?= $item['UF_NAME'] ?></div>
-                            <div class="col py-3 d-flex align-items-center justify-content-center"><?= $item['SERVICE'] ?></div>
-                            <div class="col py-3 d-flex align-items-center justify-content-center"><?= $prevMeterFormat ?></div>
-                            <div class="col py-3 d-flex align-items-center justify-content-center"><?= $raznostFormat ?></div>
-                            <div class="col py-3 d-flex align-items-center justify-content-center"><?= $lastMeter ? $lastMeterFormat : $prevMeterFormat ?></div>
-                            <div class="col-4 bg-info-subtle">
-                                <div class="d-flex align-items-center py-2">
-                                    <div class="col-3 d-flex justify-content-center">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input null-meter" type="checkbox" role="button" data-switch-id="<?= $item['ID'] ?>" <?= $lastMeter ? 'disabled' : '' ?>
-                                                title="Оставить показания без изменений">
+                    $prevMeterFormat = number_format($prevMeter, 3, '.', '');
+                    $lastMeterFormat = number_format($lastMeter, 3, '.', '');
+                    $raznostFormat = number_format($raznost, 3, '.', '');
+
+                    if ($lastMeter)
+                        $userSend = true;
+
+                    ?>
+                    <div class="row card counter-item">
+                        <div class="card-body ps-2 pe-1 py-0">
+                            <div class="row gx-2 align-items-stretch">
+                                <div class="col-3 py-3 d-flex align-items-center"><?= $item['UF_NAME'] ?></div>
+                                <div class="col py-3 d-flex align-items-center justify-content-center"><?= $item['SERVICE'] ?></div>
+                                <div class="col py-3 d-flex align-items-center justify-content-center current_use"><?= $prevMeterFormat ?></div>
+                                <div class="col py-3 d-flex align-items-center justify-content-center"><?= $raznostFormat ?></div>
+                                <div class="col py-3 d-flex align-items-center justify-content-center"><?= $lastMeter ? $lastMeterFormat : $prevMeterFormat ?></div>
+                                <div class="col-4 bg-info-subtle">
+                                    <div class="d-flex align-items-center py-2">
+                                        <div class="col-3 d-flex justify-content-center">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input null-meter" type="checkbox" role="button" data-switch-id="<?= $item['ID'] ?>"
+                                                    <?= $arResult['SEND_FORM'] && $userSend || !$arResult['SEND_FORM'] && !$arResult['SEND_ADMIN']  ? 'disabled' : '' ?>
+                                                    title="Оставить показания без изменений">
+                                            </div>
                                         </div>
+                                        <input id="inputMeter<?= $item['ID'] ?>" type="text" name="METER[<?= $item['ID'] ?>]" class="meter form-control" onkeyup="validate(this)" onclick="moveCaretToStart(this)"
+                                            min=" <?= $lastMeter ?:  $prevMeter ?>" <?= $arResult['SEND_FORM'] && $userSend || !$arResult['SEND_FORM'] && !$arResult['SEND_ADMIN'] ? 'disabled' : '' ?> value="<?= $lastMeter ?:  $prevMeter ?>" data-current="<?= $prevMeterFormat ?>">
+                                        <div class="col-4 d-flex justify-content-center align-items-end"><span class="fw-bold changeDiff">0</span><small class="ps-1"><?= $item['UNIT'] ?></small></div>
+
                                     </div>
-                                    <input id="inputMeter<?= $item['ID'] ?>" type="text" name="METER[<?= $item['ID'] ?>]" class="meter form-control" onkeyup="validate(this)" onclick="moveCaretToStart(this)"
-                                        min=" <?= $lastMeter ?:  $prevMeter ?>" <?= $lastMeter ? 'disabled' : '' ?> value="<?= $lastMeter ?:  $prevMeter ?>">
-                                    <span class="col-3 d-flex justify-content-center" id="diff" data-last="<?= $prevMeterFormat ?>">0.00</span>
                                 </div>
                             </div>
-                        </div>
 
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3"></div>
+                        <div class="col"></div>
+                        <div class="col"></div>
+                        <div class="col"></div>
+                        <div class="col"></div>
+                        <div class="col-4 px-0 py-1 bg-info-subtle"></div>
+                    </div>
+                <? endforeach; ?>
+                <div class="row">
+                    <div class="col-6 mx-auto text-center">
+                        <div id="mess" class="alert d-none" role="alert"></div>
+                    </div>
+                    <div class="col-4 text-center bg-info-subtle rounded-bottom pb-2">
+                        <? if ($arResult['SEND_ADMIN']): ?>
+                            <button type="button" class="ui-btn ui-btn-lg ui-btn-primary-dark" onclick="sendData()" <?= $userSend ? 'disabled' : '' ?>>корректировка показаниий</button>
+                        <? else: ?>
+                            <button type="button" class="ui-btn ui-btn-lg ui-btn-primary-dark" onclick="sendData()" <?= $userSend || !$arResult['SEND_FORM'] ? 'disabled' : '' ?>>Внести показания</button>
+                        <? endif ?>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-3"></div>
-                    <div class="col"></div>
-                    <div class="col"></div>
-                    <div class="col"></div>
-                    <div class="col"></div>
-                    <div class="col-4 px-0 py-1 bg-info-subtle"></div>
-                </div>
-            <? endforeach; ?>
-            <div class="row">
-                <div class="col-6 mx-auto text-center">
-                    <div id="mess" class="alert d-none" role="alert"></div>
-                </div>
-                <div class="col-4 text-center bg-info-subtle rounded-bottom pb-2">
-                    <button type="button" class="ui-btn ui-btn-lg ui-btn-primary-dark" onclick="sendData()">Внести показания</button>
-                </div>
-            </div>
-        </form>
-    </div>
-    <script>
-        function sendData() {
+            </form>
 
-            const form = document.getElementById("objectMeter");
-            // console.log('form', form);
-            let form_data = new FormData(form);
-            // console.log(form_data);
+        </div>
 
-            var message = $('#mess');
+        <script>
+            function sendData() {
+
+                const form = document.getElementById("objectMeter");
+                // console.log('form', form);
+                let form_data = new FormData(form);
+                // console.log(form_data);
+
+                var message = $('#mess');
 
 
-            // sendMeter
-            BX.ajax.runComponentAction("zhek:cabinet.counters", 'sendMeter', {
-                    mode: "class",
-                    data: form_data,
-                }).then(function(response) {
-                    // console.log('message', message);
+                // sendMeter
+                BX.ajax.runComponentAction("zhek:cabinet.counters", 'sendMeter', {
+                        mode: "class",
+                        data: form_data,
+                    }).then(function(response) {
+                        // console.log('message', message);
 
-                    if (response.status === 'success') {
+                        if (response.status === 'success') {
+
+                            message.removeClass('d-none')
+                                .removeClass('alert-danger')
+                                .addClass('alert-success')
+                                .html('Изменения успешно сохранены');
+                            setTimeout(function() {
+                                location.reload();
+                            }, 5000);
+                        } else {
+                            message
+                                .removeClass('d-none')
+                                .removeClass('alert-success')
+                                .addClass('alert-danger')
+                                .html('<span class="text-danger">Произошла ошибка на сервере! Пожалуйста, попробуйте позже.</span>');
+                        }
+                    })
+                    .catch((response) => {
+                        // console.log('response_error', response);
 
                         message.removeClass('d-none')
-                            .removeClass('alert-danger')
-                            .addClass('alert-success')
-                            .html('Изменения успешно сохранены');
-                        setTimeout(function() {
-                            location.reload();
-                        }, 5000);
-                    } else {
-                        message
-                            .removeClass('d-none')
                             .removeClass('alert-success')
-                            .addClass('alert-danger')
-                            .html('<span class="text-danger">Произошла ошибка на сервере! Пожалуйста, попробуйте позже.</span>');
-                    }
-                })
-                .catch((response) => {
-                    // console.log('response_error', response);
+                            .addClass('alert-danger');
 
-                    message.removeClass('d-none')
-                        .removeClass('alert-success')
-                        .addClass('alert-danger');
-
-                    // msgOk.html('').hide();
-                    $.each(response.errors, function() {
-                        message.html(this.message + '<br>');
+                        // msgOk.html('').hide();
+                        $.each(response.errors, function() {
+                            message.html(this.message + '<br>');
+                        });
                     });
-                });
 
-        }
+            }
 
-        function validate(element) {
+            function validate(element) {
 
-            var value = element.value;
-            // replace everything that's not a number or comma or decimal
-            value = value.replace(/[^0-9,.]/g, "");
-            // replace commas with decimal
-            value = value.replace(/,/, ".");
-            // set element value to new value
-            element.value = value;
-
-
-            // var dotted = value.indexOf('.');
-            // console.log('dotted', dotted)
-            // console.log('substring', value.substring(dotted, dotted + 1))
-
-            // console.log('substring 1', value.substring(dotted, value.lenght))
-
-        }
+                var value = element.value;
+                // replace everything that's not a number or comma or decimal
+                value = value.replace(/[^0-9,.]/g, "");
+                // replace commas with decimal
+                value = value.replace(/,/, ".");
+                // set element value to new value
+                element.value = value;
 
 
-        $('.meter').keypress(function(event) {
-            console.log(event.which);
-
-
-
-            if (event.which == 46) {
-
-                var value = $(this).val()
-                // console.log('this.val', value)
-
-                var dotted = value.indexOf('.');
-
-                // console.log('value', value)
+                // var dotted = value.indexOf('.');
                 // console.log('dotted', dotted)
                 // console.log('substring', value.substring(dotted, dotted + 1))
 
-                // var value = $(this).val()
-
-                // console.log('replace', value.replace($(this).val().substring(dotted, dotted + 1), '_'))
-
-                //value.slice(dotted, dotted + 1)
-
-
-
-                // console.log('dote', value.indexOf('.'))
+                // console.log('substring 1', value.substring(dotted, value.lenght))
 
             }
 
-            // console.log('which', event.which)
-
-            //  console.log('dote', $(this).val().indexOf('.'))
-
-            // if (((event.which != 46 || (event.which == 46 && $(this).val() == '')) ||
-            //         $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
-            //     event.preventDefault();
-            // }
-        }).on('paste', function(event) {
-            event.preventDefault();
-        });
-
-        $('.meter').keyup(function() {
-
-            var last = $(this).val()
-
-            console.log($(this));
-
-            // console.log($(this).val());
-
-            //$(this).val() // get the current value of the input field.
-        });
+            $('.meter').keypress(function(event) {
+                // console.log(event.which);
 
 
-        $('.null-meter').change(function() {
-            console.log($(this).data('switch-id'));
+                if (event.which == 46) {
 
-            let switchID = $(this).data('switch-id'),
-                inputID = $('#inputMeter' + switchID)
+                    var value = $(this).val()
+                    // console.log('this.val', value)
 
-            if ($(this).is(':checked')) {
-                inputID.prop('disabled', true)
-            } else {
-                inputID.prop('disabled', false)
+                    var dotted = value.indexOf('.');
+
+                    // console.log('value', value)
+                    // console.log('dotted', dotted)
+                    // console.log('substring', value.substring(dotted, dotted + 1))
+
+                    // var value = $(this).val()
+
+                    // console.log('replace', value.replace($(this).val().substring(dotted, dotted + 1), '_'))
+
+                    //value.slice(dotted, dotted + 1)
+
+
+
+                    // console.log('dote', value.indexOf('.'))
+
+                }
+
+                // console.log('which', event.which)
+
+                //  console.log('dote', $(this).val().indexOf('.'))
+
+                // if (((event.which != 46 || (event.which == 46 && $(this).val() == '')) ||
+                //         $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
+                //     event.preventDefault();
+                // }
+            }).on('paste', function(event) {
+                event.preventDefault();
+            });
+
+            $('.meter').keyup(function() {
+
+                var last = $(this).val()
+
+                let current = $(this).data('current');
+
+                let diff_span = $(this).closest('.counter-item').find('.changeDiff')
+
+                // var diff_val = Math.round(+last - +current )
+                // var diff_val = (+last - +current).toFixed(3)
+
+                // var diff_val = clear(last - current)
+                var diff_val = subtractFloats(last, current);
+
+                diff_span.html(diff_val)
+                console.log('diff_val', diff_val);
+
+                // console.log($(this).val());
+
+                //$(this).val() // get the current value of the input field.
+            });
+
+            function subtractFloats(float1, float2) {
+                // Преобразуем числа в строки
+                const str1 = float1.toString();
+                const str2 = float2.toString();
+
+                // Находим количество знаков после запятой
+                const decimalPlaces1 = str1.includes('.') ? str1.split('.')[1].length : 0;
+                const decimalPlaces2 = str2.includes('.') ? str2.split('.')[1].length : 0;
+
+                // Определяем максимальное количество знаков после запятой
+                const maxDecimalPlaces = Math.max(decimalPlaces1, decimalPlaces2);
+
+                // Умножаем на 10 в степени maxDecimalPlaces, чтобы получить целые числа
+                const factor = Math.pow(10, maxDecimalPlaces);
+                const int1 = Math.round(float1 * factor);
+                const int2 = Math.round(float2 * factor);
+
+                // Выполняем вычитание
+                const resultInt = int1 - int2;
+
+                // Возвращаем результат, делим на factor
+                return resultInt / factor;
             }
-        });
 
-        function moveCaretToStart(inputObject) {
-            inputObject.setSelectionRange(0, 0)
-        }
-        // $(".meter").mask("9.9?99");
-    </script>
+
+            $('.null-meter').change(function() {
+                console.log($(this).data('switch-id'));
+
+                let switchID = $(this).data('switch-id'),
+                    inputID = $('#inputMeter' + switchID)
+
+                inputID.val(inputID.data('current'))
+
+                $(this).closest('.counter-item').find('.changeDiff').html(0)
+
+                if ($(this).is(':checked')) {
+                    inputID.prop('disabled', true)
+                } else {
+                    inputID.prop('disabled', false)
+                }
+            });
+
+            function moveCaretToStart(inputObject) {
+                inputObject.setSelectionRange(0, 0)
+            }
+            // $(".meter").mask("9.9?99");
+        </script>
+    <? endif; ?>
     <?
 
     // $request = Application::getInstance()->getContext()->getRequest();

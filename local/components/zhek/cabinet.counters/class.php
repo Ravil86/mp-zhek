@@ -67,28 +67,57 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 	private function run()
 	{
-
 		$this->arResult['ACCESS'] = $this->checkAccess();
-		$arItems = [];
+		$arResult = $this->arResult;
+		// $arItems = [];
 
 		$serviceList = LKClass::getService();
-
 		$myCompany = LKClass::myCompany();
 
-		// if ($this->arResult['ADMIN'] || $this->arResult['MODERATOR'])
-		// 	$arObjects = LKClass::getObjects();
-		// else if ($myCompany)
-		$arObjects = LKClass::getObjects($myCompany['ID']);
+		$day = date("d");
+
+		$dateStart = 1;
+		$dateEnd = 5;
+
+		$editEnd = 25;
+		// gg($day);
+
+		if ($dateStart <= $day && $day <= $dateEnd)
+			$arResult['DATE_USER'] = true;
+
+		if ($dateEnd < $day && $day <= $editEnd)
+			$arResult['DATE_ADMIN'] = true;
+
+		$this->arResult['SEND_ADMIN'] = $arResult['DATE_ADMIN'] && $arResult['MODERATOR'];
+		$this->arResult['SEND_FORM'] = $arResult['DATE_USER'] && !$arResult['MODERATOR'] ?? false;
+		// gg($userActive);
+
+		if ($this->arResult['ADMIN'] || $this->arResult['MODERATOR'])
+			$arObjects = LKClass::getObjects();
+		elseif ($myCompany)
+			$arObjects = LKClass::getObjects($myCompany['ID']);
 
 		if ($this->arResult['VARIABLES']) {
 
 			$objectID = $this->arResult['VARIABLES']['DETAIL_ID'];
 
+			$this->arResult['OBJECT_ID'] = $objectID;
+
 			// $this->arResult['DETAIL']['GRID'] =  'object_detail';
 			// $arResult['DETAIL']['GRID'] = $this->arResult['DETAIL']['GRID'];
 
-			$this->arResult['DETAIL']['OBJECT'] = $arObjects[$objectID];
+			// gg($arObjects);
 
+			// gg($objectID);
+
+			if (!array_key_exists($objectID, $arObjects))
+				$this->arResult['WRONG'] = true;
+
+			// gg(!array_key_exists($objectID, $arObjects));
+
+			// gg($this->arResult['WRONG']);
+
+			$this->arResult['DETAIL']['OBJECT'] = $arObjects[$objectID];
 
 			$countersObject  = LKClass::getCounters($objectID);
 			foreach ($countersObject as $key => &$item) {
@@ -96,9 +125,11 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 				$types = [];
 				foreach ($item['UF_TYPE'] as $value) {
 					$typeItem = $serviceList[$value];
+					$unit = $typeItem['UNIT'];
 					$types[] = '<img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/>';
 				}
-
+				// gg($unit);
+				$item['UNIT'] = $unit;
 				$item['SERVICE'] = implode(' ', $types);
 
 				$this->arResult['DETAIL']['LIST'][$item['ID']] = $item;
@@ -227,8 +258,9 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 		// return $request['METER'];
 
-		foreach ($request['METER'] as $kCounter => $meter) {
+		Bitrix\Main\Diag\Debug::dumpToFile(var_export($request, 1), '$request', 'test.log');
 
+		foreach ($request['METER'] as $kCounter => $meter) {
 			LKClass::saveMeter($request['OBJECT'], $kCounter, $meter);
 		}
 

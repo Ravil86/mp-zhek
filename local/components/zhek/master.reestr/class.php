@@ -10,6 +10,7 @@ use Bitrix\Main\Context,
 	Bitrix\Iblock,
 	Bitrix\Main\Application,
 	Bitrix\Main\Web\Uri;
+use PhpParser\Node\Stmt\Break_;
 
 class MasterReestr extends CBitrixComponent
 {
@@ -44,8 +45,19 @@ class MasterReestr extends CBitrixComponent
 		$this->includeComponentTemplate($componentPage);
 	}
 
+
 	private function run()
 	{
+
+		// function testEmpty($array)
+		// {
+		// 	foreach ($array as $element) {
+		// 		if ($element == '')
+		// 			return true;
+		// 	}
+		// 	return false;
+		// }
+
 		$arParams = $this->arParams;
 		$this->arResult['PAGE_SIZE'] = 20;
 
@@ -66,6 +78,7 @@ class MasterReestr extends CBitrixComponent
 			$orgContracts[$contr['COMPANY']][] = [
 				'NUMBER' => $contr['FULL_NUMBER'],
 				'STATUS' => $contr['STATUS'],
+				'ACTIVE' => $contr['UF_STATUS'] == 14 ?: false,
 				// 'DATE' => $contr['DATE'],
 			];
 		}
@@ -100,18 +113,17 @@ class MasterReestr extends CBitrixComponent
 			//какую сортировку сохранил пользователь (передаем то, что по умолчанию)
 			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
 			$this->arResult['GRID']['COLUMNS'] = [
-			['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 50, 'resizeable' => false, 'rowspan' => true],
+			// ['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 50, 'resizeable' => false, 'rowspan' => true],
 			['id' => 'UF_NAME', 'name' => 'Организация', /*'sort' => 'NAME', */ 'default' => true, 'rowspan' => true /*'sticked' => true, 'resizeable' => true*/],
 			// ['id' => 'UF_ADDRESS', 'name' => 'Адрес организации', /*'sort' => 'ADDRESS', */ 'default' => false],
 			// ['id' => 'UF_INN', 'name' => 'ИНН',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => false, 'rowspan' => true],
 			['id' => 'DOGOVOR', 'name' => 'Текущий контракт', 'default' => true, 'rowspan' => true],
 			['id' => 'OBJECT', 'name' => 'Объект', 'default' => true],
-			['id' => 'EDIT', 'name' => '', 'default' => true],
 			['id' => 'COUNTER', 'name' => 'ПУ', 'default' => true],
 			['id' => 'METER_LAST', 'name' => 'Текущие', 'default' => true, 'colspan' => 4, 'text' => 'Показания', 'color' => '#ddd'],
 			['id' => 'METER_ALL', 'name' => 'Предыдущие', 'default' => true, 'colspan' => 0, 'color' => '#ddd'],
 			['id' => 'METER_RAZNOST', 'name' => 'Разность', 'default' => true, 'colspan' => 0],
-
+			['id' => 'EDIT', 'name' => 'кор.', 'default' => true, 'colspan' => 0, 'center' => true],
 			// ['id' => 'UF_TYPE', 'name' => 'Тип организации', 'default' => false, 'rowspan' => true /*"editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]*/],
 		];
 
@@ -122,10 +134,11 @@ class MasterReestr extends CBitrixComponent
 		// 	'offset' => $nav->getOffset(),
 		// 	'limit' => $nav->getLimit(),
 		// ];
+		$arResult['COUNTER_SHOW'] = $arParams['CLEAR_DATA'] == 'Y' ? true : false;
+		// $this->$arResult['COUNTER_SHOW'] = $arResult['COUNTER_SHOW'];
+
 		if ($arParams['ALL_ORG'] != 'Y')
 			$filter['UF_ACTIVE'] = 1;
-
-		// gg($filter);
 
 		$itemsCompany = LKClass::getCompany(null, $filter);
 		// $itemsCompany = LKClass::getCompany(null, $filter, $navParams);
@@ -138,15 +151,23 @@ class MasterReestr extends CBitrixComponent
 				$item['OBJECTS'][$object['ID']] = $object;		//заполняем обьектами организации для сортировки
 			}
 
-
 			if ($getDogovOrg = $orgContracts[$item['ID']])	//заполняем контрактами для сортировки
-			$item['CONTRACTS'] = $getDogovOrg;
+				$item['CONTRACT'] = $getDogovOrg[0];
+			// $item['CONTRACTS'] = $getDogovOrg;
 		}
+
+		if ($arParams['ALL_ORG'] != 'Y') {
+			foreach ($itemsCompany as $key => $org) {
+				// gg($org['CONTRACT']);
+				if (!$org['CONTRACT']['ACTIVE'])
+					unset($itemsCompany[$key]);
+			}
+		}
+
 
 		if (!function_exists('sortObjects')) {
 			function sortObjects($a, $b)
 			{
-
 				if (isset($a['OBJECTS']) == isset($b['OBJECTS'])) {
 					return 0;
 				}
@@ -160,10 +181,10 @@ class MasterReestr extends CBitrixComponent
 		if (!function_exists('sortContract')) {
 		function sortContract($a, $b)
 		{
-			if (isset($a['CONTRACTS']) == isset($b['CONTRACTS'])) {
+				if (isset($a['CONTRACT']) == isset($b['CONTRACT'])) {
 				return 0;
 			}
-			return ($a['CONTRACTS'] > $b['CONTRACTS']) ? -1 : 1;
+				return ($a['CONTRACT'] > $b['CONTRACT']) ? -1 : 1;
 		}
 		}
 		usort($itemsCompany, "sortContract");
@@ -182,15 +203,18 @@ class MasterReestr extends CBitrixComponent
 		$i = 0;
 
 		// foreach ($orgContracts as $orgID => &$item) {	// записи по контрактам
-		foreach ($itemsCompany as $key => &$item) {		// записи по всем организации
-				$countObjects = 0;
+		foreach ($itemsCompany as $keyCompany => &$item) {		// записи по всем организации
+			$countObjects = 0;
 
 			$column = $item;
+
+
+			$column['UF_NAME'] = '#' . $column['ID'] . ' ' . $column['UF_NAME'];
 			// if ($itemsCompany[$orgID])
 			// 	$column['UF_NAME'] = $itemsCompany[$orgID]['UF_NAME'];
 
-			if ($item['CONTRACTS']) {
-				$dogovor = '<div class="text-' . $item['CONTRACTS'][0]['STATUS']['CODE'] . ' px-3 py-1 text-center"><small>' . $item['CONTRACTS'][0]['NUMBER'] . '</small></div>';
+			if ($item['CONTRACT']) {
+				$dogovor = '<div class="text-' . $item['CONTRACT']['STATUS']['CODE'] . ' text-center"><small>' . $item['CONTRACT']['NUMBER'] . '</small></div>';
 				$column["DOGOVOR"] = $dogovor;
 			}
 
@@ -200,11 +224,11 @@ class MasterReestr extends CBitrixComponent
 				$colRow['COUNTS'] = $countObjects;
 				$colRow['ROWSPAN'] = $countObjects > 1 ?: false;
 
-				$g = 0;
+				$gRow = 0;
 
 				$arService = LKClass::getService();
 
-				foreach ($item['OBJECTS'] as $key => $object) {
+				foreach ($item['OBJECTS'] as $keyObject => &$object) {
 
 					$servicesAll = [];
 					$lastIconType = '';
@@ -213,29 +237,31 @@ class MasterReestr extends CBitrixComponent
 
 					$column['OBJECT'] = '#' . $object['ID'] . ' ' . $object['NAME'];
 
-					$column['EDIT'] = '<a href="/master/counter/' . $object['ID'] . '" target="_blank">i</a><i class="bi bi-pencil"></i>';
+					$column['EDIT'] = '<a class="text-center" href="/master/counter/' . $object['ID'] . '" target="_blank"><i class="revicon-pencil-1"></i></a>';
 
 					$counterObjects = LKClass::getCounters($object['ID']);
 
 					$column['COUNTER'] = [];
 					$countersObject = [];
 					$arType = null;
+
 					foreach ($counterObjects as $key => $value) {
 
 						$servicesImage = [];
 						if ($value['UF_TYPE']) {
 							foreach ($value['UF_TYPE'] as $type) {
+
 								$arType = $arService[$type];
-								$servicesImage[] = '<img src="' . $arType['ICON'] . '" width="18"/>';
+								// gg($arType);
+								$servicesImage[] = '<img class="" src="' . $arType['ICON'] . '" width="15"/>';
 							}
-							$iconType = implode(' ', $servicesImage);
+							$iconType = implode('', $servicesImage);
 							unset($arType);
 						}
 
-						$countersObject[$value['ID']] = $iconType . ' <small>' . ($value['UF_NUMBER'] ?: $value['UF_NAME']) . '</small>';
+						$countersObject[$value['ID']] = '<div class="d-flex align-items-center "><small class="p-0 bg-0 me-1">#' . $value['ID'] . '</small>' . (!$arResult['COUNTER_SHOW'] ? '<span class="col-3 p-0 bg-0">' . $iconType . '</span>' : '') . '<small class="ms-1 p-0 bg-0">' . ($value['UF_NUMBER'] ?: $value['UF_NAME']) . '</small></div>';
 					}
 					$column['COUNTER'] = $countersObject;
-
 
 					//последние показания
 					$metersLast = LKClass::meters($object['ID'], 1);
@@ -267,7 +293,14 @@ class MasterReestr extends CBitrixComponent
 						$curentAllMeter = '';
 
 						$lastMeter = $lastObjMeters[$object['ID']][$key];
-						$column['METER_LAST'][$key] =  $lastMeter ?: '-';
+
+						$column['METER_LAST'][$key] =  $lastMeter ?: '';
+						// $column['METER_LAST'][$key] =  $lastMeter ?: (!$arResult['COUNTER_SHOW'] ? '-' : '');
+						// $column['METER_LAST'][$key] =  $lastMeter ?: (!$arResult['COUNTER_SHOW'] ? '<span class="alert alert-danger p-1">-</span>' : '');
+
+						if (!$lastMeter) {
+							$column['ALERT'][$key] = true;
+						}
 
 						$allMeters =  $allObjMeters[$object['ID']][$key];
 						if ($allMeters)
@@ -325,17 +358,28 @@ class MasterReestr extends CBitrixComponent
 					}*/
 					//$column['METER_ALL'] =  $allIconType . ' ' . $curentAll['METER']; //все данные
 
+					// if (!$column['COUNTER'])
+					// 	$i--;
 
-					if ($g > 0)
-					$colRow['ROWSPAN'] = false;
+					// gg($column['METER_LAST']);
+
+					// gg(testEmpty($column['METER_LAST']));
+
+					// if ($arParams['CLEAR_DATA'] == 'Y' && empty($column['COUNTER']))
+					// 	continue;
+
+					if ($gRow > 0)
+						$colRow['ROWSPAN'] = false;
+
 
 					$this->arResult['GRID']['ROWS'][$i] = [
 						'columns'	=> $column,
 					];
+
 					$this->arResult['ROWS_COLUMNS'][$i] = $colRow;
 
 					$i++;
-					$g++;
+					$gRow++;
 				}
 			}
 
@@ -364,12 +408,32 @@ class MasterReestr extends CBitrixComponent
 			if (!$item['OBJECTS'])
 				$i++;
 		}
+
+		// gg($this->arResult['ROWS_COLUMNS']);
+
+		// foreach ($column['COUNTER'] as $keyCounter => &$counter) {
+
+		// 	// gg($counter);
+		// 	// gg($keyCounter);
+
+		// 	foreach ($column['METER_LAST'] as $meter) {
+		// 		// gg($meter);
+
+		// 		// if ($meter)
+		// 		// unset($column['COUNTER'][$keyCounter]);
+		// 		// unset($column['OBJECTS'][$keyObject]);
+		// 		// $item['OBJECTS']$keyObject
+		// 		// unset($object);
+
+		// 		//unset($item['OBJECTS'][$keyObject]);
+		// 	}
+		// }
 		// }
 
-		// dump($this->arResult['GRID']['ROWS']);
 
-		// $this->arResult['GRID']['ROW_LAYOUT'][0] = ['data' => 'data_field_1', 'colspan' => 3];
-		// $this->arResult['GRID']['ROW_LAYOUT'][1] = $columns;
+		// }
+
+
 
 		// $rowColumns = ['ID', 'UF_NAME'/*, 'END'*/];
 		$i = 1;
@@ -412,13 +476,28 @@ class MasterReestr extends CBitrixComponent
 
 			$i++;
 
-
 			// foreach ($this->arResult['GRID']['ROW_LAYOUT'] as $key => $value) {
 			// 	asort($value);
 			// }
 
 			// $this->arResult['GRID']['ROW_LAYOUT'][$key] = $columns;
 		}
+
+		// gg($this->arResult['GRID']['ROW_LAYOUT']);
+
+		// if ($arResult['COUNTER_SHOW']) {
+		// foreach ($this->arResult['GRID']['ROWS'] as $kRow => $row) {
+
+		// 	// gg($row['columns']['COUNTER']);
+		// 	if (empty($row['columns']['COUNTER'])) {
+		// 		unset($this->arResult['GRID']['ROWS'][$kRow]);
+		// 		unset($this->arResult['ROWS_COLUMNS'][$kRow]);
+		// 	}
+		// }
+		// gg($this->arResult['GRID']['ROWS']);
+		// gg($this->arResult['ROWS_COLUMNS']);
+
+
 		// dump($this->arResult['ROWS_COLUMNS']);
 		// dump($this->arResult['GRID']['ROW_LAYOUT']);
 		// dump($this->arResult['GRID']['ROWS']);
@@ -564,57 +643,4 @@ class MasterReestr extends CBitrixComponent
 
 		return $componentPage;
 	}
-
-	// метод обработки режима без ЧПУ
-	/*protected function noSefMode()
-	{
-		if (empty($this->arParams["VARIABLE_ALIASES"]["CATALOG_URL"])) {
-			$dbResult = CIBlock::GetByID($this->arParams["IBLOCK_ID"])->GetNext();
-			if (!empty($dbResult)) {
-				$this->arParams["VARIABLE_ALIASES"]["ELEMENT_ID"] = preg_replace('/\#/', '', $dbResult["DETAIL_PAGE_URL"]);
-				$this->arParams["VARIABLE_ALIASES"]["SECTION_ID"] = preg_replace('/\#/', '', $dbResult["SECTION_PAGE_URL"]);
-				$this->arParams["VARIABLE_ALIASES"]["CATALOG_URL"] = preg_replace('/\#/', '', $dbResult["LIST_PAGE_URL"]);
-			}
-		}
-		$arDefaultVariableAliases = [
-			'ELEMENT_COUNT' => 'count',
-		];
-		$arVariableAliases = CComponentEngine::makeComponentVariableAliases(
-			$arDefaultVariableAliases,
-			$this->arParams["VARIABLE_ALIASES"]
-		);
-		$arVariables = [];
-		// дополнительные GET параметры которые будем отлавливать в запросе, в массив $arVariables будет добавлена переменная sort, значение которой будет получено из $_REQUEST['sort'], применяется когда не нужно указывать точный псевдоним для ключа
-		$arComponentVariables = [
-			'sort'
-		];
-		// метод предназначен для получения и объединения GET параметров результат записываем в $arVariables
-		CComponentEngine::initComponentVariables(
-			false,
-			$arComponentVariables,
-			$arVariableAliases,
-			$arVariables
-		);
-		$context = Application::getInstance()->getContext();
-		$request = $context->getRequest();
-		$rDir = $request->getRequestedPageDirectory();
-		$componentPage = "";
-		// если запрошенная директория равна переданой в arParams["CATALOG_URL"], определяем тип страницы стартовая
-		if ($arVariableAliases["CATALOG_URL"] == $rDir) {
-			$componentPage = "index";
-		}
-		// по найденным параметрам $arVariables определяем тип страницы секция
-		if ((isset($arVariables["SECTION_ID"]) && intval($arVariables["SECTION_ID"]) > 0) || (isset($arVariables["SECTION_CODE"]) && $arVariables["SECTION_CODE"] <> '')) {
-			$componentPage = "section";
-		}
-		// по найденным параметрам $arVariables определяем тип страницы элемент
-		if ((isset($arVariables["ELEMENT_ID"]) && intval($arVariables["ELEMENT_ID"]) > 0) || (isset($arVariables["ELEMENT_CODE"]) && $arVariables["ELEMENT_CODE"] <> '')) {
-			$componentPage = "element";
-		}
-		$this->arResult = [
-			"VARIABLES" => $arVariables,
-			"ALIASES" => $arVariableAliases
-		];
-		return $componentPage;
-	}*/
 }
