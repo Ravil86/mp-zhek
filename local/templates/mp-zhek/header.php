@@ -90,13 +90,16 @@ $arSite = $rsSites->Fetch();
     }
 
     $arJs = array(
-        SITE_TEMPLATE_PATH . '/js/jquery-3.3.1.min.js',
-        // SITE_TEMPLATE_PATH.'/js/jquery-1.12.4.min.js',
-        SITE_TEMPLATE_PATH . '/js/jquery-migrate-1.4.1.min.js',
+        SITE_TEMPLATE_PATH . '/js/jquery-3.7.1.min.js',
+        // SITE_TEMPLATE_PATH . '/js/jquery-1.12.4.min.js',
+
+        SITE_TEMPLATE_PATH . '/js/jquery-migrate-3.5.2.min.js',
+        // SITE_TEMPLATE_PATH . '/js/jquery-migrate-1.4.1.min.js',
+
         // //--slider revolution
         SITE_TEMPLATE_PATH . '/lib/jquery.themepunch.tools.min.js',    //rs-plugin
         SITE_TEMPLATE_PATH . '/lib/jquery.themepunch.revolution.min.js',    //rs-plugin
-        SITE_TEMPLATE_PATH . '/js/jquery.ba-bbq.min.js',
+        // SITE_TEMPLATE_PATH . '/js/jquery.ba-bbq.min.js',
         SITE_TEMPLATE_PATH . '/js/jquery-ui-1.12.1.custom.min.js',
         SITE_TEMPLATE_PATH . '/js/jquery.ui.touch-punch.min.js',
         SITE_TEMPLATE_PATH . '/js/jquery.isotope.min.js',
@@ -128,8 +131,8 @@ $arSite = $rsSites->Fetch();
         SITE_TEMPLATE_PATH . '/lib/maskedinput/jquery.maskedinput.min.js',
         // SITE_TEMPLATE_PATH.'/lib/mask/jquery.mask.min.js',
 
-        SITE_TEMPLATE_PATH . '/js/special.js',
-        // SITE_TEMPLATE_PATH.'/js/special.min.js',
+        // SITE_TEMPLATE_PATH . '/js/special.js',
+        // SITE_TEMPLATE_PATH . '/js/special.min.js',
 
         // '//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/2.0.0-beta1/js/bootstrap-select.min.js',
         // '//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/2.0.0-beta1/js/i18n/defaults-ru_RU.min.js'
@@ -171,7 +174,8 @@ $arSite = $rsSites->Fetch();
                 </ul>
 
                 <ul class="contact-details float-end d-none d-lg-block">
-                    <li id="specialButton" class="lh-1"><i class="template-display me-2 fs-6"></i><button class="btn p-0" title="Версия для слабовидщих">Версия для слабовидщих</button></li>
+                    <?/*
+                    <li id="specialButton" class="lh-1"><i class="template-display me-2 fs-6"></i><button class="btn p-0" title="Версия для слабовидщих">Версия для слабовидщих</button></li>*/ ?>
                     <!-- <li class="d-none d-xl-block"><a href="https://old.mp-zhek-3.ru" target="_blank">Прежняя версия сайта</a></li> -->
                     <li id="lkButton" class="lh-1"><i class="features-person me-2 fs-6"></i><a href="/cabinet/">Личный кабинет</a></li>
                 </ul>

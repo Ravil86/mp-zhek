@@ -16,11 +16,12 @@ function gm_authFailure() {
 	if ($("#map").length)
 		alert('Please define Google Maps API Key.\nReplace YOUR_API_KEY with the key generated on https://developers.google.com/maps/documentation/javascript/get-api-key\nin below line before the </body> closing tag <script type="text/javascript" src="//maps.google.com/maps/api/js?key=YOUR_API_KEY"></script>');
 }
+
 $(document).ready(function () {
 
 	//  $('#multiselect').selectpicker();
 
-	// jQuery(document).ready(function($){
+// jQuery(document).ready(function($){
 	//preloader
 	var preloader = function () {
 		$(".blog a.post-image>img, .post.single .post-image img, .services-list a>img, .projects-list:not('.isotope') a>img, .cm-preload>img").each(function () {
@@ -338,12 +339,12 @@ $(document).ready(function () {
 		$(".parallax").addClass("attachment-scroll");
 
 	//isotope
-	$(".isotope").isotope({
-		masonry: {
-			//columnWidth: 225,
-			gutter: 30
-		}
-	});
+	// $(".isotope").isotope({
+	// 	masonry: {
+	// 		//columnWidth: 225,
+	// 		gutter: 30
+	// 	}
+	// });
 
 	//testimonials
 	$(".testimonials-carousel").each(function () {
@@ -897,7 +898,7 @@ $(document).ready(function () {
 			$("html, body").animate({ scrollTop: offset.top - 90 }, 400);
 	});
 	//hashchange
-	$(window).on("hashchange", function (event) {
+	/*$(window).on("hashchange", function (event) {
 		var hashSplit = $.param.fragment().split("-");
 		var hashString = "";
 		for (var i = 0; i < hashSplit.length - 1; i++)
@@ -935,7 +936,7 @@ $(document).ready(function () {
 
 			$(".isotope").isotope({ filter: (filterClass != "*" ? "." : "") + filterClass });
 		}
-	}).trigger("hashchange");
+	}).trigger("hashchange");*/
 
 	$('body.dont-scroll').on("touchmove", {}, function (event) {
 		event.preventDefault();

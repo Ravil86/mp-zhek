@@ -2109,3 +2109,7 @@ box-shadow: none;
 .bootstrap-select .dropdown-toggle .filter-option{
 height: unset;
 }
+
+.bg-0{
+background-color: transparent!important;
+}

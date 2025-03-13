@@ -126,7 +126,7 @@ pre {
 	height: auto;
 }
 
-input:not(.form-check-input),
+input:not(.form-check-input, .btn),
 textarea {
 	font-family: "PT Sans", sans-serif;
 	/* font-size: 14px; */
