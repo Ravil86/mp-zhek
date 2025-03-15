@@ -93,26 +93,26 @@ class MasterReestr extends CBitrixComponent
 			$arObjects[$value['ORG']][] = $value;
 		}
 
-			$grid_options = new CGridOptions($this->arResult["GRID_ID"]);
-			$nav_params = $grid_options->GetNavParams(array("nPageSize" => $this->arResult['PAGE_SIZE']));
-			$nav = new Bitrix\Main\UI\PageNavigation($this->arResult["GRID_ID"]);
-			$nav->allowAllRecords(true)
-				->setPageSize($nav_params['nPageSize'])
-				->initFromUri();
+		$grid_options = new CGridOptions($this->arResult["GRID_ID"]);
+		$nav_params = $grid_options->GetNavParams(array("nPageSize" => $this->arResult['PAGE_SIZE']));
+		$nav = new Bitrix\Main\UI\PageNavigation($this->arResult["GRID_ID"]);
+		$nav->allowAllRecords(true)
+			->setPageSize($nav_params['nPageSize'])
+			->initFromUri();
 
-			if ($nav->allRecordsShown())
-				$nav_params = false;
-			else
-				$nav_params['iNumPage'] = $nav->getCurrentPage();
+		if ($nav->allRecordsShown())
+			$nav_params = false;
+		else
+			$nav_params['iNumPage'] = $nav->getCurrentPage();
 
-			$rsEnum = HLWrap::getEnumProp('UF_TYPE');
-			// while ($arEnum = $rsEnum->Fetch()) {
-			// 	//dump($arEnum);
-			// }
+		$rsEnum = HLWrap::getEnumProp('UF_TYPE');
+		// while ($arEnum = $rsEnum->Fetch()) {
+		// 	//dump($arEnum);
+		// }
 
-			//какую сортировку сохранил пользователь (передаем то, что по умолчанию)
-			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
-			$this->arResult['GRID']['COLUMNS'] = [
+		//какую сортировку сохранил пользователь (передаем то, что по умолчанию)
+		$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
+		$this->arResult['GRID']['COLUMNS'] = [
 			// ['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 50, 'resizeable' => false, 'rowspan' => true],
 			['id' => 'UF_NAME', 'name' => 'Организация', /*'sort' => 'NAME', */ 'default' => true, 'rowspan' => true /*'sticked' => true, 'resizeable' => true*/],
 			// ['id' => 'UF_ADDRESS', 'name' => 'Адрес организации', /*'sort' => 'ADDRESS', */ 'default' => false],
@@ -147,9 +147,9 @@ class MasterReestr extends CBitrixComponent
 		foreach ($itemsCompany as &$item) {
 
 			if ($orgObjects = $arObjects[$item['ID']])
-			foreach ($orgObjects as $object) {
-				$item['OBJECTS'][$object['ID']] = $object;		//заполняем обьектами организации для сортировки
-			}
+				foreach ($orgObjects as $object) {
+					$item['OBJECTS'][$object['ID']] = $object;		//заполняем обьектами организации для сортировки
+				}
 
 			if ($getDogovOrg = $orgContracts[$item['ID']])	//заполняем контрактами для сортировки
 				$item['CONTRACT'] = $getDogovOrg[0];
@@ -179,13 +179,13 @@ class MasterReestr extends CBitrixComponent
 		usort($itemsCompany, "sortObjects");
 
 		if (!function_exists('sortContract')) {
-		function sortContract($a, $b)
-		{
+			function sortContract($a, $b)
+			{
 				if (isset($a['CONTRACT']) == isset($b['CONTRACT'])) {
-				return 0;
-			}
+					return 0;
+				}
 				return ($a['CONTRACT'] > $b['CONTRACT']) ? -1 : 1;
-		}
+			}
 		}
 		usort($itemsCompany, "sortContract");
 
@@ -291,7 +291,7 @@ class MasterReestr extends CBitrixComponent
 
 					foreach ($countersObject as $key => $value) {
 						$curentAllMeter = '';
-
+						// $column['ALERT'][$key] = false;
 						$lastMeter = $lastObjMeters[$object['ID']][$key];
 
 						$column['METER_LAST'][$key] =  $lastMeter ?: '';

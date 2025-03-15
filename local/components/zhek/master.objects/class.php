@@ -74,6 +74,8 @@ class MasterObjects extends CBitrixComponent
 			$arObjects[$value['ORG']][] = $value;
 		}
 
+		$this->arResult['MONTH'] = LKClass::getMonth();
+
 		if ($this->arResult['VARIABLES']) {
 
 			$orgID = $this->arResult['VARIABLES']['DETAIL_ID'];
@@ -225,7 +227,6 @@ class MasterObjects extends CBitrixComponent
 
 				$this->arResult['ITEMS'][] = $item;
 			}
-
 		} else {
 
 			$result = \Bitrix\Main\UserGroupTable::getList(array(
@@ -487,7 +488,7 @@ class MasterObjects extends CBitrixComponent
 						LKClass::deleteCounter($counterID);
 					}
 				} else {
-				foreach ($arRequest["FIELDS"] as $counterID => $fields) {
+					foreach ($arRequest["FIELDS"] as $counterID => $fields) {
 
 						foreach ($fields as $key => $value) {
 							if ($key == 'TYPE' && is_array($value)) {
@@ -517,7 +518,7 @@ class MasterObjects extends CBitrixComponent
 
 			// if (!isset($arRequest["AJAX_CALL"])) {
 			// 	self::run();
-				LocalRedirect(Context::getCurrent()->getRequest()->getRequestUri());
+			LocalRedirect(Context::getCurrent()->getRequest()->getRequestUri());
 			// }
 
 		}

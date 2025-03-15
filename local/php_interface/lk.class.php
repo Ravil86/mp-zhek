@@ -21,6 +21,8 @@ class LKClass
 
     protected static $_HL_Meter = "Meter"; // HL типы услуг
 
+    protected static $_HL_Losses = "Losses"; // HL типы услуг
+
     protected static $MASTER = "MASTER"; // код группы Мастер участка
     protected static $ORG = "ORG"; // код группы Организации
 
@@ -81,6 +83,7 @@ class LKClass
                 'METER' => $value['UF_METER'],
                 'COUNTER' => $value['UF_COUNTER'],
                 'OBJECT' => $value['UF_OBJECT'],
+                'NOTE' => $value['UF_NOTE'],
                 // 'SERVICE' => $value['UF_SERVICE'],
             ];
             $result[$value['ID']] = $meter;
@@ -88,16 +91,24 @@ class LKClass
         return $result;
     }
 
-    public static function saveMeter($objectID, $counter, $meter)
+    public static function saveMeter($objectID, $counter, $meter, $note = '')
     {
 
         $classHL = \HLWrap::init(self::$_HL_Meter);
+
+        if ($note) {
+            $note = htmlspecialchars($note);
+            $note = preg_replace("/\d{1,2}\.\d{1,2}\.\d{2}\s+\d{1,2}:\d{2}/", "", $note);
+            $note = preg_replace("/(\n|\r)/", "", $note);
+            $note = date('d.m.y H:i') . '&#10;' . $note;
+        }
 
         $value = [
             'UF_METER' => $meter,
             'UF_DATE' => date('d.m.Y H:i:s'),
             'UF_OBJECT' => $objectID,
             'UF_COUNTER' => $counter,
+            'UF_NOTE' => $note,
         ];
 
         $filter = [
@@ -218,8 +229,7 @@ class LKClass
                 $arFilter['UF_NAME'] = '%' . $filter['FIND'] . '%';
             else
                 $arFilter['UF_ACTIVE'] = $filter['UF_ACTIVE'];
-        }
-        else
+        } else
             $arFilter = [];
 
         // gg($arFilter);
@@ -380,7 +390,7 @@ class LKClass
             $date = ConvertDateTime($arDoc['UF_DATE'], "DD.MM.Y", "ru");
 
             if ($arDoc['UF_YEAR'])
-            $arDoc['YEAR'] = $yearList[$arDoc['UF_YEAR']];
+                $arDoc['YEAR'] = $yearList[$arDoc['UF_YEAR']];
 
             $arDoc['NUMBER'] = ($arDoc['UF_NUMBER'] < 10 ? '0' : '') . $arDoc['UF_NUMBER'];
 
@@ -454,6 +464,19 @@ class LKClass
             ];
         }
 
+        return $result;
+    }
+
+    public static function getMonth()
+    {
+        HLWrap::init(self::$_HL_Losses);
+        $rsFields = HLWrap::getEnumProp('UF_MONTH');
+        while ($field = $rsFields->Fetch()) {
+            $result[$field['ID']] = [
+                'VALUE' => $field['VALUE'],
+                'CODE' => $field['XML_ID'],
+            ];
+        }
         return $result;
     }
 

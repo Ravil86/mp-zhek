@@ -23,17 +23,18 @@ if ($arResult['ACCESS']):
         </div>
     <? else: ?>
         <div class="row align-items-end text-center mt-2 px-1 gx-2 gy-3">
-            <div class="py-2 small col-3">Примечание</div>
-            <div class="py-2 small col">Участвует в расчете услуг</div>
-            <div class="py-2 small col">Показания на начало месяца</div>
-            <div class="py-2 small col">Разность за текущий месяц</div>
-            <div class="py-2 small col">Конечные показания</div>
-            <div class="py-2 col-4 text-center bg-info-subtle rounded-top">
+            <div class="py-2 small col-<?= !$arResult['SEND_ADMIN'] ? '3' : '2' ?>">Примечание</div>
+            <div class="py-2 small col"><?= !$arResult['SEND_ADMIN'] ? 'Участвует в расчете услуг' : '' ?></div>
+            <div class="py-2 small col"><?= !$arResult['SEND_ADMIN'] ? 'Показания на ' : '' ?>начало месяца</div>
+            <div class="py-2 small col"><?= !$arResult['SEND_ADMIN'] ? 'Разность за текущий месяц' : 'разность' ?></div>
+            <div class="py-2 small col"><?= !$arResult['SEND_ADMIN'] ? 'Конечные показания' : 'конечные' ?></div>
+            <div class="py-2 col-<?= !$arResult['SEND_ADMIN'] ? '4' : '5' ?> text-center bg-info-subtle rounded-top">
                 <div class="fs-5 mt-1">Ввод показаний</div>
                 <div class="row gx-2 mt-3">
-                    <div class="col small">Нулевой расход</div>
+                    <? if (!$arResult['SEND_ADMIN']): ?><div class="col small">Нулевой расход</div><? endif; ?>
                     <div class="col small">Текущие показания</div>
                     <div class="col small">Разность</div>
+                    <? if ($arResult['SEND_ADMIN']): ?> <div class="col-5 small">Комментарий</div><? endif; ?>
                 </div>
             </div>
         </div>
@@ -44,7 +45,8 @@ if ($arResult['ACCESS']):
                 $userSend = false;
                 foreach ($arResult['DETAIL']['LIST'] as $key => $item): ?>
                     <?
-                    // gg($item);
+                    $noteMeter = '';
+                    // gg($item['ID']);
                     $raznost = 0;
 
                     if (is_array($arResult['DETAIL']['PREV_METERS'][$item['ID']]))
@@ -60,6 +62,8 @@ if ($arResult['ACCESS']):
                     $lastMeterFormat = number_format($lastMeter, 3, '.', '');
                     $raznostFormat = number_format($raznost, 3, '.', '');
 
+                    $noteMeter = $arResult['DETAIL']['NOTE_METERS'][$item['ID']];
+
                     if ($lastMeter)
                         $userSend = true;
 
@@ -67,46 +71,58 @@ if ($arResult['ACCESS']):
                     <div class="row card counter-item">
                         <div class="card-body ps-2 pe-1 py-0">
                             <div class="row gx-2 align-items-stretch">
-                                <div class="col-3 py-3 d-flex align-items-center"><?= $item['UF_NAME'] ?></div>
+                                <div class="col-<?= !$arResult['SEND_ADMIN'] ? '3' : '2' ?> py-3 d-flex align-items-center"><?= $item['UF_NAME'] ?></div>
                                 <div class="col py-3 d-flex align-items-center justify-content-center"><?= $item['SERVICE'] ?></div>
                                 <div class="col py-3 d-flex align-items-center justify-content-center current_use"><?= $prevMeterFormat ?></div>
                                 <div class="col py-3 d-flex align-items-center justify-content-center"><?= $raznostFormat ?></div>
                                 <div class="col py-3 d-flex align-items-center justify-content-center"><?= $lastMeter ? $lastMeterFormat : $prevMeterFormat ?></div>
-                                <div class="col-4 bg-info-subtle">
+                                <div class="col-<?= !$arResult['SEND_ADMIN'] ? '4' : '5' ?> bg-info-subtle">
                                     <div class="d-flex align-items-center py-2">
-                                        <div class="col-3 d-flex justify-content-center">
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input null-meter" type="checkbox" role="button" data-switch-id="<?= $item['ID'] ?>"
-                                                    <?= $arResult['SEND_FORM'] && $userSend || !$arResult['SEND_FORM'] && !$arResult['SEND_ADMIN']  ? 'disabled' : '' ?>
-                                                    title="Оставить показания без изменений">
+                                        <? if (!$arResult['SEND_ADMIN']): ?>
+                                            <div class="col-3 d-flex justify-content-center">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input null-meter" type="checkbox" role="button" data-switch-id="<?= $item['ID'] ?>"
+                                                        <?= $arResult['SEND_FORM'] && $userSend || !$arResult['SEND_FORM'] && !$arResult['SEND_ADMIN']  ? 'disabled' : '' ?>
+                                                        title="Оставить показания без изменений">
+                                                </div>
                                             </div>
-                                        </div>
+                                        <? else: ?>
+                                            <div class="col">&nbsp;&nbsp;</div>
+                                        <? endif; ?>
                                         <input id="inputMeter<?= $item['ID'] ?>" type="text" name="METER[<?= $item['ID'] ?>]" class="meter form-control" onkeyup="validate(this)" onclick="moveCaretToStart(this)"
                                             min=" <?= $lastMeter ?:  $prevMeter ?>" <?= $arResult['SEND_FORM'] && $userSend || !$arResult['SEND_FORM'] && !$arResult['SEND_ADMIN'] ? 'disabled' : '' ?> value="<?= $lastMeter ?:  $prevMeter ?>" data-current="<?= $prevMeterFormat ?>">
-                                        <div class="col-4 d-flex justify-content-center align-items-end"><span class="fw-bold changeDiff">0</span><small class="ps-1"><?= $item['UNIT'] ?></small></div>
-
+                                        <div class="col-<?= !$arResult['SEND_ADMIN'] ? '4' : '3' ?> d-flex justify-content-center align-items-end"><span class="fw-bold changeDiff">0</span><small class="ps-1"><?= $item['UNIT'] ?></small></div>
+                                        <? if ($arResult['SEND_ADMIN']): ?>
+                                            <div class="col">
+                                                <div class="ui-ctl ui-ctl-textarea ui-ctl-xs">
+                                                    <textarea class="ui-ctl-element" name="NOTE[<?= $item['ID'] ?>]" <?= $noteMeter ? 'readonly' : '' ?>><?= $noteMeter ?></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="col">&nbsp;&nbsp;</div>
+                                        <? endif; ?>
                                     </div>
+
                                 </div>
                             </div>
 
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-3"></div>
+                        <div class="col-<?= !$arResult['SEND_ADMIN'] ? '3' : '2' ?>"></div>
                         <div class="col"></div>
                         <div class="col"></div>
                         <div class="col"></div>
                         <div class="col"></div>
-                        <div class="col-4 px-0 py-1 bg-info-subtle"></div>
+                        <div class="col-<?= !$arResult['SEND_ADMIN'] ? '4' : '5' ?> px-0 py-1 bg-info-subtle"></div>
                     </div>
                 <? endforeach; ?>
                 <div class="row">
-                    <div class="col-6 mx-auto text-center">
+                    <div class="col-<?= !$arResult['SEND_ADMIN'] ? '6' : '5' ?> mx-auto text-center">
                         <div id="mess" class="alert d-none" role="alert"></div>
                     </div>
-                    <div class="col-4 text-center bg-info-subtle rounded-bottom pb-2">
+                    <div class="col-<?= !$arResult['SEND_ADMIN'] ? '4' : '5' ?> text-center bg-info-subtle rounded-bottom pb-2">
                         <? if ($arResult['SEND_ADMIN']): ?>
-                            <button type="button" class="ui-btn ui-btn-lg ui-btn-primary-dark" onclick="sendData()" <?= $userSend ? 'disabled' : '' ?>>корректировка показаниий</button>
+                            <button type="button" class="ui-btn ui-btn-lg ui-btn-primary-dark" onclick="sendData()" <?= !$userSend && $arResult['MODERATOR'] ? 'disabled' : '' ?>>корректировка показаниий</button>
                         <? else: ?>
                             <button type="button" class="ui-btn ui-btn-lg ui-btn-primary-dark" onclick="sendData()" <?= $userSend || !$arResult['SEND_FORM'] ? 'disabled' : '' ?>>Внести показания</button>
                         <? endif ?>

@@ -85,6 +85,14 @@ if ($arResult['ACCESS']): ?>
     if ($arResult['ADMIN'])
         $controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getRemoveButton();
 
+    // $controlPanel['GROUPS'][0]['ITEMS'][] = [
+    //     'TYPE' => Bitrix\Main\Grid\Panel\Types::CUSTOM,
+    //     'ID' => 'example-custom',
+    //     'NAME' => 'EXAMPLE_CUSTOM',
+    //     'CLASS' => 'custom-css-class',
+    //     'VALUE' => '<button class="ui-btn ui-btn-sm ui-btn-secondary" data-bs-toggle="modal" data-bs-target="#counterModal">добавить счётчик</button>',
+    // ];
+
     foreach ($arResult['ITEMS'] as $key => $value): ?>
 
         <div class="card my-2">
@@ -95,7 +103,8 @@ if ($arResult['ACCESS']): ?>
                         <div class="h6 card-subtitle mb-2 text-body-secondary"><?= $value['ADDRESS']; ?></div>
                     </div>
                     <div class="col-auto">
-                        <button class="ui-btn ui-btn-sm ui-btn-secondary" data-bs-toggle="modal" data-bs-target="#counterModal<?= $value['ID']; ?>">добавить счётчик</button>
+                        <button class="ui-btn ui-btn-sm ui-btn-secondary" data-bs-toggle="modal" data-bs-target="#counterModal<?= $value['ID']; ?>">Добавить счётчик</button>
+                        <button class="ui-btn ui-btn-sm ui-btn-light-border" data-bs-toggle="collapse" data-bs-target="#collapseLosses<?= $value['ID']; ?>" role="button" aria-expanded="false" aria-controls="collapseLosses">Потери</button>
                     </div>
                 </div>
                 <div class="grid_form">
@@ -178,10 +187,38 @@ if ($arResult['ACCESS']): ?>
                     $APPLICATION->IncludeComponent('bitrix:main.ui.grid', '', $gridParams);
                     ?>
                 </div>
+                <div class="collapse" id="collapseLosses<?= $value['ID']; ?>">
+                    <hr>
+                    <div class="text-center">
+                        <div class="row g-0">
+                            <div class="col-auto">
+                                <div class="card-body">
+                                    <p class="py-0">Месяцы</p>
+                                    <p class="py-3">Потери</p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="card-body">
+                                    <form class="counter_add needs-validation" method="post" novalidate>
+                                        <div class="row gx-2">
+                                            <? foreach ($arResult['MONTH'] as $id => $month): ?>
+                                                <div class="col">
+                                                    <div class="h6"><?= $month['VALUE'] ?></div>
+                                                    <input class="ui-ctl-element" type="text" name="losses[<?= $id ?>]">
+                                                </div>
+                                            <? endforeach; ?>
+                                        </div>
+                                        <div class="mt-2">
+                                            <button type="submit" class="ui-btn ui-btn-success">Сохранить</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <? // dump($arResult);
-        ?>
         <div class="modal counter-modal fade" id="counterModal<?= $value['ID']; ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-id="<?= $value['ID']; ?>">
             <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content">

@@ -88,7 +88,7 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 		if ($dateEnd < $day && $day <= $editEnd)
 			$arResult['DATE_ADMIN'] = true;
 
-		$this->arResult['SEND_ADMIN'] = $arResult['DATE_ADMIN'] && $arResult['MODERATOR'];
+		$this->arResult['SEND_ADMIN'] = $arResult['DATE_ADMIN'] && $arResult['MODERATOR'] || $arResult['ADMIN'];
 		$this->arResult['SEND_FORM'] = $arResult['DATE_USER'] && !$arResult['MODERATOR'] ?? false;
 		// gg($userActive);
 
@@ -138,8 +138,6 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 			$prevMeters = LKClass::meters($objectID);
 			$lastMeters = LKClass::meters($objectID, true);
 
-			// dump($prevMeters);
-
 			foreach ($prevMeters as $key => $value) {
 
 				$arPrevMeters[$value['COUNTER']][] = $value['METER'];
@@ -151,6 +149,8 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 			}
 			foreach ($lastMeters as $key => $value) {
 				$arLastMeters[$value['COUNTER']] = $value['METER'];
+
+				$noteMeter[$value['COUNTER']] = $value['NOTE'];
 				// $arLastMeters[$value['COUNTER']] = [
 				// 	'VALUE' => $value['METER'],
 				// 	'DATE' => $value['DATE'],
@@ -161,6 +161,7 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 			// dump($arLastMeters);
 			$this->arResult['DETAIL']['PREV_METERS'] = $arPrevMeters;
 			$this->arResult['DETAIL']['LAST_METERS'] = $arLastMeters;
+			$this->arResult['DETAIL']['NOTE_METERS'] = $noteMeter;
 		} else {
 
 			$this->arResult['GRID_ID'] = str_replace('.', '_', str_replace(':', '_', $this->GetName()));
@@ -258,10 +259,12 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 		// return $request['METER'];
 
-		Bitrix\Main\Diag\Debug::dumpToFile(var_export($request, 1), '$request', 'test.log');
+		Bitrix\Main\Diag\Debug::dumpToFile(var_export($request['METER'], 1), '$request', 'test.log');
+		Bitrix\Main\Diag\Debug::dumpToFile(var_export($request['OBJECT'], 1), '$request', 'test.log');
+		Bitrix\Main\Diag\Debug::dumpToFile(var_export($request['NOTE'], 1), '$request', 'test.log');
 
 		foreach ($request['METER'] as $kCounter => $meter) {
-			LKClass::saveMeter($request['OBJECT'], $kCounter, $meter);
+			LKClass::saveMeter($request['OBJECT'], $kCounter, $meter, $request['NOTE'][$kCounter]);
 		}
 
 		return true;
