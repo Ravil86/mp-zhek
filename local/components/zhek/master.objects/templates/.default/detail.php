@@ -191,25 +191,33 @@ if ($arResult['ACCESS']): ?>
                     <hr>
                     <div class="text-center">
                         <div class="row g-0">
-                            <div class="col-auto">
-                                <div class="card-body">
+                            <div class="col-2 col-lg-1">
+                                <div class="card-body px-0">
                                     <p class="py-0">Месяцы</p>
-                                    <p class="py-3">Потери</p>
+                                    <p class="py-3">Потери тепла (Гкал)</p>
                                 </div>
                             </div>
                             <div class="col">
                                 <div class="card-body">
-                                    <form class="counter_add needs-validation" method="post" novalidate>
+                                    <form class="losses_add" id="losses<?= $value['ID'] ?>">
+                                        <input type="hidden" name="object" value="Y">
                                         <div class="row gx-2">
                                             <? foreach ($arResult['MONTH'] as $id => $month): ?>
-                                                <div class="col">
+                                                <div class="col-3 col-lg-2 col-xxl-1">
                                                     <div class="h6"><?= $month['VALUE'] ?></div>
-                                                    <input class="ui-ctl-element" type="text" name="losses[<?= $id ?>]">
+                                                    <input class="ui-ctl-element" type="text" name="losses[<?= $id ?>]" onkeyup="validate(this)" value="<?= $arResult['LOSSES'][$value['ID']][$id] ?>">
                                                 </div>
                                             <? endforeach; ?>
                                         </div>
                                         <div class="mt-2">
-                                            <button type="submit" class="ui-btn ui-btn-success">Сохранить</button>
+                                            <div class="row justify-content-center align-items-end">
+                                                <div class="col-auto">
+                                                    <button type="button" class="ui-btn ui-btn-success" onclick="saveLosses(<?= $value['ID'] ?>)">Сохранить</button>
+                                                </div>
+                                                <div class="col-5 col-xl-3">
+                                                    <div id="mess" class="alert py-2 mb-0 d-none" role="alert">Ошибка</div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </form>
                                 </div>
@@ -232,9 +240,9 @@ if ($arResult['ACCESS']): ?>
                         </div>
                         <div class="modal-body">
 
-                            <input class="ui-ctl-element" type="hidden" name="ADD_COUNTER" value="Y">
-                            <input class="ui-ctl-element" type="hidden" name="FIELDS[UF_ORG]" value="<?= $arResult['DETAIL']['ORG']['ID']; ?>">
-                            <input class="ui-ctl-element" type="hidden" name="FIELDS[UF_OBJECT]" value="<?= $value['ID']; ?>">
+                            <input type="hidden" name="ADD_COUNTER" value="Y">
+                            <input type="hidden" name="FIELDS[UF_ORG]" value="<?= $arResult['DETAIL']['ORG']['ID']; ?>">
+                            <input type="hidden" name="FIELDS[UF_OBJECT]" value="<?= $value['ID']; ?>">
                             <?= bitrix_sessid_post() ?>
                             <div class="row gx-2">
                                 <div class="col-12 col-md">
@@ -425,8 +433,6 @@ if ($arResult['ACCESS']): ?>
 
         })
 
-
-
         // var forms = document.querySelectorAll('.objects_add')
         // Array.prototype.slice.call(forms)
         //     .forEach(function(form) {
@@ -444,4 +450,67 @@ if ($arResult['ACCESS']): ?>
 
 
     })()
+
+    function saveLosses(id) {
+
+        const form = document.getElementById("losses" + id);
+        // console.log('form', form);
+        let form_data = new FormData(form);
+
+
+        form_data.append('object', id)
+        console.log('form_data', form_data);
+
+        var message = $('#losses' + id + ' #mess');
+
+        // sendLosses
+        BX.ajax.runComponentAction("zhek:master.objects", 'sendLosses', {
+                mode: "class",
+                data: form_data,
+            }).then(function(response) {
+
+                console.log('message', message);
+
+                if (response.status === 'success') {
+
+                    message.removeClass('d-none')
+                        .removeClass('alert-danger')
+                        .addClass('alert-success')
+                        .html('Изменения успешно сохранены');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 5000);
+                } else {
+                    message
+                        .removeClass('d-none')
+                        .removeClass('alert-success')
+                        .addClass('alert-danger')
+                        .html('<span class="text-danger">Произошла ошибка на сервере! Пожалуйста, попробуйте позже.</span>');
+                }
+            })
+            .catch((response) => {
+                // console.log('response_error', response);
+
+                message.removeClass('d-none')
+                    .removeClass('alert-success')
+                    .addClass('alert-danger');
+
+                // msgOk.html('').hide();
+                $.each(response.errors, function() {
+                    message.html(this.message + '<br>');
+                });
+            });
+
+    }
+
+    function validate(element) {
+
+        var value = element.value;
+        // replace everything that's not a number or comma or decimal
+        value = value.replace(/[^0-9,.]/g, "");
+        // replace commas with decimal
+        value = value.replace(/,/, ".");
+        // set element value to new value
+        element.value = value;
+    }
 </script>

@@ -39,7 +39,7 @@ class MasterUsers extends CBitrixComponent
 		$this->arResult['ACCESS'] = $this->checkAccess();
 		$arItems = [];
 
-		$this->arResult['GRID_ID'] = str_replace('.', '_', str_replace(':', '_', $this->GetName()));
+		/*$this->arResult['GRID_ID'] = str_replace('.', '_', str_replace(':', '_', $this->GetName()));
 		$arResult['GRID_ID'] = $this->arResult['GRID_ID'];
 
 		$serviceList = LKClass::getService();
@@ -74,9 +74,9 @@ class MasterUsers extends CBitrixComponent
 		$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
 		$this->arResult['GRID']['COLUMNS'] = [
 			['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 70],
-			['id' => 'UF_NAME', 'name' => 'Организация', /*'sort' => 'NAME', */ 'default' => true, 'editable' => true],
-			['id' => 'UF_ADDRESS', 'name' => 'Адрес организации', /*'sort' => 'ADDRESS', */ 'default' => true, 'width' => 300, 'editable' => true],
-			['id' => 'UF_INN', 'name' => 'ИНН',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => true, 'width' => 200, 'editable' => true],
+			['id' => 'UF_NAME', 'name' => 'Организация',  'default' => true, 'editable' => true],
+			['id' => 'UF_ADDRESS', 'name' => 'Адрес организации',  'default' => true, 'width' => 300, 'editable' => true],
+			['id' => 'UF_INN', 'name' => 'ИНН', 'default' => true, 'width' => 200, 'editable' => true],
 			['id' => 'USER', 'name' => 'Пользователь', 'default' => true],
 			['id' => 'DETAIL', 'name' => '', 'default' => true],
 		];
@@ -111,7 +111,7 @@ class MasterUsers extends CBitrixComponent
 
 
 		//return $componentPage;
-		return $this->arResult;
+		return $this->arResult;*/
 	}
 
 
@@ -138,15 +138,6 @@ class MasterUsers extends CBitrixComponent
 		}
 		return false;
 	}
-
-	private function arraySort($a, $b)
-	{
-		if ($a['SORT'] == $b['SORT']) {
-			return 0;
-		}
-		return ($a['SORT'] < $b['SORT']) ? -1 : 1;
-	}
-
 
 	public function getRequest()
 	{
@@ -175,22 +166,22 @@ class MasterUsers extends CBitrixComponent
 
 			// dump($arRequest);
 
-			if ($arRequest["ADD_OBJECT"] == 'Y') {
-				LKClass::addObject($arRequest["FIELDS"]);
-			} elseif ($arRequest["ADD_COUNTER"] == 'Y') {
-				LKClass::addCounter($arRequest["FIELDS"]);
-			} elseif ($arRequest["ADD_COMPANY"] == 'Y') {
-				LKClass::addCompany($arRequest["FIELDS"]);
-			} elseif ($arRequest["grid_id"] == 'zhek_master_objects') {
-				Bitrix\Main\Diag\Debug::dumpToFile(var_export($arRequest, 1), '$arRequest', 'test.log');
-				foreach ($arRequest["FIELDS"] as $companyID => $fields) {
-					LKClass::saveCompany($companyID, $fields);
-				}
-			} else {
-				foreach ($arRequest["FIELDS"] as $counterID => $fields) {
-					LKClass::saveCounter($counterID, $fields);
-				}
-			}
+			// if ($arRequest["ADD_OBJECT"] == 'Y') {
+			// 	LKClass::addObject($arRequest["FIELDS"]);
+			// } elseif ($arRequest["ADD_COUNTER"] == 'Y') {
+			// 	LKClass::addCounter($arRequest["FIELDS"]);
+			// } elseif ($arRequest["ADD_COMPANY"] == 'Y') {
+			// 	LKClass::addCompany($arRequest["FIELDS"]);
+			// } elseif ($arRequest["grid_id"] == 'zhek_master_objects') {
+			// 	Bitrix\Main\Diag\Debug::dumpToFile(var_export($arRequest, 1), '$arRequest', 'test.log');
+			// 	foreach ($arRequest["FIELDS"] as $companyID => $fields) {
+			// 		LKClass::saveCompany($companyID, $fields);
+			// 	}
+			// } else {
+			// 	foreach ($arRequest["FIELDS"] as $counterID => $fields) {
+			// 		LKClass::saveCounter($counterID, $fields);
+			// 	}
+			// }
 
 			// $fields = [
 			// 	'VOICE'         => $arFields['VOICE'],

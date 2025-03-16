@@ -200,9 +200,10 @@ use Bitrix\Highloadblock as HL;
         menu: {
             items: [{
                     text: "Добавить пользователя",
-                    onclick: function(button, event) {
-                        addUser.show()
-                    },
+                    href: "/master/users/"
+                    // onclick: function(button, event) {
+                    //     addUser.show()
+                    // },
                 },
                 // {
                 //     delimiter: true

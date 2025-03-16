@@ -11,7 +11,10 @@ use Bitrix\Main\Context,
 	Bitrix\Main\Application,
 	Bitrix\Main\Web\Uri;
 
-class MasterObjects extends CBitrixComponent
+use Bitrix\Main\Engine\Contract\Controllerable;
+use Bitrix\Main\Engine\ActionFilter;
+
+class MasterObjects extends CBitrixComponent implements Controllerable
 {
 
 	protected static $_HL_Reference = "ReferenceCustomer"; // HL общий реестр
@@ -22,6 +25,20 @@ class MasterObjects extends CBitrixComponent
 	public function onPrepareComponentParams($arParams)
 	{
 		return $arParams;
+	}
+
+	public function configureActions()
+	{
+		return [
+			'sendLosses' => [
+				'prefilters' => [
+					new ActionFilter\Authentication,
+					new ActionFilter\HttpMethod([
+						ActionFilter\HttpMethod::METHOD_POST
+					])
+				],
+			],
+		];
 	}
 
 	public function executeComponent()
@@ -70,11 +87,18 @@ class MasterObjects extends CBitrixComponent
 
 		// if ($myCompany)
 		$getObjects = LKClass::getObjects();
-		foreach ($getObjects as $key => $value) {
+		foreach ($getObjects as $value) {
 			$arObjects[$value['ORG']][] = $value;
 		}
 
 		$this->arResult['MONTH'] = LKClass::getMonth();
+
+		$lossesList = LKClass::getLosses();
+		foreach ($lossesList as $val) {
+			$this->arResult['LOSSES'][$val['OBJECT']][$val['MONTH']] = $val['VALUE'];
+		}
+
+		// gg($this->arResult['LOSSES']);
 
 		if ($this->arResult['VARIABLES']) {
 
@@ -254,7 +278,7 @@ class MasterObjects extends CBitrixComponent
 				$userList[$user['ID']] = $user;
 				$userItems[$user['ID']] = $user['SHORT_NAME'];
 			}
-
+			gg($userItems);
 			$grid_options = new CGridOptions($this->arResult["GRID_ID"]);
 			$nav_params = $grid_options->GetNavParams(array("nPageSize" => $this->arResult['PAGE_SIZE']));
 			$nav = new Bitrix\Main\UI\PageNavigation($this->arResult["GRID_ID"]);
@@ -428,13 +452,27 @@ class MasterObjects extends CBitrixComponent
 		return false;
 	}
 
-	private function arraySort($a, $b)
+	public function sendLossesAction()
 	{
-		if ($a['SORT'] == $b['SORT']) {
-			return 0;
-		}
-		return ($a['SORT'] < $b['SORT']) ? -1 : 1;
+		$request = Application::getInstance()->getContext()->getRequest();
+
+		Bitrix\Main\Diag\Debug::dumpToFile(var_export($request, 1), '$request', 'test.log');
+
+		LKClass::saveLosses($request['object'], $request['losses']);
+		// foreach ($request['METER'] as $kCounter => $meter) {
+		// 	LKClass::saveMeter($request['OBJECT'], $kCounter, $meter, $request['NOTE'][$kCounter]);
+		// }
+
+		return true;
 	}
+
+	// private function arraySort($a, $b)
+	// {
+	// 	if ($a['SORT'] == $b['SORT']) {
+	// 		return 0;
+	// 	}
+	// 	return ($a['SORT'] < $b['SORT']) ? -1 : 1;
+	// }
 
 
 	public function getRequest()

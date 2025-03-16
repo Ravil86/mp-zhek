@@ -418,16 +418,72 @@ class LKClass
         return $result;
     }
 
-    public static function addContract($data)
+    public static function getLosses()
     {
-        $classHL = \HLWrap::init(self::$_HL_Contracts);
-        $classHL::add($data);
+
+        $classHL = \HLWrap::init(self::$_HL_Losses);
+
+        $rsHLoad = $classHL::getList([
+            'select' => ['*'],
+            'filter' => [],
+            'order' => []
+        ]);
+
+        $result = [];
+        while ($losses = $rsHLoad->fetch()) {
+            // gg($losses);
+            $value = [
+                'ID' => $losses['ID'],
+                'NAME' => $losses['UF_NAME'],
+                'OBJECT' => $losses['UF_OBJECT'],
+                'VALUE' => $losses['UF_VALUE'],
+                'MONTH' => $losses['UF_MONTH'],
+            ];
+            $result[$losses['ID']] = $value;
+        }
+
+        return $result;
     }
 
     public static function saveContract($contractID, $data)
     {
         $classHL = \HLWrap::init(self::$_HL_Contracts);
         $classHL::update($contractID, $data);
+    }
+
+    public static function addContract($data)
+    {
+        $classHL = \HLWrap::init(self::$_HL_Contracts);
+        $classHL::add($data);
+    }
+
+    public static function saveLosses($objectID, $data)
+    {
+        $classHL = \HLWrap::init(self::$_HL_Losses);
+
+        foreach ($data as $month => $value) {
+
+            $rsHLoad = $classHL::getList(
+                [
+                    'select' => ['ID'],
+                    'filter' => [
+                        'UF_OBJECT' => $objectID,
+                        'UF_MONTH' => $month
+                    ]
+                ]
+            );
+            $field = [
+                'UF_OBJECT' => $objectID,
+                'UF_MONTH' => $month,
+                'UF_VALUE' => $value,
+            ];
+            if ($id = $rsHLoad->fetch()) {
+                $classHL::update($id['ID'], $field);
+            } else {
+                $classHL::add($field);
+            }
+        }
+        // return true;
     }
 
     public static function deleteContract($data)

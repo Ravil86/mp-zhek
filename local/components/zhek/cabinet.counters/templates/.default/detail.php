@@ -90,7 +90,7 @@ if ($arResult['ACCESS']):
                                             <div class="col">&nbsp;&nbsp;</div>
                                         <? endif; ?>
                                         <input id="inputMeter<?= $item['ID'] ?>" type="text" name="METER[<?= $item['ID'] ?>]" class="meter form-control" onkeyup="validate(this)" onclick="moveCaretToStart(this)"
-                                            min=" <?= $lastMeter ?:  $prevMeter ?>" <?= $arResult['SEND_FORM'] && $userSend || !$arResult['SEND_FORM'] && !$arResult['SEND_ADMIN'] ? 'disabled' : '' ?> value="<?= $lastMeter ?:  $prevMeter ?>" data-current="<?= $prevMeterFormat ?>">
+                                            min="<?= $lastMeter ?:  $prevMeter ?>" <?= $arResult['SEND_FORM'] && $userSend || !$arResult['SEND_FORM'] && !$arResult['SEND_ADMIN'] ? 'disabled' : '' ?> value="<?= $lastMeter ?:  $prevMeter ?>" data-current="<?= $prevMeterFormat ?>">
                                         <div class="col-<?= !$arResult['SEND_ADMIN'] ? '4' : '3' ?> d-flex justify-content-center align-items-end"><span class="fw-bold changeDiff">0</span><small class="ps-1"><?= $item['UNIT'] ?></small></div>
                                         <? if ($arResult['SEND_ADMIN']): ?>
                                             <div class="col">
