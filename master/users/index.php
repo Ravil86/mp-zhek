@@ -10,12 +10,12 @@ $APPLICATION->IncludeComponent(
 	"zhek:master.users",
 	"",
 	[
-		'SEF_FOLDER' => '/master/users/',
-		'SEF_URL_TEMPLATES' => [
-			'list' => '',
-			'detail' => '#DETAIL_ID#/',
-		],
-		'SEF_MODE' => 'Y',
+		// 'SEF_FOLDER' => '/master/users/',
+		// 'SEF_URL_TEMPLATES' => [
+		// 	'list' => '',
+		// 	'detail' => '#DETAIL_ID#/',
+		// ],
+		'SEF_MODE' => 'N',
 		'GROUP_CODES' => [
 			'MODERATOR' => 'OPERATORS',
 			'ADMINISTRATOR' => 'MASTER',

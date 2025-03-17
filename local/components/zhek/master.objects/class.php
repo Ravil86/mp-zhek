@@ -88,17 +88,24 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 		// if ($myCompany)
 		$getObjects = LKClass::getObjects();
 		foreach ($getObjects as $value) {
+
 			$arObjects[$value['ORG']][] = $value;
+			$orgObjectsIDs[$value['ORG']][$value['ID']] = $value['ID'];
 		}
+
+		// gg($orgObjectsIDs);
+
 
 		$this->arResult['MONTH'] = LKClass::getMonth();
 
 		$lossesList = LKClass::getLosses();
+		$lossObjects = [];
 		foreach ($lossesList as $val) {
 			$this->arResult['LOSSES'][$val['OBJECT']][$val['MONTH']] = $val['VALUE'];
+			$lossObjects[$val['OBJECT']] += 1;
 		}
 
-		// gg($this->arResult['LOSSES']);
+		// gg($lossObjects);
 
 		if ($this->arResult['VARIABLES']) {
 
@@ -278,7 +285,7 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 				$userList[$user['ID']] = $user;
 				$userItems[$user['ID']] = $user['SHORT_NAME'];
 			}
-			gg($userItems);
+			// gg($userItems);
 			$grid_options = new CGridOptions($this->arResult["GRID_ID"]);
 			$nav_params = $grid_options->GetNavParams(array("nPageSize" => $this->arResult['PAGE_SIZE']));
 			$nav = new Bitrix\Main\UI\PageNavigation($this->arResult["GRID_ID"]);
@@ -308,6 +315,7 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 				['id' => 'UF_USER', 'name' => 'Оператор', 'default' => true, "editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]],
 				['id' => 'UF_TYPE', 'name' => 'Тип организации', 'default' => false, "editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]],
 				['id' => 'DETAIL', 'name' => 'Объектов', 'default' => true],
+				['id' => 'LOSSES', 'name' => 'Потери', 'width' => 130, 'default' => true],
 			];
 
 			$this->arResult['GRID']["FILTER"] = [
@@ -393,13 +401,12 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 					$item['UF_USER'] = '[' . $orgUser['ID'] . '] ' . $orgUser['SHORT_NAME'];
 				}
 
-				if ($arObjects[$item['ID']])
-					$countObjects = count($arObjects[$item['ID']]);
+				if ($objectItems = $arObjects[$item['ID']])
+					$countObjects = count($objectItems);
 
 				// $item['COMPANY'] = $item['COMPANY']['NAME'];
 
 				$status = '<a class="d-flex!" href="' . $item["ID"] . '/">';
-
 				$status .= '<div class="ui-btn ui-btn-' . ($item['UF_ACTIVE'] == 'Y' ? 'secondary' : ' opacity-25') . ' opacity-75! ui-btn-sm px-3 py-1 text-center">Объектов ';
 				//if ($countObjects) {
 				$status .= '<div class="ui-counter ui-counter-' . ($countObjects ? 'primary gray!' : 'dark') . ' ms-2">
@@ -410,6 +417,20 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 				$status .= '</div>';
 				$status .= '</a>';
 				$item["DETAIL"] = $status;
+
+				// gg($lossObjects);
+				$lossObject = [];
+				if ($idsObjects = $orgObjectsIDs[$item['ID']]) {
+					foreach ($idsObjects as $key => $obj) {
+						// gg($obj);
+						// if (array_key_exists($obj, $lossObjects))
+						$lossObject[$obj] = $lossObjects[$obj] ?: 0;
+						// gg($lossObjects[$obj]);
+					}
+				}
+
+				$item["LOSSES"] = implode('/', $lossObject);
+
 
 				// dump($item);
 

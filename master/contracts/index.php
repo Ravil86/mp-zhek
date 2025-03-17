@@ -12,6 +12,7 @@ $APPLICATION->SetTitle("Контракты");
 		'SEF_URL_TEMPLATES' => [
 			'list' => '',
 			'detail' => '#DETAIL_ID#/',
+			"month" => "#DETAIL_ID#/#YEAR#/#MONTH#/",
 		],
 		'SEF_MODE' => 'Y',
 		'GROUP_CODES' => [

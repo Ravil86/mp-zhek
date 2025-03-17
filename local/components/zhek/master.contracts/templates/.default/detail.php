@@ -38,6 +38,7 @@ if ($arResult['ACCESS']): ?>
         </div>
         */ ?>
         <?
+        // gg($arResult);
         // dump($provider);
         function cmp($a, $b)
         {
@@ -49,15 +50,28 @@ if ($arResult['ACCESS']): ?>
         $begin = new DateTime($dateStr);
         $end = new DateTime($dateEnd);
 
-        // dump($arResult);
+        $selectMonth = trim($arResult['MONTH'] . '-' . $arResult['YEAR']);
+        // gg($selectMonth);
         ?>
         <div class="ui-ctl ui-ctl-after-icon ui-ctl-dropdown">
             <div class="ui-ctl-after ui-ctl-icon-angle"></div>
-            <select class="ui-ctl-element">
+            <select class="ui-ctl-element" onchange="redirect(this)">
                 <!-- <option value=""></option> -->
-                <?= LKClass::setMonth('', $begin, $end);
+                <?= LKClass::setMonth($selectMonth, $begin, $end);
                 ?>
             </select>
+            <script>
+                function redirect(list) {
+                    var selection = list.options[list.selectedIndex].value
+                    var folder = '<?= $arResult['FOLDER'] ?>'
+                    var contract = '<?= $arResult['CONTRACT'] ?>'
+                    let split = selection.split('-')
+
+                    console.log('this.value', selection.split('-'));
+
+                    document.location.href = folder + '/' + contract + '/' + split[1] + '/' + split[0];
+                }
+            </script>
         </div>
         <!-- <select class="form-control required select" name="date" id="date">
 

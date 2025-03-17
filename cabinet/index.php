@@ -4,7 +4,11 @@ define("LK", true);
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 $APPLICATION->SetTitle("Кабинет");
 ?>
-<? LocalRedirect("/cabinet/objects/");
+<?
+if (LKClass::isMaster())
+	LocalRedirect("/master/");
+else
+	LocalRedirect("/cabinet/objects/");
 ?>
 <?/* $APPLICATION->IncludeComponent(
 	"zhek:cabinet.company",

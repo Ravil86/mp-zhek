@@ -55,6 +55,9 @@ class MasterContracts extends CBitrixComponent
 		if ($this->arParams["SEF_MODE"] != "Y") {
 			$componentPage = $this->noSefMode();
 		}
+		// gg($componentPage);
+		if ($componentPage == 'month')
+			$componentPage = 'detail';
 
 		// отдаем 404 статус если не найден шаблон
 		if (!$componentPage) {
@@ -119,7 +122,37 @@ class MasterContracts extends CBitrixComponent
 
 		if ($this->arResult['VARIABLES']) {
 
-			$this->arResult['DETAIL'] = $this->getDocs()[$this->arResult['VARIABLES']['DETAIL_ID']];
+
+			$CONTRACT_ID = $this->arResult['VARIABLES']['DETAIL_ID'];
+			$this->arResult['CONTRACT'] = $CONTRACT_ID;
+			// $request = \Bitrix\Main\Application::getInstance()->getContext()->getRequest();
+			// $uri = new \Bitrix\Main\Web\Uri($request->getRequestUri());
+
+			// $uri->addParams(array("foo"=>"bar"));
+
+			// gg($uri);
+			$template = $this->arResult['URL_TEMPLATES']['month'];
+
+			$this->arResult['YEAR'] = $this->arResult['VARIABLES']['YEAR'];
+			$this->arResult['MONTH'] = $this->arResult['VARIABLES']['MONTH'];
+
+			if (!$this->arResult['YEAR'])
+				$this->arResult['YEAR'] = date('Y');
+
+			if (!$this->arResult['MONTH'])
+				$this->arResult['MONTH'] = date('m');
+
+			// gg($this->arResult['YEAR']);
+			// gg($this->arResult['MONTH']);
+
+			$template = preg_replace('(#DETAIL_ID#)', $CONTRACT_ID, $template);
+			$template = preg_replace('(#YEAR#)', $this->arResult['YEAR'], $template);
+			$template = preg_replace('(#MONTH#)', $this->arResult['MONTH'], $template);
+
+			if (!$this->arResult['VARIABLES']['MONTH'])
+				LocalRedirect($this->arResult['FOLDER'] . $template);
+
+			$this->arResult['DETAIL'] = $this->getDocs()[$CONTRACT_ID];
 
 			$orgServices = $this->arResult['DETAIL']['UF_SERVICE'];
 
@@ -138,22 +171,35 @@ class MasterContracts extends CBitrixComponent
 				$prevMetersObject = [];
 				$lastMetersObject = [];
 
-				$arPrevMeters = LKClass::meters($object['ID']);
+				// gg($this->arResult['MONTH']);
+
+				// gg(LKClass::meters($object['ID'], true, $this->arResult['MONTH']));
+
+				// gg(LKClass::meters($object['ID'], false, $this->arResult['MONTH']));
+
+				/*$arPrevMeters = LKClass::meters($object['ID']);
 
 				foreach ($arPrevMeters as $key => $meter) {
 					$prevMetersObject[$meter['COUNTER']][] = $meter;
-					/*$metersObject[$meter['COUNTER']][$meter['ID']] = [
-						'ID' => $meter['ID'],
-						'METER' => $meter['METER'],
-						'DATE' => $meter['DATE'],
-					];*/
+					// $metersObject[$meter['COUNTER']][$meter['ID']] = [
+					// 	'ID' => $meter['ID'],
+					// 	'METER' => $meter['METER'],
+					// 	'DATE' => $meter['DATE'],
+					// ];
 				}
 				// if ($prevMetersObject)
 				// 	array_shift($prevMetersObject);
 
-				$this->arResult['PREV_METERS'][$object['ID']] = $prevMetersObject;
+				// gg($prevMetersObject);
 
-				$arLastMeters = LKClass::meters($object['ID'], true);
+				$this->arResult['PREV_METERS'][$object['ID']] = $prevMetersObject;
+				*/
+
+				$arLastMeters = LKClass::meters($object['ID'], true, $this->arResult['MONTH'], $this->arResult['YEAR']);
+				// $arLastMeters = LKClass::meters($object['ID'], true);
+
+				// gg($arLastMeters);
+
 				foreach ($arLastMeters as $key => $lastMeter) {
 					$lastMetersObject[$lastMeter['COUNTER']][$lastMeter['ID']] = $lastMeter;
 				}
@@ -443,7 +489,7 @@ class MasterContracts extends CBitrixComponent
 			$arCompany = LKClass::getCompany($userFilter['USER_ID']);
 			if ($arCompany && isset($arCompany['ID']))
 				$itemList = LKClass::getContracts($arCompany['ID']);
-				// $itemList = $this->getContracts($arCompany['ID']);
+			// $itemList = $this->getContracts($arCompany['ID']);
 		} else {
 			$getCompany = $this->companyList;
 			$itemList = LKClass::getContracts();
@@ -662,7 +708,7 @@ class MasterContracts extends CBitrixComponent
 			}
 
 			if (!isset($arRequest["AJAX_CALL"]))
-			LocalRedirect(Context::getCurrent()->getRequest()->getRequestUri());
+				LocalRedirect(Context::getCurrent()->getRequest()->getRequestUri());
 		}
 	}
 
@@ -695,8 +741,8 @@ class MasterContracts extends CBitrixComponent
 
 		$arDefaultUrlTemplates404 = [
 			"detail" => "#DETAIL_ID#/",
-			// "section" => "#SECTION_CODE#/",
-			// "element" => "#SECTION_CODE#/#ELEMENT_CODE#/",
+			"month" => "#DETAIL_ID#/#YEAR#/#MONTH#",
+			// "month" => "#DETAIL_ID#/#DATE#/",
 		];
 		$arUrlTemplates = CComponentEngine::makeComponentUrlTemplates(
 			$arDefaultUrlTemplates404,

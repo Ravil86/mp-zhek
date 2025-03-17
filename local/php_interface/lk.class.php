@@ -56,18 +56,28 @@ class LKClass
             return false;
     }
 
-    public static function meters($objectID, $last = false)
+    public static function meters($objectID, $last = false, $month = '', $year = '')
     {
         $classHL = \HLWrap::init(self::$_HL_Meter);
 
         // $filter = [];
         $filter = ['UF_OBJECT' => $objectID];
-        if ($last)
-            $filter[">=" . "UF_DATE"] = new DateTime(date('01.m.Y') . " 00:00:00");
-        else
-            $filter['<=' . 'UF_DATE'] = new DateTime(date('01.m.Y') . " 00:00:00");
-
+        if ($month) {       //c фильтром по кокретному месяцу
+            $filterYear = $year ?: 'Y';
+            if ($last) {      //только выбранный
+                $filter[">=" . "UF_DATE"] = new DateTime(date('01.' . $month . '.' . $filterYear) . " 00:00:00");
+                $filter["<=" . "UF_DATE"] = new DateTime(date('29.' . $month . '.' . $filterYear) . " 00:00:00");        // для февраля чтоб не захватить март
+            } else {
+                $filter["<=" . "UF_DATE"] = new DateTime(date('01.' . $month . '.' . $filterYear) . " 00:00:00");
+            }
+        } else {
+            if ($last)
+                $filter[">=" . "UF_DATE"] = new DateTime(date('01.m.Y') . " 00:00:00");
+            else
+                $filter['<=' . 'UF_DATE'] = new DateTime(date('01.m.Y') . " 00:00:00");
+        }
         // dump($filter);
+
 
         $rsHLoad = $classHL::getList([
             'select' => ['*'],
@@ -463,24 +473,26 @@ class LKClass
 
         foreach ($data as $month => $value) {
 
-            $rsHLoad = $classHL::getList(
-                [
-                    'select' => ['ID'],
-                    'filter' => [
-                        'UF_OBJECT' => $objectID,
-                        'UF_MONTH' => $month
+            if ($value) {
+                $rsHLoad = $classHL::getList(
+                    [
+                        'select' => ['ID'],
+                        'filter' => [
+                            'UF_OBJECT' => $objectID,
+                            'UF_MONTH' => $month
+                        ]
                     ]
-                ]
-            );
-            $field = [
-                'UF_OBJECT' => $objectID,
-                'UF_MONTH' => $month,
-                'UF_VALUE' => $value,
-            ];
-            if ($id = $rsHLoad->fetch()) {
-                $classHL::update($id['ID'], $field);
-            } else {
-                $classHL::add($field);
+                );
+                $field = [
+                    'UF_OBJECT' => $objectID,
+                    'UF_MONTH' => $month,
+                    'UF_VALUE' => $value,
+                ];
+                if ($id = $rsHLoad->fetch()) {
+                    $classHL::update($id['ID'], $field);
+                } else {
+                    $classHL::add($field);
+                }
             }
         }
         // return true;
@@ -550,14 +562,25 @@ class LKClass
         // $begin = (new DateTime($dateStr));
         $periods = new DatePeriod($begin, new \DateInterval('P1M'), $end);
         $result = '';
+
+
+        // echo (trim($setDate));
+
+
         foreach (array_reverse(iterator_to_array($periods)) as $period) {
 
-            $num = $period->format("n");
+            $num = $period->format("m");
+            // $num = $period->format("n");
             $year = $period->format('Y');
-            $month = FormatDate("f", strtotime($year . "-" . $num . "-01"));
-            //$select = ((date('Y-m', strtotime($year . "-" . $month . "-01")) == $setDate) ? 'selected="selected"' : '');
+
+            $month = FormatDate("m", strtotime($year . "-" . $num . "-01"));
+            $monthText = FormatDate("f", strtotime($year . "-" . $num . "-01"));
+
+            $select = ((date('m-Y', strtotime("01-" . $month . "-" . $year)) == $setDate) ? 'selected="selected"' : '');
+            // $select = ((date('Y-m', strtotime($year . "-" . $month . "-01")) == $setDate) ? 'selected="selected"' : '');
             //$month = $months[$num - 1];
-            $result .= "<option value='{$num}-{$year}'>{$month} {$year}</option>";
+
+            $result .= "<option value='{$num}-{$year}' {$select}>{$monthText} {$year}</option>";
         }
 
         /*$month = date("m", strtotime("+1 month"));
