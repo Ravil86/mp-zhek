@@ -122,7 +122,6 @@ class MasterContracts extends CBitrixComponent
 
 		if ($this->arResult['VARIABLES']) {
 
-
 			$CONTRACT_ID = $this->arResult['VARIABLES']['DETAIL_ID'];
 			$this->arResult['CONTRACT'] = $CONTRACT_ID;
 			// $request = \Bitrix\Main\Application::getInstance()->getContext()->getRequest();
@@ -154,6 +153,13 @@ class MasterContracts extends CBitrixComponent
 
 			$this->arResult['DETAIL'] = $this->getDocs()[$CONTRACT_ID];
 
+			if ($this->arResult['DETAIL']['COMPANY'] && $this->arResult['DETAIL']['COMPANY']['USER_ID'])
+				$this->arResult['DETAIL']['COMPANY']['RESPONIBLE'] = LKClass::curentUserFields($this->arResult['DETAIL']['COMPANY']['USER_ID']);
+
+			// gg($this->arResult['DETAIL']);
+
+			$this->arResult['COMPANY'] = $this->arResult['DETAIL']['COMPANY'];
+
 			$orgServices = $this->arResult['DETAIL']['UF_SERVICE'];
 
 			foreach ($orgServices as $service) {
@@ -162,7 +168,22 @@ class MasterContracts extends CBitrixComponent
 				$this->arResult['SERVICE'][$service]['OBJECTS'] = [];
 			}
 
-			$arObjects = LKClass::getObjects($this->arResult['DETAIL']['COMPANY_ID']);
+			$arObjects = LKClass::getObjects($this->arResult['COMPANY']['ID']);
+
+
+			$lossesList = LKClass::getLosses();
+			$lossObjects = [];
+			foreach ($lossesList as $val) {
+				$this->arResult['LOSSES'][$val['OBJECT']][$val['MONTH']] = $val['VALUE'];
+			}
+
+			$this->arResult['MONTH_LIST'] = LKClass::getMonth();
+			if ($this->arResult['MONTH_LIST'])
+				foreach ($this->arResult['MONTH_LIST'] as $key => $month) {
+					$this->arResult['MONTH_CODE'][$month['CODE']] = $key;
+				}
+
+			// gg($this->arResult['LOSSES']);
 
 			$this->arResult['PREV_METERS'] = [];
 			$this->arResult['LAST_METERS'] = [];
@@ -172,12 +193,12 @@ class MasterContracts extends CBitrixComponent
 				$lastMetersObject = [];
 
 				// gg($this->arResult['MONTH']);
-
 				// gg(LKClass::meters($object['ID'], true, $this->arResult['MONTH']));
-
 				// gg(LKClass::meters($object['ID'], false, $this->arResult['MONTH']));
 
-				/*$arPrevMeters = LKClass::meters($object['ID']);
+				$arPrevMeters = LKClass::meters($object['ID'], false, $this->arResult['MONTH'], $this->arResult['YEAR']);
+				// gg($arPrevMeters);
+				//$arPrevMeters = LKClass::meters($object['ID']);
 
 				foreach ($arPrevMeters as $key => $meter) {
 					$prevMetersObject[$meter['COUNTER']][] = $meter;
@@ -191,9 +212,7 @@ class MasterContracts extends CBitrixComponent
 				// 	array_shift($prevMetersObject);
 
 				// gg($prevMetersObject);
-
 				$this->arResult['PREV_METERS'][$object['ID']] = $prevMetersObject;
-				*/
 
 				$arLastMeters = LKClass::meters($object['ID'], true, $this->arResult['MONTH'], $this->arResult['YEAR']);
 				// $arLastMeters = LKClass::meters($object['ID'], true);
@@ -205,6 +224,8 @@ class MasterContracts extends CBitrixComponent
 				}
 				$this->arResult['LAST_METERS'][$object['ID']] = $lastMetersObject;
 
+				// gg($object);
+				// gg($this->arResult['LOSSES'][$object['ID']]);
 
 				$counterObjects = LKClass::getCounters($object['ID']);
 
@@ -320,32 +341,36 @@ class MasterContracts extends CBitrixComponent
 
 			$arItems = $this->getDocs(false, $arSort['sort'], $nav_params, $userFilter);
 
-			foreach ($arItems as $key => &$item) {
+			foreach ($arItems as $key => $item) {
 
 				$data = $item;
+				$column = $item;
 
-				$item['SERVICE'] = '';
+				$column['SERVICE'] = '';
 				$arService = [];
 				foreach ($item['PROVIDER'] as $pid => $value) {
 					$arService[$pid] = '<span class="text-' . $value['COLOR'] . '">' . $value['VALUE'] . '</span>';
 					// $arService['SERVICE'][$pid] = $value['VALUE'];
 				}
 				if ($arService)
-					$item['SERVICE'] = implode('<br>', $arService);
+					$column['SERVICE'] = implode('<br>', $arService);
 
 				$data['SERVICE'] = array_values($item['UF_SERVICE']);
 				$data['STATUS'] = $item['UF_STATUS'];
 
 				$data['YEAR'] = $item['UF_YEAR'];
 
+				// gg($item['COMPANY']);
+
 				// $number = '№ ' . $item['NUMBER'] . '-' . $item['YEAR'] . ' от ' . $item['DATE'];
 				// $item["FULL_NUMBER"] = $number;
-				// $item['COMPANY'] = $item['COMPANY']['NAME'];
+
+				$column['COMPANY'] = $item['COMPANY']['NAME'];
 
 				$status = '<a class="d-flex!" href="' . $item["ID"] . '/">';
 				$status .= '<div class="btn btn-' . $item['STATUS']['CODE'] . ' px-3 py-1 text-center opacity-75 text-nowrap"><small>' . $item['STATUS']['VALUE'] . '</small></div>';
 				$status .= '</a>';
-				$item["STATUS"] = $status;
+				$column["STATUS"] = $status;
 
 				// <input value="01.01.2025" name="DATE" class="main-grid-editor main-grid-editor-text main-grid-editor-date" id="DATE_control">
 				$data['DATE'] = '<div class="ui-ctl ui-ctl-after-icon ui-ctl-date">
@@ -380,7 +405,7 @@ class MasterContracts extends CBitrixComponent
 									</script>';
 				// gg($data);
 				$this->arResult['GRID']['ROWS'][] = [
-					'columns' => $item,
+					'columns' => $column,
 					'data' => $data			//Данные для инлайн-редактирования
 				];
 			}
@@ -504,33 +529,38 @@ class MasterContracts extends CBitrixComponent
 
 		foreach ($itemList as &$value) {
 
+			$companyID = $value['COMPANY'];
 			// $value['NUMBER'] = $value['UF_NUMBER'] < 10 ? '0' . $value['UF_NUMBER'] : $value['UF_NUMBER'];
 
-			$value['COMPANY_ID'] = $value['COMPANY'];
+			unset($value['COMPANY']);
+			// $value['COMPANY']['ID'] = $value['COMPANY'];
+			$value['COMPANY']['ID'] = $companyID;
+
+			// gg($value);
+
 			if ($getCompany)
-				$arCompany = $getCompany[$value['COMPANY']];
+				$arCompany = $getCompany[$companyID];
 
 			// if ($value['UF_YEAR']) {
 			// 	$value['YEAR'] = $yearList[$value['UF_YEAR']];
 			// }
-			// dump($value);
+			// dump($arCompany);
 
 			// $value['STATUS'] = $this->statusList[$value['UF_STATUS']];
 
 			if ($arCompany) {
-				$value['COMPANY'] = $arCompany['UF_NAME'];
+				// $value['COMPANY']['NAME'] = $arCompany['UF_NAME'];
 
 				foreach ($arCompany as $key => $item) {
 					preg_match('/^UF_(\D*)/', $key, $match);
 					if ($match[0]) {
-						$value['COMPANY_INFO'][$match[1]] = $item;
+						$value['COMPANY'][$match[1]] = $item;
+						// $value['COMPANY_INFO'][$match[1]] = $item;
 					}
 				}
 			}
-			// dump($value['ID']);
-			// dump($value['UF_SERVICE']);
+
 			//$value['COMPANY'] = $getCompany[$value['COMPANY']];
-			// dump($this->serviceList);
 
 			if ($value['UF_SERVICE'] && is_array($value['UF_SERVICE'])) {
 

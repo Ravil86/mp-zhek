@@ -38,53 +38,72 @@ if ($arResult['ACCESS']): ?>
         </div>
         */ ?>
         <?
-        // gg($arResult);
-        // dump($provider);
         function cmp($a, $b)
         {
             return $a['DATE'] <=> $b['DATE'];
         }
 
-        $dateStr = date('Y-m-d', strtotime('-5 months'));
-        $dateEnd = date("Y-m-d", strtotime('+1 month'));
+        $dateStr = date('2025-01-01');
+        $dateEnd = date('Y-m-d');
+        // $dateStr = date('Y-m-d', strtotime('-3 months'));
+        // $dateEnd = date("Y-m-d", strtotime('+1 month'));
         $begin = new DateTime($dateStr);
         $end = new DateTime($dateEnd);
 
         $selectMonth = trim($arResult['MONTH'] . '-' . $arResult['YEAR']);
         // gg($selectMonth);
+
+        // gg(date('m'));
+        $useDate = false;
+        $number = FormatDate("m", MakeTimeStamp('01.' . $arResult['MONTH'] . '.' . $arResult['YEAR']));
+        // $number = FormatDate("n", MakeTimeStamp('01.' . $arResult['MONTH'] . '.' . $arResult['YEAR']));
+
+        if ($arResult['MONTH'] == date('m') && $arResult['YEAR'] == date('Y')) {
+            $useDate = true;
+            $date = FormatDate("j", MakeTimeStamp(time()));
+            $month = date('m');
+            $monthYear = FormatDate("F Y", MakeTimeStamp(time()));
+        } else {
+            $month = $arResult['MONTH'];
+            // $date = '20';
+            // $date =  rand(15, 20);
+            // $monthYear = FormatDate("F Y", MakeTimeStamp('01.' . $arResult['MONTH'] . '.' . $arResult['YEAR']));
+            // gg($monthYear);
+        }
         ?>
-        <div class="ui-ctl ui-ctl-after-icon ui-ctl-dropdown">
-            <div class="ui-ctl-after ui-ctl-icon-angle"></div>
-            <select class="ui-ctl-element" onchange="redirect(this)">
-                <!-- <option value=""></option> -->
-                <?= LKClass::setMonth($selectMonth, $begin, $end);
-                ?>
-            </select>
-            <script>
-                function redirect(list) {
-                    var selection = list.options[list.selectedIndex].value
-                    var folder = '<?= $arResult['FOLDER'] ?>'
-                    var contract = '<?= $arResult['CONTRACT'] ?>'
-                    let split = selection.split('-')
-
-                    console.log('this.value', selection.split('-'));
-
-                    document.location.href = folder + '/' + contract + '/' + split[1] + '/' + split[0];
-                }
-            </script>
-        </div>
-        <!-- <select class="form-control required select" name="date" id="date">
-
-        </select> -->
-        <div class="row mb-1 ">
+        <div class="row mb-1">
             <div class="col">
+                <div class="ui-ctl ui-ctl-after-icon ui-ctl-dropdown">
+                    <div class="ui-ctl-after ui-ctl-icon-angle"></div>
+                    <select class="ui-ctl-element" onchange="redirect(this)">
+                        <!-- <option value=""></option> -->
+                        <?= LKClass::setMonth($selectMonth, $begin, $end);
+                        ?>
+                    </select>
+                    <script>
+                        function redirect(list) {
+                            var selection = list.options[list.selectedIndex].value
+                            var folder = '<?= $arResult['FOLDER'] ?>'
+                            var contract = '<?= $arResult['CONTRACT'] ?>'
+                            let split = selection.split('-')
+
+                            // console.log('this.value', selection.split('-'));
+
+                            document.location.href = folder + '/' + contract + '/' + split[1] + '/' + split[0];
+                        }
+                    </script>
+                </div>
             </div>
             <div class="col-auto me-2">
-                <a class="ui-btn ui-btn-primary-dark" onclick="saveButton('<?= date('m') ?>')">Скачать справки</a>
+                <? if ($useDate || $arResult['ADMIN']): ?>
+                    <a class="ui-btn ui-btn-primary-dark" onclick="saveButton('<?= $month ?>')">Скачать справки</a>
+                <? endif; ?>
             </div>
         </div>
+
         <div id="reestr">
             <?
+            // gg($arResult);
             $count = $arResult['DETAIL']['PROVIDER'] ? count($arResult['DETAIL']['PROVIDER']) : 0;
             foreach ($arResult['DETAIL']['PROVIDER'] as $k => $provider) : ?>
                 <?/* if ($arResult['SERVICE'][$provider['ID']]['OBJECTS']): ?>
@@ -96,17 +115,21 @@ if ($arResult['ACCESS']): ?>
                     </div>
                 </div>
             <? endif; */ ?>
+                <?
+                // gg($arResult);
+                // gg($arResult['LOSSES']);
+                ?>
                 <div class="reestr card me-2 border-<?= $provider['COLOR'] ?><?= $k + 1 < $count ? ' pageBreak mb-3' : '' ?>" id="ref<?= $provider['ID'] ?>">
                     <div class="card-body">
                         <div class="row gx-2 align-items-center mb-2">
                             <div class="col-3 col-xxl-2 pt-2 pb-1">Заказчик:</div>
                             <div class="col-9 text-center pt-2 pb-1 border-bottom">
-                                <?= $arResult['DETAIL']['COMPANY_INFO']['NAME'] ?>, <?= $arResult['DETAIL']['COMPANY_INFO']['INN'] ?>
+                                <?= $arResult['COMPANY']['NAME'] ?>, <?= $arResult['COMPANY']['INN'] ?>
                             </div>
                         </div>
                         <div class="row gx-2 align-items-center mb-2">
                             <div class="col-3 col-xxl-2 pt-2 pb-1">Юридический адрес:</div>
-                            <div class="col-9 text-center pt-2 pb-1 border-bottom"><?= $arResult['DETAIL']['COMPANY_INFO']['ADDRESS'] ?>
+                            <div class="col-9 text-center pt-2 pb-1 border-bottom"><?= $arResult['COMPANY']['ADDRESS'] ?>
                             </div>
                         </div>
                         <div class="row gx-2 mb-4">
@@ -116,7 +139,9 @@ if ($arResult['ACCESS']): ?>
                         </div>
                         <div class="card! mt-4 mb-1">
                             <div class="card-body!">
-                                <div class="h5 text-center">СПРАВКА № <?= $k + 1 ?> от «<?= FormatDate("j", MakeTimeStamp(time())) ?>» <?= FormatDate("F Y", MakeTimeStamp(time())) ?>г.</div>
+                                <? //= $k + 1
+                                ?>
+                                <div class="h5 text-center">СПРАВКА № <?= $provider['LITERA'] ?>-<?= $arResult['COMPANY']['ID'] ?>/<?= $number ?>-<?= $arResult['DETAIL']['YEAR'] ?> <? if ($useDate): ?> от «<?= $date ?>» <?= $monthYear ?>г.<? endif; ?></div>
                                 <? if ($arResult['SERVICE'][$provider['ID']]['OBJECTS']): ?>
                                     <div class="table-responsive!">
                                         <table class="table table-sm! mb-1">
@@ -127,19 +152,21 @@ if ($arResult['ACCESS']): ?>
                                                     <!-- <th>ID</th> -->
                                                     <th width="220">Адрес</th>
                                                     <th>Вид услуги</th>
-                                                    <th>ID</th>
+                                                    <!-- <th>ID</th> -->
                                                     <th>Дата очередной поверки ПУ</th>
                                                     <th>Номер пломбы ПУ</th>
                                                     <th>Ед. изм.</th>
                                                     <th>Предыдущие показания ПУ</th>
                                                     <th>Текущие показания ПУ</th>
+                                                    <? if ($provider['ID'] == 2): ?>
+                                                        <th>Потери</th>
+                                                    <? endif; ?>
                                                     <th>Потребленный объем (разница)</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <?
                                                 $i = 1;
-
                                                 // dump($arResult['PREV_METERS']);
                                                 foreach ($arResult['SERVICE'][$provider['ID']]['OBJECTS'] as $key => $value): ?>
                                                     <?
@@ -147,7 +174,10 @@ if ($arResult['ACCESS']): ?>
                                                     $lastMeters = null;
                                                     $potreb = null;
 
-                                                    // dump($arResult['PREV_METERS'][$key][$value['COUNTER']['ID']]);
+                                                    $potery = $arResult['LOSSES'][$key][$arResult['MONTH_CODE'][$month]] ?: null;
+
+                                                    // gg($potery);
+                                                    // gg($arResult['PREV_METERS'][$key][$value['COUNTER']['ID']]);
 
                                                     if (is_array($arResult['PREV_METERS'][$key][$value['COUNTER']['ID']])) {
                                                         $prevMeters = $arResult['PREV_METERS'][$key][$value['COUNTER']['ID']][0]['METER'];
@@ -157,12 +187,12 @@ if ($arResult['ACCESS']): ?>
                                                     if (is_array($arResult['LAST_METERS'][$key][$value['COUNTER']['ID']]))
                                                         $lastMeters = array_shift($arResult['LAST_METERS'][$key][$value['COUNTER']['ID']])['METER'];
 
-
                                                     if ($prevMeters && $lastMeters)
                                                         $potreb = $lastMeters - $prevMeters;
                                                     // $meterLast = array_shift($value['METERS']);
 
-                                                    // dump($value['LAST_METERS']);
+                                                    if ($potery && $potreb)
+                                                        $potreb = $potreb + $potery;
                                                     ?>
                                                     <tr class="text-center">
                                                         <td><?= $i; ?></td>
@@ -171,13 +201,17 @@ if ($arResult['ACCESS']): ?>
                                                                     ?></th> -->
                                                         <td class="text-start"><?= $value['INFO']['ADDRESS']; ?></td>
                                                         <td><?= $provider['NAME']; ?></td>
-                                                        <td><?= $value['COUNTER']['ID']; ?></td>
+                                                        <!-- <td><? //= $value['COUNTER']['ID'];
+                                                                    ?></td> -->
                                                         <td><?= $value['COUNTER']['UF_CHECK']; ?></td>
                                                         <td><?= $value['COUNTER']['UF_NUMBER']; ?></td>
                                                         <td><?= $provider['UNIT']; ?></td>
-                                                        <td><?= $prevMeters; ?></td>
-                                                        <td><?= $lastMeters; ?></td>
-                                                        <td><?= $potreb ?></td>
+                                                        <td><?= $prevMeters ?? '-'; ?></td>
+                                                        <td><?= $lastMeters ?? '-'; ?></td>
+                                                        <? if ($provider['ID'] == 2): ?>
+                                                            <td><?= $arResult['LOSSES'][$key][$arResult['MONTH_CODE'][$month]] ?></td>
+                                                        <? endif; ?>
+                                                        <td><?= $potreb ?? '-'; ?></td>
                                                     </tr>
                                                     <? $i++; ?>
                                                 <? endforeach ?>
@@ -194,11 +228,13 @@ if ($arResult['ACCESS']): ?>
                         <table class="table table-borderless mb-0">
                             <tr class="text-center">
                                 <td width="40"></td>
-                                <td width="400" class="border-bottom text-start"><?= $arResult['USER_INFO']['WORK_POSITION'] ?></td>
+                                <td width="400" class="border-bottom text-start"><?= $arResult['COMPANY']['RESPONIBLE']['WORK_POSITION'] //$arResult['USER_INFO']['WORK_POSITION']
+                                                                                    ?></td>
                                 <td width="20"></td>
                                 <td class="border-bottom" width="300"></td>
                                 <td width="20"></td>
-                                <td class="border-bottom" width="300"><?= $arResult['USER_INFO']['FULL_NAME'] ?></td>
+                                <td class="border-bottom" width="300"><?= $arResult['COMPANY']['RESPONIBLE']['FULL_NAME'] //$arResult['USER_INFO']['FULL_NAME']
+                                                                        ?></td>
                                 <td></td>
                             </tr>
                             <tr class="text-center small">
@@ -270,8 +306,7 @@ $url = $templateFolder . '/ajax.php';
 
         console.log('month', month);
 
-
-        var filename = month + '_<?= $arResult['DETAIL']['FULL_NUMBER'] ?>_<?= $arResult['DETAIL']['COMPANY_INFO']['INN'] ?>.pdf'
+        var filename = '#' + <?= $arResult['COMPANY']['ID'] ?> + '_' + month + '_' + <?= $arResult['DETAIL']['YEAR'] ?> + '_<?= $arResult['DETAIL']['UF_NUMBER'] ?>_<?= TruncateText($arResult['COMPANY']['NAME'], 100) ?>.pdf'
 
         element = document.getElementById('reestr');
         // var element = document.getElementById('ref' + event);
@@ -287,8 +322,10 @@ $url = $templateFolder . '/ajax.php';
                 scale: 2
             },
             jsPDF: {
+                unit: 'mm',
+                // format: 'letter',
                 format: 'a4',
-                orientation: 'landscape'
+                orientation: 'landscape',
             },
             pagebreak: {
                 // mode: 'avoid-all',

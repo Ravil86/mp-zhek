@@ -560,12 +560,9 @@ class LKClass
 
         // $end = (new DateTime($dateEnd));
         // $begin = (new DateTime($dateStr));
+
         $periods = new DatePeriod($begin, new \DateInterval('P1M'), $end);
         $result = '';
-
-
-        // echo (trim($setDate));
-
 
         foreach (array_reverse(iterator_to_array($periods)) as $period) {
 
@@ -629,10 +626,10 @@ class LKClass
      * @param mixed
      * @return void
      */
-    public static function curentUserFields()
+    public static function curentUserFields($userId = null)
     {
-
-        $userId = \Bitrix\Main\Engine\CurrentUser::get()->getId();
+        if (!$userId)
+            $userId = \Bitrix\Main\Engine\CurrentUser::get()->getId();
 
         $result = \Bitrix\Main\UserTable::getList(array(
             'filter' => array('=ID' => $userId),
