@@ -6,6 +6,12 @@ use Bitrix\Main\Application;
 use Bitrix\Main\Type\DateTime;
 use Bitrix\Main\Config\Option;
 
+use Bitrix\Main\Error;
+use Bitrix\Main\ErrorCollection;
+use Bitrix\Main\Result;
+use Bitrix\Main\Engine\Response\AjaxJson;
+
+
 Loader::includeModule("iblock");
 
 class LKClass
@@ -25,6 +31,17 @@ class LKClass
 
     protected static $MASTER = "MASTER"; // код группы Мастер участка
     protected static $ORG = "ORG"; // код группы Организации
+
+    protected ErrorCollection $errorCollection;
+
+    public function getErrors(): array
+    {
+        return $this->errorCollection->toArray();
+    }
+    public function getErrorByCode($code): Error
+    {
+        return $this->errorCollection->getErrorByCode($code);
+    }
 
     public static function isMaster()
     {
@@ -463,8 +480,22 @@ class LKClass
 
     public static function addContract($data)
     {
+
+        $result = new \Bitrix\Main\Result();
+
         $classHL = \HLWrap::init(self::$_HL_Contracts);
-        $classHL::add($data);
+        $addResult = $classHL::add($data);
+
+        if ($addResult->isSuccess()) {
+            // $newId = $addResult->getId();
+            return 'Контракт добавлен';
+            //return $result->setData($addResult->getData());
+        } else {
+            // return $addResult->getErrorMessages();
+
+            $errorCollection = new ErrorCollection($addResult->getErrors());
+            return AjaxJson::createError($errorCollection);
+        }
     }
 
     public static function saveLosses($objectID, $data)

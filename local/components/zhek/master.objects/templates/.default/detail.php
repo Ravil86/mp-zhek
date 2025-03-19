@@ -413,10 +413,11 @@ if ($arResult['ACCESS']): ?>
 
                     form.addEventListener('submit', function(event) {
 
-                        event.preventDefault()
+						//event.preventDefault()
 
                         if (!form.checkValidity()) {
-                            event.stopPropagation()
+							event.preventDefault()
+							event.stopPropagation()
                         } else {
                             // var gridObject = BX.Main.gridManager.getById('<?= $arResult['DETAIL']['GRID'] ?>_' + id); // Идентификатор грида
                             // console.log('gridObject', gridObject);

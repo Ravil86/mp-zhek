@@ -1,103 +1,103 @@
 <?php
-$arUrlRewrite = array(
-  1 =>
-  array(
+$arUrlRewrite=array (
+  1 => 
+  array (
     'CONDITION' => '#^/raskrytie-informatsii/#',
     'RULE' => '',
     'ID' => 'bitrix:news',
     'PATH' => '/raskrytie-informatsii/index.php',
     'SORT' => 100,
   ),
-  14 =>
-  array(
+  14 => 
+  array (
     'CONDITION' => '#^/cabinet/contracts/#',
     'RULE' => '',
     'ID' => 'bitrix:news',
     'PATH' => '/cabinet/contracts/index.php',
     'SORT' => 100,
   ),
-  13 =>
-  array(
+  13 => 
+  array (
     'CONDITION' => '#^/cabinet/counters/#',
     'RULE' => '',
     'ID' => 'bitrix:news',
     'PATH' => '/cabinet/counters/index.php',
     'SORT' => 100,
   ),
-  11 =>
-  array(
+  11 => 
+  array (
     'CONDITION' => '#^/master/contracts/#',
     'RULE' => '',
     'ID' => 'bitrix:news',
     'PATH' => '/master/contracts/index.php',
     'SORT' => 100,
   ),
-  12 =>
-  array(
+  12 => 
+  array (
     'CONDITION' => '#^/cabinet/objects/#',
     'RULE' => '',
     'ID' => 'bitrix:news',
     'PATH' => '/cabinet/objects/index.php',
     'SORT' => 100,
   ),
-  10 =>
-  array(
+  10 => 
+  array (
     'CONDITION' => '#^/master/objects/#',
     'RULE' => '',
     'ID' => 'bitrix:news',
     'PATH' => '/master/objects/index.php',
     'SORT' => 100,
   ),
-  16 =>
-  array(
+  16 => 
+  array (
     'CONDITION' => '#^/master/counter/#',
     'RULE' => '',
     'ID' => 'bitrix:news',
     'PATH' => '/master/counter/index.php',
     'SORT' => 100,
   ),
-  36 =>
-  array(
+  36 => 
+  array (
     'CONDITION' => '#^/master/users/#',
     'RULE' => '',
     'ID' => 'bitrix:news',
     'PATH' => '/master/users/index.php',
     'SORT' => 100,
   ),
-  3 =>
-  array(
+  3 => 
+  array (
     'CONDITION' => '#^/services/#',
     'RULE' => '',
     'ID' => 'bitrix:news',
     'PATH' => '/services/index.php',
     'SORT' => 100,
   ),
-  4 =>
-  array(
+  4 => 
+  array (
     'CONDITION' => '#^/shelter/#',
     'RULE' => '',
     'ID' => 'bitrix:catalog',
     'PATH' => '/shelter/index.php',
     'SORT' => 100,
   ),
-  15 =>
-  array(
+  15 => 
+  array (
     'CONDITION' => '#^/tarify/#',
     'RULE' => '',
     'ID' => 'bitrix:news',
     'PATH' => '/tarify/index.php',
     'SORT' => 100,
   ),
-  6 =>
-  array(
+  6 => 
+  array (
     'CONDITION' => '#^/rest/#',
     'RULE' => '',
     'ID' => NULL,
     'PATH' => '/bitrix/services/rest/index.php',
     'SORT' => 100,
   ),
-  7 =>
-  array(
+  7 => 
+  array (
     'CONDITION' => '#^/news/#',
     'RULE' => '',
     'ID' => 'bitrix:news',

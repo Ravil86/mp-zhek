@@ -176,7 +176,7 @@ require($_SERVER['DOCUMENT_ROOT'] . '/includes/modal_feedback.php');
 					event.preventDefault()
 				}
 				form.classList.add('was-validated')
-			}, false)
+}, false)
 		})
 </script>
 </body>

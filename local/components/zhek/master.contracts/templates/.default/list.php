@@ -15,8 +15,8 @@ use Bitrix\Highloadblock as HL;
 \Bitrix\Main\UI\Extension::load("ui");
 // \Bitrix\Main\UI\Extension::load('ui.entity-selector');
 \Bitrix\Main\UI\Extension::load("ui.select");
-
 \Bitrix\Main\UI\Extension::load('ui.entity-selector');
+\Bitrix\Main\UI\Extension::load("ui.alerts");
 
 ?>
 <? if ($arResult['ACCESS']): ?>
@@ -159,7 +159,7 @@ use Bitrix\Highloadblock as HL;
                 <div class="modal-content">
                     <? // gg($arResult);
                     ?>
-                    <form class="contract_add needs-validation" method="post" novalidate>
+                    <form class="contract_add needs-validation!" method="post" novalidate>
                         <div class="modal-header">
                             <h4 class="modal-title">Добавить контракт</h4>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -257,7 +257,7 @@ use Bitrix\Highloadblock as HL;
                                 <div class="col-12 col-md-3">
                                     <label>Номер</label>
                                     <div class="ui-ctl ui-ctl-textbox ui-ctl-lg! ui-ctl-w100">
-                                        <input class="ui-ctl-element form-control" type="text" name="FIELDS[UF_NUMBER]" placeholder="Номер" required>
+                                        <input class="ui-ctl-element form-control" type="number" name="FIELDS[UF_NUMBER]" placeholder="Номер" required>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-3">
@@ -281,8 +281,17 @@ use Bitrix\Highloadblock as HL;
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="ui-btn ui-btn-success">Сохранить</button>
-                            <button type="button" class="ui-btn ui-btn-link" data-bs-dismiss="modal">Закрыть</button>
+                            <div class="col-8">
+                                <div class="col-auto">
+                                    <div id="message" class="ui-alert ui-alert-danger d-none" style="display:none!">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col"></div>
+                            <div class="col-auto">
+                                <button type="submit" class="ui-btn ui-btn-success">Сохранить</button>
+                                <button type="button" class="ui-btn ui-btn-link" data-bs-dismiss="modal">Закрыть</button>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -293,7 +302,8 @@ use Bitrix\Highloadblock as HL;
     <script>
         (function() {
 
-            /*const options = <?= \Bitrix\Main\Web\Json::encode($arResult['COMPANY_JSON']); ?>;
+            /*const options = <? //= \Bitrix\Main\Web\Json::encode($arResult['COMPANY_JSON']);
+                                ?>;
             // console.log('options', options);
 
             const selectOrg = new BX.Ui.Select({
@@ -327,10 +337,12 @@ use Bitrix\Highloadblock as HL;
             selectService.renderTo(document.getElementById('service'));
             */
 
-            const exampleModal = document.getElementById('addContract')
+            const contractModal = document.getElementById('addContract')
             // console.log(exampleModal);
-            if (exampleModal) {
-                exampleModal.addEventListener('show.bs.modal', e => {
+            var modalContract = new bootstrap.Modal(contractModal)
+            //console.log('myModal', myModal);
+            if (contractModal) {
+                contractModal.addEventListener('show.bs.modal', e => {
 
                     const input = document.querySelector(`input[name="FIELDS[UF_DATE]"]`);
                     // console.log('input', input);
@@ -353,8 +365,69 @@ use Bitrix\Highloadblock as HL;
 
                         return picker;
                     };
-
                     BX.Event.bind(button, "click", () => getPicker().show());
+
+
+                    // (function() {
+                    //         'use strict'
+                    var form = document.querySelector('.contract_add')
+
+                    var message = form.querySelector('#message')
+                    // Array.prototype.slice.call(forms)
+                    //     .forEach(function(form) {
+                    // console.log(form);
+
+                    form.addEventListener('submit', function(event) {
+
+                        event.preventDefault()
+
+                        if (!form.checkValidity()) {
+                            event.stopPropagation()
+
+                        } else {
+
+                            //const form = document.getElementById("requestForm");
+                            let form_data = new FormData(form);
+
+                            BX.ajax.runComponentAction("zhek:master.contracts", 'addContract', {
+                                mode: "class",
+                                data: form_data,
+                            }).then(function(response) {
+                                console.log('response', response);
+                                message.innerHTML = response.data
+                                message.classList.add('ui-alert-success', 'd-block')
+                                message.classList.remove('ui-alert-danger', 'd-none')
+
+                                setTimeout(() => {
+                                    form.reset()
+                                    message.innerHTML = ''
+                                    message.classList.add('d-none')
+                                    form.classList.remove('was-validated')
+                                    modalContract.hide()
+                                }, 3000)
+
+                                //$('#response').html('<span class="text-success">Ваше сообщение принято на рассмотрение</span>');
+
+                            }).catch((response) => {
+                                let errors = response.errors
+                                message.innerHTML = errors[0].message
+                                message.classList.add('ui-alert-danger', 'd-block')
+                                message.classList.remove('ui-alert-success', 'd-none')
+                                console.log('error', errors);
+                            });
+                        }
+                        form.classList.add('was-validated')
+                    }, false)
+
+
+
+                    // })
+                    // })()
+
+
+
+
+
 
                 })
             }
@@ -383,32 +456,7 @@ use Bitrix\Highloadblock as HL;
                     document.getElementById(selectName).value = dataValue.VALUE;
                 }
 
-                // var valueId = obj.getDataValue().VALUE;
-                // console.log('valueId', valueId);
-                /*switch (selectName) {
-                    case 'UF_COMPANY':
-                        var valueId = obj.getDataValue().VALUE;
-                        console.log('valueId', valueId);
 
-                        document.getElementById(selectName).value = valueId;
-                        // console.log('selectName', selectName);
-
-                        break;
-                    case 'SELECT_CITY_LOCATION':
-                        var valueId = obj.getDataValue().VALUE;
-                        // if (valueId) {
-                        //     $.post('/realestate/ajax.php', {
-                        //         m: 'cityFilterDistr',
-                        //         sid: valueId
-                        //     }, function(d) {
-                        //         if (d) {
-                        //             var $blockToInsert = $(obj.node).closest('.main-ui-custom');
-                        //             $blockToInsert.find('.js-location-select').empty().append(d);
-                        //             cookieSet('f_city_distr', valueId);
-                        //         }
-                        //     });
-                        // }
-                }*/
             });
         });
 

@@ -11,7 +11,10 @@ use Bitrix\Main\Context,
 	Bitrix\Main\Application,
 	Bitrix\Main\Web\Uri;
 
-class MasterContracts extends CBitrixComponent
+use Bitrix\Main\Engine\Contract\Controllerable;
+use Bitrix\Main\Engine\ActionFilter;
+
+class MasterContracts extends CBitrixComponent implements Controllerable
 {
 
 	protected static $_HL_Reference = "Contracts"; // HL Контракты
@@ -43,6 +46,20 @@ class MasterContracts extends CBitrixComponent
 	public function onPrepareComponentParams($arParams)
 	{
 		return $arParams;
+	}
+
+	public function configureActions()
+	{
+		return [
+			'addContract' => [
+				'prefilters' => [
+					new ActionFilter\Authentication,
+					new ActionFilter\HttpMethod([
+						ActionFilter\HttpMethod::METHOD_POST
+					])
+				],
+			],
+		];
 	}
 
 	public function executeComponent()
@@ -293,7 +310,7 @@ class MasterContracts extends CBitrixComponent
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 60],
 				['id' => 'DATE', 'name' => 'Дата', 'width' => 100, 'default' => true,  "editable" => ['TYPE' => 'CUSTOM']],
 				// ['id' => 'DATE', 'name' => 'Дата', /*'sort' => 'TIMESTAMP_X',*/ 'default' => true, 'width' => 100, "editable" => ['TYPE' => 'DATE']],
-				['id' => 'NUMBER', 'name' => '№', /*'sort' => 'NUMBER',*/ 'default' => true, 'width' => 70, 'editable' => true],
+				['id' => 'NUMBER', 'name' => '№', /*'sort' => 'NUMBER',*/ 'default' => true, 'width' => 100, 'editable' => ['TYPE' => 'NUMBER']],
 				['id' => 'YEAR', 'name' => 'Год', 'default' => true, 'width' => 80, 'editable' => ['TYPE' => 'DROPDOWN', 'items' => $arYears]],
 				['id' => 'COMPANY', 'name' => 'Наименование организации', 'sort' => 'COMPANY', 'default' => true],
 				['id' => 'FULL_NUMBER', 'name' => 'Номер', 'sort' => '', 'default' => true, 'width' => 150],
@@ -740,6 +757,15 @@ class MasterContracts extends CBitrixComponent
 			if (!isset($arRequest["AJAX_CALL"]))
 				LocalRedirect(Context::getCurrent()->getRequest()->getRequestUri());
 		}
+	}
+
+	public function addContractAction()
+	{
+
+		$arRequest = $this->getRequest();
+		Bitrix\Main\Diag\Debug::dumpToFile(var_export($arRequest, 1), 'addContractAction $arRequest', 'test.log');
+
+		return LKClass::addContract($arRequest["FIELDS"]);
 	}
 
 	// метод обработки режима ЧПУ

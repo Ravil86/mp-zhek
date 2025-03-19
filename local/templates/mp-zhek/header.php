@@ -74,7 +74,7 @@ $arSite = $rsSites->Fetch();
 
         SITE_TEMPLATE_PATH . '/lib/fancybox/fancybox.css',
 
-        SITE_TEMPLATE_PATH . '/css/special.css',
+		//SITE_TEMPLATE_PATH . '/css/special.css',
         // SITE_TEMPLATE_PATH.'/css/special.min.css',
 
         // '//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/2.0.0-beta1/css/bootstrap-select.min.css',
