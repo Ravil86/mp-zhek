@@ -98,7 +98,7 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 	{
 
 		$this->arResult['ACCESS'] = $this->checkAccess();
-
+		$this->arResult['PAGE_SIZE'] = 10;
 
 		$this->arResult['GRID_ID'] = str_replace('.', '_', str_replace(':', '_', $this->GetName()));
 		$arResult['GRID_ID'] = $this->arResult['GRID_ID'];
@@ -126,6 +126,7 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 				'VALUE' => $value['ID'],
 				'NAME' => $value['UF_NAME'],
 			];
+			$this->arResult['COMPANY_ITEMS'][$value['ID']] = $value['UF_NAME'];
 		}
 
 		foreach ($this->serviceList as $key => $value) {
@@ -278,7 +279,7 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 			$grid_options = new CGridOptions($this->arResult["GRID_ID"]);
 
 			//размер страницы в постраничке (передаем умолчания)
-			$nav_params = $grid_options->GetNavParams(array("nPageSize" => 10));
+			$nav_params = $grid_options->GetNavParams(array("nPageSize" => $this->arResult['PAGE_SIZE']));
 			// $nav_params = $grid_options->GetNavParams();
 
 			$nav = new Bitrix\Main\UI\PageNavigation($this->arResult["GRID_ID"]);
@@ -290,6 +291,10 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 				$nav_params = false;
 			else
 				$nav_params['iNumPage'] = $nav->getCurrentPage();
+
+			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
+
+			// gg($arSort);
 
 			// dump($this->serviceList);
 			foreach ($this->serviceList as $serv) {
@@ -304,57 +309,53 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 
 			$arYears = LKClass::getYears();
 
-			//какую сортировку сохранил пользователь (передаем то, что по умолчанию)
-			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
+			// gg($arYears);
+			// gg($this->arResult);
+
 			$this->arResult['GRID']['COLUMNS'] = [
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 60],
 				['id' => 'DATE', 'name' => 'Дата', 'width' => 100, 'default' => true,  "editable" => ['TYPE' => 'CUSTOM']],
 				// ['id' => 'DATE', 'name' => 'Дата', /*'sort' => 'TIMESTAMP_X',*/ 'default' => true, 'width' => 100, "editable" => ['TYPE' => 'DATE']],
-				['id' => 'NUMBER', 'name' => '№', /*'sort' => 'NUMBER',*/ 'default' => true, 'width' => 100, 'editable' => ['TYPE' => 'NUMBER']],
+				['id' => 'NUMBER', 'name' => '№', /*'sort' => 'NUMBER',*/ 'default' => true, 'width' => 80, 'editable' => ['TYPE' => 'NUMBER']],
 				['id' => 'YEAR', 'name' => 'Год', 'default' => true, 'width' => 80, 'editable' => ['TYPE' => 'DROPDOWN', 'items' => $arYears]],
-				['id' => 'COMPANY', 'name' => 'Наименование организации', 'sort' => 'COMPANY', 'default' => true],
-				['id' => 'FULL_NUMBER', 'name' => 'Номер', 'sort' => '', 'default' => true, 'width' => 150],
-				['id' => 'SERVICE', 'name' => 'Услуги', 'default' => true, "editable" => ['TYPE' => 'MULTISELECT', 'items' => $arService]],
+				['id' => 'COMPANY', 'name' => 'Наименование организации', 'sort' => 'COMPANY', 'default' => true, 'editable' => ['TYPE' => 'DROPDOWN', 'items' => $this->arResult['COMPANY_ITEMS']]],
+				['id' => 'FULL_NUMBER', 'name' => 'Номер', 'sort' => '', 'default' => true, 'width' => 160],
+				['id' => 'SERVICE', 'name' => 'Услуги', 'default' => true, 'width' => 220, "editable" => ['TYPE' => 'MULTISELECT', 'items' => $arService]],
 				['id' => 'STATUS', 'name' => 'Статус', 'default' => true, 'editable' => ['TYPE' => 'DROPDOWN', 'items' => $arStatus]],
 				// ['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => '130'],
 			];
 
-			$filterOption = new Bitrix\Main\UI\Filter\Options($this->arResult["GRID_ID"]);
+			if ($arSort['sort']['TIMESTAMP_X'])
+				$arSort['sort']['DATE_CREATE'] = $arSort['sort']['TIMESTAMP_X'];
+
+			$filterOption = new Bitrix\Main\UI\Filter\Options("filter_" . $this->arResult["GRID_ID"]);
 			$filterData = $filterOption->GetFilter();
 
-			$userFilter = false;
+			$userFilter = [];
 
 			global $USER;
 			if ($this->arResult['OPERATOR']) {
 				$userFilter['USER_ID'] = $USER->GetID();
 			}
 
-			if (isset($filterData["DATE_MODIFY_from"])) {
-				$userFilter["DATE_MODIFY_FROM"] = $filterData["DATE_MODIFY_from"];
-				$userFilter["DATE_MODIFY_TO"] = $filterData["DATE_MODIFY_to"];
-			}
-
-			if (isset($filterData["FIND"])) {
-				if (isset($filterData["NAME"]))
-					$userFilter["NAME"] = "%" . $filterData["NAME"] . "%";
-				else
-					$userFilter["NAME"] = "%" . $filterData["FIND"] . "%";
-			}
-			if (isset($filterData["DATE_CREATE_from"])) {
-				$userFilter[">=DATE_CREATE"] = $filterData["DATE_CREATE_from"];
-			}
-			if (isset($filterData["DATE_CREATE_to"])) {
-				$userFilter["<=DATE_CREATE"] = $filterData["DATE_CREATE_to"];
-			}
-			// if (isset($filterData["COURSE"])) {
-			// 	$userFilter["PROPERTY_COURSE"] = $filterData["COURSE"];
+			// if (isset($filterData["DATE_MODIFY_from"])) {
+			// 	$userFilter["DATE_MODIFY_FROM"] = $filterData["DATE_MODIFY_from"];
+			// 	$userFilter["DATE_MODIFY_TO"] = $filterData["DATE_MODIFY_to"];
 			// }
 
-			if (!$nav_params['nPageSize'])
-				$nav_params['nPageSize'] = 500;
+			// if (isset($filterData["FIND"])) {
+			// 	if (isset($filterData["NAME"]))
+			// 		$userFilter["NAME"] = "%" . $filterData["NAME"] . "%";
+			// 	else
+			// 		$userFilter["NAME"] = "%" . $filterData["FIND"] . "%";
+			// }
 
-			if ($arSort['sort']['TIMESTAMP_X'])
-				$arSort['sort']['DATE_CREATE'] = $arSort['sort']['TIMESTAMP_X'];
+			if (isset($filterData["DATE_CREATE_from"])) {
+				$userFilter[">=UF_DATE"] = $filterData["DATE_CREATE_from"];
+			}
+			if (isset($filterData["DATE_CREATE_to"])) {
+				$userFilter["<=UF_DATE"] = $filterData["DATE_CREATE_to"];
+			}
 
 			$arItems = $this->getDocs(false, $arSort['sort'], $nav_params, $userFilter);
 
@@ -362,6 +363,8 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 
 				$data = $item;
 				$column = $item;
+
+				$column['ID'] = '<a class="ui-btn ui-btn-xs ui-btn-success-light" href="' . $item["ID"] . '">' . $item['ID'] . '</a>';
 
 				$column['SERVICE'] = '';
 				$arService = [];
@@ -377,11 +380,9 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 
 				$data['YEAR'] = $item['UF_YEAR'];
 
-				// gg($item['COMPANY']);
-
 				// $number = '№ ' . $item['NUMBER'] . '-' . $item['YEAR'] . ' от ' . $item['DATE'];
 				// $item["FULL_NUMBER"] = $number;
-
+				$data['COMPANY'] = $item['COMPANY']['ID'];
 				$column['COMPANY'] = $item['COMPANY']['NAME'];
 
 				$status = '<a class="d-flex!" href="' . $item["ID"] . '/">';
@@ -437,7 +438,7 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 			// }
 
 			$this->arResult['GRID']["FILTER"] = [
-				['id' => 'DATE_CREATE', 'name' => 'Дата', 'type' => 'date', 'default' => true],
+				['id' => 'DATE_CREATE', 'name' => 'Дата контракта', 'type' => 'date', 'default' => true],
 				// ['id' => 'NAME', 'name' => 'ФИО', 'type' => 'text', 'default' => true],
 				// ['id' => 'MO', 'name' => 'Муниципалитет', 'type' => 'list', 'items' => $arCity, 'params' => ['multiple' => 'N'], 'default' => true],
 				// ['id' => 'COURSE', 'name' => 'Курс', 'type' => 'list', 'items' => $this->courses, 'params' => ['multiple' => 'Y'], 'default' => true],
@@ -530,11 +531,11 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 		if (isset($userFilter['USER_ID'])) {
 			$arCompany = LKClass::getCompany($userFilter['USER_ID']);
 			if ($arCompany && isset($arCompany['ID']))
-				$itemList = LKClass::getContracts($arCompany['ID']);
+				$itemList = LKClass::getContracts($arCompany['ID'], $userFilter);
 			// $itemList = $this->getContracts($arCompany['ID']);
 		} else {
 			$getCompany = $this->companyList;
-			$itemList = LKClass::getContracts();
+			$itemList = LKClass::getContracts(false, $userFilter);
 			// $getCompany = LKClass::getCompany();
 			// $itemList = $this->getContracts();
 		}

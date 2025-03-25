@@ -74,7 +74,7 @@ $arSite = $rsSites->Fetch();
 
         SITE_TEMPLATE_PATH . '/lib/fancybox/fancybox.css',
 
-		//SITE_TEMPLATE_PATH . '/css/special.css',
+        //SITE_TEMPLATE_PATH . '/css/special.css',
         // SITE_TEMPLATE_PATH.'/css/special.min.css',
 
         // '//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/2.0.0-beta1/css/bootstrap-select.min.css',
@@ -120,7 +120,6 @@ $arSite = $rsSites->Fetch();
         SITE_TEMPLATE_PATH . '/js/jquery.blockUI.min.js',
         SITE_TEMPLATE_PATH . '/js/main.js',
 
-
         SITE_TEMPLATE_PATH . '/lib/bootstrap/js/bootstrap.bundle.min.js',
         // SITE_TEMPLATE_PATH . '/lib/bootstrap/js/bootstrap.min.js',
 
@@ -144,8 +143,10 @@ $arSite = $rsSites->Fetch();
         Asset::getInstance()->addJs($js);
     }
     ?>
-    <!-- <script src="https://lidrekon.ru/slep/js/jquery.js"></script>
-	<script src="https://lidrekon.ru/slep/js/uhpv-full.min.js"></script> -->
+    <?/*
+    <script src="https://lidrekon.ru/slep/js/jquery.js"></script>
+	<script src="https://lidrekon.ru/slep/js/uhpv-full.min.js"></script>
+    */ ?>
 </head>
 <div class="d-none d-md-block">
     <? $APPLICATION->ShowPanel(); ?>

@@ -158,10 +158,10 @@ if ($arResult['ACCESS']): ?>
                                                     <th>Ед. изм.</th>
                                                     <th>Предыдущие показания ПУ</th>
                                                     <th>Текущие показания ПУ</th>
+                                                    <th>Потребленный объем (разница)</th>
                                                     <? if ($provider['ID'] == 2): ?>
                                                         <th>Потери</th>
                                                     <? endif; ?>
-                                                    <th>Потребленный объем (разница)</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -191,8 +191,8 @@ if ($arResult['ACCESS']): ?>
                                                         $potreb = $lastMeters - $prevMeters;
                                                     // $meterLast = array_shift($value['METERS']);
 
-                                                    if ($potery && $potreb)
-                                                        $potreb = $potreb + $potery;
+                                                    // if ($potery && $potreb)
+                                                    //     $potreb = $potreb + $potery;
                                                     ?>
                                                     <tr class="text-center">
                                                         <td><?= $i; ?></td>
@@ -208,10 +208,10 @@ if ($arResult['ACCESS']): ?>
                                                         <td><?= $provider['UNIT']; ?></td>
                                                         <td><?= $prevMeters ?? '-'; ?></td>
                                                         <td><?= $lastMeters ?? '-'; ?></td>
+                                                        <td><?= $potreb ?? '-'; ?></td>
                                                         <? if ($provider['ID'] == 2): ?>
                                                             <td><?= $arResult['LOSSES'][$key][$arResult['MONTH_CODE'][$month]] ?></td>
                                                         <? endif; ?>
-                                                        <td><?= $potreb ?? '-'; ?></td>
                                                     </tr>
                                                     <? $i++; ?>
                                                 <? endforeach ?>

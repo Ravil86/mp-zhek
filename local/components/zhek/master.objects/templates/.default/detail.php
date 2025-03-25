@@ -97,12 +97,30 @@ if ($arResult['ACCESS']): ?>
 
         <div class="card my-2">
             <div class="card-body">
-                <div class="row">
-                    <div class="col">
-                        <h5 class="card-title"><?= $i ?>. <?= $value['NAME']; ?> (#<?= $value['ID']; ?>)</h5>
-                        <div class="h6 card-subtitle mb-2 text-body-secondary"><?= $value['ADDRESS']; ?></div>
-                    </div>
-                    <div class="col-auto">
+                <div class="row gx-1">
+                    <form class="col-8 col-lg edit-block">
+                        <div class="row gx-1">
+                            <div class="col-auto pt-1"><?= $i ?>.</div>
+                            <div class="col-auto object-name">
+                                <h5 class="card-title"><?= $value['NAME']; ?> (#<?= $value['ID']; ?>)</h5>
+                                <div class="h6 card-subtitle mb-2 text-body-secondary"><?= $value['ADDRESS']; ?></div>
+                            </div>
+                            <div class="col-8 col-xl-auto object-edit d-none!" style="display:none">
+                                <div class="ui-ctl ui-ctl-textarea">
+                                    <input type="hidden" name="OBJECT" value="<?= $value['ID'] ?>">
+                                    <textarea class="ui-ctl-element form-control" name="object[UF_NAME]" placeholder="Наименование объекта" required><?= $value['NAME']; ?></textarea>
+                                    <textarea class="ui-ctl-element form-control" name="object[UF_ADRES]" placeholder="Адрес"><?= $value['ADDRESS']; ?></textarea>
+                                </div>
+                            </div>
+                            <div class="col-auto d-flex align-items-end! flex-column justify-content-between! mt-2!">
+                                <div class="col">
+                                    <a role="button" class="editObject btn btn-link btn-sm text-center"><i class="revicon-pencil-1"></i></a>
+                                </div>
+                                <button class="editSubmit btn btn-link btn-sm text-center" style="display:none">Применить</button>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="col-auto d-grid d-xl-flex">
                         <button class="ui-btn ui-btn-sm ui-btn-secondary" data-bs-toggle="modal" data-bs-target="#counterModal<?= $value['ID']; ?>">Добавить счётчик</button>
                         <button class="ui-btn ui-btn-sm ui-btn-light-border" data-bs-toggle="collapse" data-bs-target="#collapseLosses<?= $value['ID']; ?>" role="button" aria-expanded="false" aria-controls="collapseLosses">Потери</button>
                     </div>
@@ -413,11 +431,11 @@ if ($arResult['ACCESS']): ?>
 
                     form.addEventListener('submit', function(event) {
 
-						//event.preventDefault()
+                        //event.preventDefault()
 
                         if (!form.checkValidity()) {
-							event.preventDefault()
-							event.stopPropagation()
+                            event.preventDefault()
+                            event.stopPropagation()
                         } else {
                             // var gridObject = BX.Main.gridManager.getById('<?= $arResult['DETAIL']['GRID'] ?>_' + id); // Идентификатор грида
                             // console.log('gridObject', gridObject);
@@ -448,7 +466,80 @@ if ($arResult['ACCESS']): ?>
         //             form.classList.add('was-validated')
         //         }, false)
         //     })
+        $(".editObject").click(function() {
 
+            var $this = $(this)
+            $this.hide()
+            let container = $this.closest('.edit-block');
+
+            container.find('.object-name').hide()
+            container.find('.object-edit').show()
+            container.find('.editSubmit').show()
+
+
+            console.log('container', container);
+
+            //действия
+        });
+
+        $('.edit-block').on('submit', function(event) {
+            // console.log(this);
+            let form = $(this)
+
+            event.preventDefault();
+
+            let editObject = new FormData(this);
+
+            BX.ajax.runComponentAction("zhek:master.objects", 'editObject', {
+                    mode: "class",
+                    data: editObject,
+                }).then(function(response) {
+
+                    location.reload();
+
+                    // console.log('response', response);
+                    // console.log('form', form.find('.object-name').show());
+                    // console.log($(this));
+
+                    // console.log(this.find('.object-name'));
+
+                    // this.find('.object-name').hide()
+                    // container.find('.object-edit').show()
+                    // container.find('.editSubmit').show()
+
+
+                    /*if (response.status === 'success') {
+
+                        message.removeClass('d-none')
+                            .removeClass('alert-danger')
+                            .addClass('alert-success')
+                            .html('Изменения успешно сохранены');
+                        setTimeout(function() {
+                            location.reload();
+                        }, 5000);
+                    } else {
+                        message
+                            .removeClass('d-none')
+                            .removeClass('alert-success')
+                            .addClass('alert-danger')
+                            .html('<span class="text-danger">Произошла ошибка на сервере! Пожалуйста, попробуйте позже.</span>');
+                    }*/
+                })
+                .catch((response) => {
+
+                    console.log('error', response);
+
+                    /* message.removeClass('d-none')
+                         .removeClass('alert-success')
+                         .addClass('alert-danger');
+
+                     // msgOk.html('').hide();
+                     $.each(response.errors, function() {
+                         message.html(this.message + '<br>');
+                     });*/
+                });
+
+        });
 
     })()
 
@@ -503,6 +594,13 @@ if ($arResult['ACCESS']): ?>
             });
 
     }
+
+    // function editObject(event) {
+    //     let container = event.closest('.edit-block');
+    //     container.find('.object-name').hide()
+
+    //     // console.log($(this).closest('.edit-block'));
+    // }
 
     function validate(element) {
 

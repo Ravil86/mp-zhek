@@ -18,6 +18,8 @@ use Bitrix\Highloadblock as HL;
 \Bitrix\Main\UI\Extension::load('ui.entity-selector');
 \Bitrix\Main\UI\Extension::load("ui.alerts");
 
+$curentYear = date('Y');
+$lastYear = date('Y', strtotime('-1 year'));
 ?>
 <? if ($arResult['ACCESS']): ?>
     <div class="d-flex">
@@ -30,6 +32,16 @@ use Bitrix\Highloadblock as HL;
                 'FILTER' => $arResult['GRID']['FILTER'],
                 'ENABLE_LIVE_SEARCH' => true,
                 'ENABLE_LABEL' => true,
+                "FILTER_PRESETS" => [
+                    "CURRENT_YEAR" => [
+                        "name" => 'Текущий год',
+                        "default" => true, // если true - пресет по умолчанию
+                        "fields" => [
+                            "DATE_CREATE_datesel" => "YEAR",
+                            "DATE_CREATE_year" => $curentYear,
+                        ]
+                    ],
+                ]
             ]);
 
             ?>
@@ -43,10 +55,7 @@ use Bitrix\Highloadblock as HL;
         $grid_options = new CGridOptions($arResult["GRID_ID"]);
 
         //размер страницы в постраничке (передаем умолчания)
-        $nav_params = $grid_options->GetNavParams();
-
-        $curentYear = date('Y');
-        $lastYear = date('Y', strtotime('-1 year'));
+        $nav_params = $grid_options->GetNavParams(array("nPageSize" => $arResult['PAGE_SIZE']));
 
         $nav = new Bitrix\Main\UI\PageNavigation($arResult["GRID_ID"]);
         $nav->allowAllRecords(true)
@@ -91,7 +100,7 @@ use Bitrix\Highloadblock as HL;
             'FOOTER' => [
                 'TOTAL_ROWS_COUNT' => $arResult['GRID']['COUNT'],
             ],
-            'SHOW_ROW_CHECKBOXES' => $arResult['ADMIN'] || $arResult['MODERATOR'] ?: false,
+            'DEFAULT_PAGE_SIZE' => $arResult['PAGE_SIZE'],
             'NAV_OBJECT' => $nav,
             'AJAX_MODE' => 'Y',
             //'AJAX_ID' => 'AJAX_'.$arResult['GRID_ID'],
@@ -104,9 +113,10 @@ use Bitrix\Highloadblock as HL;
                 ['NAME' => '100', 'VALUE' => '100']
             ],
             'AJAX_OPTION_JUMP' => 'Y',
+            'SHOW_ROW_CHECKBOXES' => $arResult['ADMIN'] || $arResult['MODERATOR'] ?: false,
             'SHOW_CHECK_ALL_CHECKBOXES' => false,
-            'SHOW_ROW_ACTIONS_MENU' => false,
-            'SHOW_GRID_SETTINGS_MENU' => true,
+            'SHOW_ROW_ACTIONS_MENU' => true,
+            'SHOW_GRID_SETTINGS_MENU' => true,  //кнопка с шестеренкой
             'SHOW_NAVIGATION_PANEL' => true,
             'SHOW_PAGINATION' => true,
             'SHOW_SELECTED_COUNTER' => $arResult['ADMIN'] || $arResult['MODERATOR'] ?: false,
@@ -120,6 +130,8 @@ use Bitrix\Highloadblock as HL;
             'ALLOW_PIN_HEADER' => true,
             'AJAX_OPTION_HISTORY' => 'N',
             'ACTION_PANEL' => $controlPanel,
+            'SHOW_GROUP_EDIT_BUTTON' => false, //Разрешает вывод стандартной кнопки "Редактировать" в панель групповых действий.
+            'ALLOW_CONTEXT_MENU' => false,    //Разрешает вывод контекстного меню по клику правой кнопкой на строку.
             /*'ACTION_PANEL'              => [
         'GROUPS' => [
             'TYPE' => [

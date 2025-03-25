@@ -151,9 +151,13 @@ class LKClass
             'order' => ['UF_DATE' => 'DESC']
         ]);
         if ($arMeter = $rsHLoad->Fetch()) {
-            $classHL::update($arMeter["ID"], $value);
+            $result = $classHL::update($arMeter["ID"], $value);
         } else {
-            $classHL::add($value);
+            $result = $classHL::add($value);
+        }
+        if (!$result->isSuccess()) {
+            $errorCollection = new ErrorCollection($result->getErrors());
+            return AjaxJson::createError($errorCollection);
         }
     }
 
@@ -192,38 +196,38 @@ class LKClass
 
         $data['UF_DATE'] = new DateTime(date('d.m.Y'));
 
-        $classHL::update($counterID, $data);
+        $result = $classHL::update($counterID, $data);
 
-        // $filter = ['ID' => $objectID];
+        if (!$result->isSuccess()) {
+            $errorCollection = new ErrorCollection($result->getErrors());
+            return AjaxJson::createError($errorCollection);
+        }
+    }
 
-        // $value = [
-        //     'ID' => $data['ID'],
-        //     'NAME' => $data['UF_NAME'],
-        //     'NUMBER' => $data['UF_NUMBER'],
-        //     'ORG' => $data['UF_ORG'],
-        //     'TYPE' => $data['UF_TYPE'],
-        // ];
+    public static function updateObject($objectID, $data)
+    {
 
-        // $params = array(
-        //     "order" => array(
-        //         "ID" => "asc"
-        //     ),
-        //     "filter" => $filter,
-        // );
-        // $rsVoice = $classHL::getList($params);
+        // $result = new \Bitrix\Main\Result();
+        $classHL = \HLWrap::init(self::$_HL_Objects);
+        $data['UF_DATE'] = new DateTime(date('d.m.Y'));
 
-        // if ($arVoice = $rsVoice->Fetch()) {
-
-        //     $classHL::update($arVoice["ID"], $value);
-        // } else {
-        //     $classHL::add($value);
-        // }
+        $result = $classHL::update($objectID, $data);
+        if (!$result->isSuccess()) {
+            // return $errors = $result->getErrorMessages();
+            $errorCollection = new ErrorCollection($result->getErrors());
+            return AjaxJson::createError($errorCollection);
+        }
     }
 
     public static function saveCompany($companyID, $data)
     {
         $classHL = \HLWrap::init(self::$_HL_Company);
-        $classHL::update($companyID, $data);
+        $result = $classHL::update($companyID, $data);
+        if (!$result->isSuccess()) {
+            // return $errors = $result->getErrorMessages();
+            $errorCollection = new ErrorCollection($result->getErrors());
+            return AjaxJson::createError($errorCollection);
+        }
     }
 
 
@@ -244,7 +248,7 @@ class LKClass
         return $result;
     }
 
-    public static function getCompany($userID = null, $filter = [], $nav = [])
+    public static function getCompany($userID = null, $filter = [], $nav = [], $order = [])
     {
 
         $classCompany = \HLWrap::init(self::$_HL_Company);
@@ -260,11 +264,13 @@ class LKClass
             $arFilter = [];
 
         // gg($arFilter);
+        if (!$order)
+            $order = ['UF_ACTIVE' => 'desc', 'ID' => 'asc'];
 
         $params =  [
             'filter' => $arFilter,
             'select' => array('*'),
-            'order' => ['UF_ACTIVE' => 'desc', 'ID' => 'asc']
+            'order' => $order
         ];
 
         if ($nav) {
@@ -391,7 +397,7 @@ class LKClass
     /*
     Список данных из HLblock c данными контрактов
     */
-    public static function getContracts($orgID = [])
+    public static function getContracts($orgID = [], $filter = [])
     {
 
         $classsDocs = \HLWrap::init(self::$_HL_Contracts);
@@ -400,7 +406,6 @@ class LKClass
 
         $statusList = LKClass::getStatus();
 
-        $filter = [];
         if ($orgID)
             $filter['UF_COMPANY'] = $orgID;
 
@@ -475,26 +480,47 @@ class LKClass
     public static function saveContract($contractID, $data)
     {
         $classHL = \HLWrap::init(self::$_HL_Contracts);
-        $classHL::update($contractID, $data);
+        $result = $classHL::update($contractID, $data);
+        if (!$result->isSuccess()) {
+            // return $errors = $result->getErrorMessages();
+            $errorCollection = new ErrorCollection($result->getErrors());
+            return AjaxJson::createError($errorCollection);
+        }
     }
 
     public static function addContract($data)
     {
 
-        $result = new \Bitrix\Main\Result();
-
+        //$result = new \Bitrix\Main\Result();
         $classHL = \HLWrap::init(self::$_HL_Contracts);
-        $addResult = $classHL::add($data);
 
-        if ($addResult->isSuccess()) {
-            // $newId = $addResult->getId();
-            return 'Контракт добавлен';
-            //return $result->setData($addResult->getData());
-        } else {
-            // return $addResult->getErrorMessages();
+        $rsHLoad = $classHL::getList([
+            'select' => ['ID', 'UF_DATE', 'UF_NUMBER'],
+            'filter' => [
+                'UF_NUMBER' => $data['UF_NUMBER'],
+                'UF_YEAR'   => $data['UF_YEAR'],
+            ],
+        ]);
+        if ($contract = $rsHLoad->fetch()) {
 
-            $errorCollection = new ErrorCollection($addResult->getErrors());
+            foreach ($contract as $pid => $value) {
+                $err[] = $pid . ': ' . $value;
+            }
+            $error = new \Bitrix\Main\Error('Контракт уже имеется:<br> ' . implode('<br>', $err));
+            $errorCollection = new ErrorCollection([$error]);
             return AjaxJson::createError($errorCollection);
+        } else {
+            $addResult = $classHL::add($data);
+
+            if ($addResult->isSuccess()) {
+                // $newId = $addResult->getId();
+                return 'Контракт добавлен';
+                //return $result->setData($addResult->getData());
+            } else {
+                // return $addResult->getErrorMessages();
+                $errorCollection = new ErrorCollection($addResult->getErrors());
+                return AjaxJson::createError($errorCollection);
+            }
         }
     }
 
@@ -520,9 +546,14 @@ class LKClass
                     'UF_VALUE' => $value,
                 ];
                 if ($id = $rsHLoad->fetch()) {
-                    $classHL::update($id['ID'], $field);
+                    $result = $classHL::update($id['ID'], $field);
                 } else {
-                    $classHL::add($field);
+                    $result = $classHL::add($field);
+                }
+
+                if (!$result->isSuccess()) {
+                    $errorCollection = new ErrorCollection($result->getErrors());
+                    return AjaxJson::createError($errorCollection);
                 }
             }
         }

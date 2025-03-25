@@ -38,6 +38,14 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 					])
 				],
 			],
+			'editObject' => [
+				'prefilters' => [
+					new ActionFilter\Authentication,
+					new ActionFilter\HttpMethod([
+						ActionFilter\HttpMethod::METHOD_POST
+					])
+				],
+			],
 		];
 	}
 
@@ -94,7 +102,6 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 		}
 
 		// gg($orgObjectsIDs);
-
 
 		$this->arResult['MONTH'] = LKClass::getMonth();
 
@@ -286,9 +293,13 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 				$userItems[$user['ID']] = $user['SHORT_NAME'];
 			}
 			// gg($userItems);
+
 			$grid_options = new CGridOptions($this->arResult["GRID_ID"]);
 			$nav_params = $grid_options->GetNavParams(array("nPageSize" => $this->arResult['PAGE_SIZE']));
 			$nav = new Bitrix\Main\UI\PageNavigation($this->arResult["GRID_ID"]);
+
+			$order = $grid_options->GetSorting(['sort' => ['UF_ACTIVE' => 'desc', 'ID' => 'desc'], 'vars' => ['by' => 'by', 'order' => 'order']]);
+
 			$nav->allowAllRecords(true)
 				->setPageSize($nav_params['nPageSize'])
 				->initFromUri();
@@ -303,16 +314,15 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 			// 	//dump($arEnum);
 			// }
 
-			//какую сортировку сохранил пользователь (передаем то, что по умолчанию)
-			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
+
 			$this->arResult['GRID']['COLUMNS'] = [
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
-				['id' => 'UF_NAME', 'name' => 'Организация', /*'sort' => 'NAME', */ 'default' => true, 'width' => 300,  'editable' => true],
-				['id' => 'UF_ACTIVE', 'name' => 'Активность', 'default' => true, 'width' => 105,  'editable' => ['TYPE' => 'CHECKBOX']],
-				['id' => 'UF_ADDRESS', 'name' => 'Адрес организации', 'width' => 200, 'default' => false, 'editable' => true],
-				['id' => 'UF_INN', 'name' => 'ИНН',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => true, 'editable' => true],
+				['id' => 'UF_NAME', 'name' => 'Наименование организации', 'sort' => 'UF_NAME', 'default' => true, 'width' => 300,  'editable' => true],
+				['id' => 'UF_ACTIVE', 'name' => 'Активность', 'sort' => 'UF_ACTIVE', 'default' => true, 'width' => 105,  'editable' => ['TYPE' => 'CHECKBOX']],
+				['id' => 'UF_ADDRESS', 'name' => 'Адрес организации', 'width' => 200, 'default' => true, 'editable' => ['TYPE' => 'TEXTAREA']],
+				['id' => 'UF_INN', 'name' => 'ИНН', 'sort' => 'UF_INN', 'default' => true, 'editable' => true],
 				// ['id' => 'DOGOVOR', 'name' => 'Текущий договор', 'default' => false],
-				['id' => 'UF_USER', 'name' => 'Оператор', 'default' => true, "editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]],
+				['id' => 'UF_USER', 'name' => 'Оператор', 'default' => false, "editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]],
 				['id' => 'UF_TYPE', 'name' => 'Тип организации', 'default' => false, "editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]],
 				['id' => 'DETAIL', 'name' => 'Объектов', 'default' => true],
 				['id' => 'LOSSES', 'name' => 'Потери', 'width' => 130, 'default' => true],
@@ -331,7 +341,7 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 				'limit' => $nav->getLimit(),
 			];
 
-			$itemsCompany = LKClass::getCompany(null, $filter, $navParams);
+			$itemsCompany = LKClass::getCompany(null, $filter, $navParams, $order['sort']);
 
 			// $result = \Bitrix\Main\UserTable::getList(array(
 			// 	'filter' => array('GROUP_ID' => 8),
@@ -475,7 +485,8 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 
 	public function sendLossesAction()
 	{
-		$request = Application::getInstance()->getContext()->getRequest();
+		$request = $this->getRequest();
+		//$request = Application::getInstance()->getContext()->getRequest();
 
 		Bitrix\Main\Diag\Debug::dumpToFile(var_export($request, 1), '$request', 'test.log');
 
@@ -485,6 +496,18 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 		// }
 
 		return true;
+	}
+
+	public function editObjectAction()
+	{
+		$request = $this->getRequest();
+		//$request = Application::getInstance()->getContext()->getRequest();
+
+		Bitrix\Main\Diag\Debug::dumpToFile(var_export($request, 1), '$request', 'test.log');
+
+		$result = LKClass::updateObject($request['OBJECT'], $request['object']);
+
+		return $result;
 	}
 
 	// private function arraySort($a, $b)
