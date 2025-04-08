@@ -88,9 +88,9 @@ class CabinetObjects extends CBitrixComponent
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 70],
 				['id' => 'UF_NAME', 'name' => 'Наименование', 'default' => true, 'width' => 220],
 				['id' => 'UF_NUMBER', 'name' => 'Номер cчетчика', 'default' => true, 'width' => 230],
-				['id' => 'UF_DATE', 'name' => 'Дата установки', 'default' => true],
+				['id' => 'UF_DATE', 'name' => 'Дата установки', 'default' => false],
 				['id' => 'SERVICE', 'name' => 'Тип счетчика', 'default' => true, 'width' => 230],
-				['id' => 'UF_CHECK', 'name' => 'Сл. дата поверки', 'default' => true],
+				['id' => 'UF_CHECK', 'name' => 'Дата очередной поверки', 'default' => true, 'width' => 200],
 				// ['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => '130'],
 			];
 
@@ -100,7 +100,7 @@ class CabinetObjects extends CBitrixComponent
 
 				foreach ($item['UF_TYPE'] as $value) {
 					$typeItem = $serviceList[$value];
-					$types[] = '<img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'].'<span>';
+					$types[] = '<img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'] . '<span>';
 					// $types[] = '<img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/>';
 				}
 
@@ -300,88 +300,37 @@ class CabinetObjects extends CBitrixComponent
 		return $this->arResult;
 	}
 
-	/**
-	 * Получаем все документы пользователей
-	 *
-	 * @param string $group - группа модератора для которой находить участников
-	 */
-	/*private function getDocs($detailID = null, $arSort = [], $arNav = [], $userFilter = [], $userDetail = null)
-	{
-		global $USER;
-		$arParams = $this->arParams;
 
-		$filter = [];
+	// private function stringToColorCode($str)
+	// {
+	// 	$code = dechex(crc32($str));
+	// 	$code = substr($code, 0, 6);
+	// 	return $code;
+	// }
 
-		$getCompany = $this->getCompany();
+	// private function contrast_color($hex)
+	// {
+	// 	$hex = trim($hex, ' #');
 
-		// dump($getCompany);
+	// 	$size = strlen($hex);
+	// 	if ($size == 3) {
+	// 		$parts = str_split($hex, 1);
+	// 		$hex = '';
+	// 		foreach ($parts as $row) {
+	// 			$hex .= $row . $row;
+	// 		}
+	// 	}
 
-		$itemList = $this->getListDocs();
+	// 	$dec = hexdec($hex);
+	// 	$rgb = array(
+	// 		0xFF & ($dec >> 0x10),
+	// 		0xFF & ($dec >> 0x8),
+	// 		0xFF & $dec
+	// 	);
 
-		foreach ($itemList as $key => &$value) {
-			$value['COMPANY'] = $getCompany[$value['COMPANY']];
-		}
-		// dump($itemList);
-		return $itemList;
-
-		// $filter['IBLOCK_ID'] = $this->getIblockId;
-
-		// foreach ($getUsersDocs as $key => $value) {
-		// 	$result['ITEMS'][$arData['ID']] = $arData;
-		// }
-
-
-
-		// foreach ($result['ITEMS'] as $k => &$item) {
-
-		// 	$userID = $item['USER_ID'];
-		// 	$userDocStat = $getDocsStatus[$userID];
-
-		// 	$item['USER'] = $arUserFields[$userID];
-		// 	$item['USERNAME'] = $arUserFields[$userID]['LAST_NAME'].' '.$arUserFields[$userID]['NAME'].' '.$arUserFields[$userID]['SECOND_NAME'];
-		// 	$item['SNILS'] = $arUserFields[$userID]['UF_SNILS'];
-		// 	$item['FOTO'] = CFile::GetPath($arUserFields[$userID]['PERSONAL_PHOTO']);
-		// }
-
-		// if($detailID && !$userDetail)
-		// 	return array_shift($result['ITEMS']);
-		// else
-		// 	return $result;
-
-		//return $this->arResult['ITEMS'];
-	}
-	*/
-
-	private function stringToColorCode($str)
-	{
-		$code = dechex(crc32($str));
-		$code = substr($code, 0, 6);
-		return $code;
-	}
-
-	private function contrast_color($hex)
-	{
-		$hex = trim($hex, ' #');
-
-		$size = strlen($hex);
-		if ($size == 3) {
-			$parts = str_split($hex, 1);
-			$hex = '';
-			foreach ($parts as $row) {
-				$hex .= $row . $row;
-			}
-		}
-
-		$dec = hexdec($hex);
-		$rgb = array(
-			0xFF & ($dec >> 0x10),
-			0xFF & ($dec >> 0x8),
-			0xFF & $dec
-		);
-
-		$contrast = (round($rgb[0] * 299) + round($rgb[1] * 587) + round($rgb[2] * 114)) / 1000;
-		return ($contrast >= 133) ? 'dark' : 'white';
-	}
+	// 	$contrast = (round($rgb[0] * 299) + round($rgb[1] * 587) + round($rgb[2] * 114)) / 1000;
+	// 	return ($contrast >= 133) ? 'dark' : 'white';
+	// }
 
 
 	/**

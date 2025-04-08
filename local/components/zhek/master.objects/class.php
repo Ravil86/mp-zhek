@@ -309,6 +309,11 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 			else
 				$nav_params['iNumPage'] = $nav->getCurrentPage();
 
+			$navParams = [
+				'offset' => $nav->getOffset(),
+				'limit' => $nav->getLimit(),
+			];
+
 			// $rsEnum = HLWrap::getEnumProp('UF_TYPE');
 			// while ($arEnum = $rsEnum->Fetch()) {
 			// 	//dump($arEnum);
@@ -336,10 +341,6 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 			$filterOption = new Bitrix\Main\UI\Filter\Options("filter_" . $this->arResult["GRID_ID"]);
 			$filter = $filterOption->GetFilter();
 
-			$navParams = [
-				'offset' => $nav->getOffset(),
-				'limit' => $nav->getLimit(),
-			];
 
 			$itemsCompany = LKClass::getCompany(null, $filter, $navParams, $order['sort']);
 

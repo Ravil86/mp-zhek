@@ -41,6 +41,13 @@ $aMenuLinks = Array(
 		Array(), 
 		Array(), 
 		"" 
+	),
+	Array(
+		"Обращения граждан", 
+		"/feedback/", 
+		Array(), 
+		Array(), 
+		"" 
 	)
 );
 ?>

@@ -48,6 +48,8 @@ use Bitrix\Highloadblock as HL;
             ->setPageSize($nav_params['nPageSize'])
             ->initFromUri();
 
+        // gg($nav);
+
         $snippet = new Bitrix\Main\Grid\Panel\Snippet();
         $controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getEditButton();
         $controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getRemoveButton();

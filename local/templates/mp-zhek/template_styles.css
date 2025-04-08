@@ -2088,8 +2088,9 @@ button:focus-visible {
 padding: 0 10px;
 }
 
+/* pagination */
 .main-grid a {
-	/* color: var(--ui-link-color); */
+	color: var(--ui-link-color);
 }
 
 @media (min-width: 1600px) {

@@ -397,7 +397,7 @@ class LKClass
     /*
     Список данных из HLblock c данными контрактов
     */
-    public static function getContracts($orgID = [], $filter = [])
+    public static function getContracts($orgID = [], $filter = [], $order = [], $nav = [])
     {
 
         $classsDocs = \HLWrap::init(self::$_HL_Contracts);
@@ -409,13 +409,23 @@ class LKClass
         if ($orgID)
             $filter['UF_COMPANY'] = $orgID;
 
-        $rsDocs = $classsDocs::getList(
-            array(
-                'order'    => ['UF_DATE' => 'desc'],
-                'select' => array('*'),
-                'filter' => $filter,
-            )
-        );
+        if (!$order)
+            $order = ['UF_DATE' => 'desc'];
+
+        $params = [
+            'order'    => $order,
+            'select' => array('*'),
+            'filter' => $filter
+        ];
+
+        if ($nav) {
+            $params['limit'] = $nav['limit'];
+            $params['offset'] = $nav['offset'];
+        }
+
+        // $params['runtime'] = array(new \Bitrix\Main\Entity\ExpressionField('CNT', 'COUNT(*)'));
+
+        $rsDocs = $classsDocs::getList($params);
 
         while ($arDoc = $rsDocs->Fetch()) {
 

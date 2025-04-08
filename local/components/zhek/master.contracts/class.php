@@ -271,6 +271,9 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 
 		} else {
 
+
+
+
 			// $this->arResult['GRID_ID'] = 'grid_meter';
 
 			// $arResult['GRID_ID'] = $this->arResult['GRID_ID'];
@@ -292,9 +295,16 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 			else
 				$nav_params['iNumPage'] = $nav->getCurrentPage();
 
-			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
+			$navParams = [
+				'offset' => $nav->getOffset(),
+				'limit' => $nav->getLimit(),
+			];
+			// gg($nav_params);
+			// gg($navParams);
 
-			// gg($arSort);
+			$arSort = $grid_options->GetSorting(array("sort" => array("UF_DATE" => "desc"), "vars" => array("by" => "by", "order" => "order")));
+
+
 
 			// dump($this->serviceList);
 			foreach ($this->serviceList as $serv) {
@@ -314,19 +324,19 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 
 			$this->arResult['GRID']['COLUMNS'] = [
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 60],
-				['id' => 'DATE', 'name' => 'Дата', 'width' => 100, 'default' => true,  "editable" => ['TYPE' => 'CUSTOM']],
+				['id' => 'DATE', 'name' => 'Дата', 'sort' => 'UF_DATE', 'width' => 100, 'default' => true,  "editable" => ['TYPE' => 'CUSTOM']],
 				// ['id' => 'DATE', 'name' => 'Дата', /*'sort' => 'TIMESTAMP_X',*/ 'default' => true, 'width' => 100, "editable" => ['TYPE' => 'DATE']],
-				['id' => 'NUMBER', 'name' => '№', /*'sort' => 'NUMBER',*/ 'default' => true, 'width' => 80, 'editable' => ['TYPE' => 'NUMBER']],
-				['id' => 'YEAR', 'name' => 'Год', 'default' => true, 'width' => 80, 'editable' => ['TYPE' => 'DROPDOWN', 'items' => $arYears]],
-				['id' => 'COMPANY', 'name' => 'Наименование организации', 'sort' => 'COMPANY', 'default' => true, 'editable' => ['TYPE' => 'DROPDOWN', 'items' => $this->arResult['COMPANY_ITEMS']]],
+				['id' => 'NUMBER', 'name' => '№', 'sort' => 'UF_NUMBER', 'default' => true, 'width' => 80, 'editable' => ['TYPE' => 'NUMBER']],
+				['id' => 'YEAR', 'name' => 'Год', 'default' => true, 'sort' => 'UF_YEAR', 'width' => 80, 'editable' => ['TYPE' => 'DROPDOWN', 'items' => $arYears]],
+				['id' => 'COMPANY', 'name' => 'Наименование организации', 'default' => true, 'editable' => ['TYPE' => 'DROPDOWN', 'items' => $this->arResult['COMPANY_ITEMS']]],
 				['id' => 'FULL_NUMBER', 'name' => 'Номер', 'sort' => '', 'default' => true, 'width' => 160],
 				['id' => 'SERVICE', 'name' => 'Услуги', 'default' => true, 'width' => 220, "editable" => ['TYPE' => 'MULTISELECT', 'items' => $arService]],
-				['id' => 'STATUS', 'name' => 'Статус', 'default' => true, 'editable' => ['TYPE' => 'DROPDOWN', 'items' => $arStatus]],
+				['id' => 'STATUS', 'name' => 'Статус', 'default' => true, 'sort' => 'UF_STATUS', 'editable' => ['TYPE' => 'DROPDOWN', 'items' => $arStatus]],
 				// ['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => '130'],
 			];
 
-			if ($arSort['sort']['TIMESTAMP_X'])
-				$arSort['sort']['DATE_CREATE'] = $arSort['sort']['TIMESTAMP_X'];
+			// if ($arSort['sort']['TIMESTAMP_X'])
+			// 	$arSort['sort']['DATE_CREATE'] = $arSort['sort']['TIMESTAMP_X'];
 
 			$filterOption = new Bitrix\Main\UI\Filter\Options("filter_" . $this->arResult["GRID_ID"]);
 			$filterData = $filterOption->GetFilter();
@@ -357,7 +367,12 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 				$userFilter["<=UF_DATE"] = $filterData["DATE_CREATE_to"];
 			}
 
-			$arItems = $this->getDocs(false, $arSort['sort'], $nav_params, $userFilter);
+			$arAllItems = $this->getDocs(false, [], [], $userFilter);
+			if (is_array($arAllItems))
+				$this->arResult['GRID']['COUNT'] = count($arAllItems);
+			// $this->arResult['GRID']["COUNT"] = $arItems['COUNT'];
+
+			$arItems = $this->getDocs(false, $arSort['sort'], $navParams, $userFilter);
 
 			foreach ($arItems as $key => $item) {
 
@@ -429,8 +444,6 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 			}
 			// gg($arItems['ITEMS']);
 			// $this->arResult['LIST'] = $arItems['ITEMS'];
-
-			$this->arResult['GRID']["COUNT"] = $arItems['COUNT'];
 
 			// $this->arResult['AREA'] = $this->getArea($arParams['IBLOCK_CODES']['CITY']);
 			// foreach ($this->arResult['AREA'] as $key => $city) {
@@ -531,11 +544,12 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 		if (isset($userFilter['USER_ID'])) {
 			$arCompany = LKClass::getCompany($userFilter['USER_ID']);
 			if ($arCompany && isset($arCompany['ID']))
-				$itemList = LKClass::getContracts($arCompany['ID'], $userFilter);
+				unset($userFilter['USER_ID']);	// В HL контрактов нет фильтра по USER_ID
+				$itemList = LKClass::getContracts($arCompany['ID'], $userFilter, $arSort, $arNav);
 			// $itemList = $this->getContracts($arCompany['ID']);
 		} else {
 			$getCompany = $this->companyList;
-			$itemList = LKClass::getContracts(false, $userFilter);
+			$itemList = LKClass::getContracts(false, $userFilter, $arSort, $arNav);
 			// $getCompany = LKClass::getCompany();
 			// $itemList = $this->getContracts();
 		}

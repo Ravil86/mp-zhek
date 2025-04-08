@@ -63,6 +63,9 @@ $lastYear = date('Y', strtotime('-1 year'));
             ->setPageSize($nav_params['nPageSize'])
             ->initFromUri();
 
+        // gg($nav);
+        // gg($arResult['GRID']);
+
         /*$APPLICATION->IncludeComponent('bitrix:main.ui.filter', '', [
             'FILTER_ID' => $arResult['GRID_ID'],
             'GRID_ID' => $arResult['GRID_ID'],
@@ -97,9 +100,10 @@ $lastYear = date('Y', strtotime('-1 year'));
             'GRID_ID' => $arResult['GRID_ID'],
             'COLUMNS' => $arResult['GRID']['COLUMNS'],
             'ROWS' => $arResult['GRID']['ROWS'],
-            'FOOTER' => [
-                'TOTAL_ROWS_COUNT' => $arResult['GRID']['COUNT'],
-            ],
+            'TOTAL_ROWS_COUNT' => $arResult['GRID']['COUNT'],
+            // 'FOOTER' => [
+            //     'TOTAL_ROWS_COUNT' => $arResult['GRID']['COUNT'],
+            // ],
             'DEFAULT_PAGE_SIZE' => $arResult['PAGE_SIZE'],
             'NAV_OBJECT' => $nav,
             'AJAX_MODE' => 'Y',
