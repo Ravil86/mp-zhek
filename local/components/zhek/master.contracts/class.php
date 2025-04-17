@@ -190,9 +190,14 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 
 
 			$lossesList = LKClass::getLosses();
-			$lossObjects = [];
+			// $lossObjects = [];
 			foreach ($lossesList as $val) {
 				$this->arResult['LOSSES'][$val['OBJECT']][$val['MONTH']] = $val['VALUE'];
+			}
+
+			$normativList = LKClass::getLosses(1);
+			foreach ($normativList as $val) {
+				$this->arResult['NORMATIV'][$val['OBJECT']][$val['MONTH']] = $val['VALUE'];
 			}
 
 			$this->arResult['MONTH_LIST'] = LKClass::getMonth();
@@ -545,7 +550,7 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 			$arCompany = LKClass::getCompany($userFilter['USER_ID']);
 			if ($arCompany && isset($arCompany['ID']))
 				unset($userFilter['USER_ID']);	// В HL контрактов нет фильтра по USER_ID
-				$itemList = LKClass::getContracts($arCompany['ID'], $userFilter, $arSort, $arNav);
+			$itemList = LKClass::getContracts($arCompany['ID'], $userFilter, $arSort, $arNav);
 			// $itemList = $this->getContracts($arCompany['ID']);
 		} else {
 			$getCompany = $this->companyList;

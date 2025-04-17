@@ -2064,53 +2064,6 @@ button:focus-visible {
 	transition: none !important;
 }
 
-
-/* LK */
-.ui-btn.ui-btn-dropdown:after {
-	border: none;
-}
-
-.ui-btn-light-border {
-	--bs-btn-border-color: rgb(var(--ui-field-color-border-default));
-	border-radius: var(--ui-border-radius-2xs);
-}
-
-.ui-btn-light-border:hover {
-	--bs-btn-border-color: var(--ui-field-color-primary);
-}
-
-
-#specialButton i {
-	height: 20px;
-}
-
-.ui-btn {
-padding: 0 10px;
-}
-
-/* pagination */
-.main-grid a {
-	color: var(--ui-link-color);
-}
-
-@media (min-width: 1600px) {
-    .container-xxl {
-        max-width: 1620px;
-    }
-}
-
-.site-container .ui-ctl-element.form-control{
-border-radius: var(--ui-border-radius-2xs);
-}
-
-.site-container .ui-ctl-element.form-control:focus{
-box-shadow: none;
-}
-
-.bootstrap-select .dropdown-toggle .filter-option{
-height: unset;
-}
-
 .bg-0{
 background-color: transparent!important;
 }

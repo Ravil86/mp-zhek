@@ -460,14 +460,21 @@ class LKClass
         return $result;
     }
 
-    public static function getLosses()
+    public static function getLosses($norma = false)
     {
 
         $classHL = \HLWrap::init(self::$_HL_Losses);
 
+        $filter = [];
+
+        if ($norma)
+            $filter['UF_NORM'] = true;
+        else
+            $filter['UF_NORM'] = false;
+
         $rsHLoad = $classHL::getList([
             'select' => ['*'],
-            'filter' => [],
+            'filter' => $filter,
             'order' => []
         ]);
 
@@ -534,19 +541,21 @@ class LKClass
         }
     }
 
-    public static function saveLosses($objectID, $data)
+    public static function saveLosses($objectID, $data, $norm = false)
     {
         $classHL = \HLWrap::init(self::$_HL_Losses);
 
         foreach ($data as $month => $value) {
 
             if ($value) {
+
                 $rsHLoad = $classHL::getList(
                     [
                         'select' => ['ID'],
                         'filter' => [
                             'UF_OBJECT' => $objectID,
-                            'UF_MONTH' => $month
+                            'UF_MONTH' => $month,
+                            'UF_NORM' => $norm
                         ]
                     ]
                 );
@@ -554,7 +563,9 @@ class LKClass
                     'UF_OBJECT' => $objectID,
                     'UF_MONTH' => $month,
                     'UF_VALUE' => $value,
+                    'UF_NORM' => $norm
                 ];
+                // return $field;
                 if ($id = $rsHLoad->fetch()) {
                     $result = $classHL::update($id['ID'], $field);
                 } else {
@@ -567,7 +578,7 @@ class LKClass
                 }
             }
         }
-        // return true;
+        return true;
     }
 
     public static function deleteContract($data)

@@ -1,7 +1,13 @@
 .main-grid-editor-container .main-ui-multi-select {
-max-width: 245px;
+    max-width: 245px;
 }
 
 #reestr{
-min-width: 950px;
+    min-width: 950px;
+}
+
+@media (max-width: 1100.98px) {
+    #reestr{
+    font-size: .9em;
+    }
 }

@@ -38,6 +38,14 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 					])
 				],
 			],
+			'sendNorma' => [
+				'prefilters' => [
+					new ActionFilter\Authentication,
+					new ActionFilter\HttpMethod([
+						ActionFilter\HttpMethod::METHOD_POST
+					])
+				],
+			],
 			'editObject' => [
 				'prefilters' => [
 					new ActionFilter\Authentication,
@@ -107,9 +115,17 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 
 		$lossesList = LKClass::getLosses();
 		$lossObjects = [];
+		$normObjects = [];
 		foreach ($lossesList as $val) {
 			$this->arResult['LOSSES'][$val['OBJECT']][$val['MONTH']] = $val['VALUE'];
 			$lossObjects[$val['OBJECT']] += 1;
+		}
+
+		$normativList = LKClass::getLosses(true);
+		// $normaObjects = [];
+		foreach ($normativList as $val) {
+			$this->arResult['NORMATIV'][$val['OBJECT']][$val['MONTH']] = $val['VALUE'];
+			$normObjects[$val['OBJECT']] += 1;
 		}
 
 		// gg($lossObjects);
@@ -324,13 +340,14 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
 				['id' => 'UF_NAME', 'name' => 'Наименование организации', 'sort' => 'UF_NAME', 'default' => true, 'width' => 300,  'editable' => true],
 				['id' => 'UF_ACTIVE', 'name' => 'Активность', 'sort' => 'UF_ACTIVE', 'default' => true, 'width' => 105,  'editable' => ['TYPE' => 'CHECKBOX']],
-				['id' => 'UF_ADDRESS', 'name' => 'Адрес организации', 'width' => 200, 'default' => true, 'editable' => ['TYPE' => 'TEXTAREA']],
+				['id' => 'UF_ADDRESS', 'name' => 'Адрес организации', 'width' => 300, 'default' => true, 'editable' => ['TYPE' => 'TEXTAREA']],
 				['id' => 'UF_INN', 'name' => 'ИНН', 'sort' => 'UF_INN', 'default' => true, 'editable' => true],
 				// ['id' => 'DOGOVOR', 'name' => 'Текущий договор', 'default' => false],
 				['id' => 'UF_USER', 'name' => 'Оператор', 'default' => false, "editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]],
 				['id' => 'UF_TYPE', 'name' => 'Тип организации', 'default' => false, "editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]],
 				['id' => 'DETAIL', 'name' => 'Объектов', 'default' => true],
-				['id' => 'LOSSES', 'name' => 'Потери', 'width' => 130, 'default' => true],
+				['id' => 'LOSSES', 'name' => 'Потери', 'default' => true],
+				['id' => 'NORMATIV', 'name' => 'Норматив', 'default' => true],
 			];
 
 			$this->arResult['GRID']["FILTER"] = [
@@ -429,19 +446,21 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 				$status .= '</a>';
 				$item["DETAIL"] = $status;
 
-				// gg($lossObjects);
-				$lossObject = [];
+				$objLoss = [];
 				if ($idsObjects = $orgObjectsIDs[$item['ID']]) {
 					foreach ($idsObjects as $key => $obj) {
-						// gg($obj);
-						// if (array_key_exists($obj, $lossObjects))
-						$lossObject[$obj] = $lossObjects[$obj] ?: 0;
-						// gg($lossObjects[$obj]);
+						$objLoss[$obj] = $lossObjects[$obj] ?: 0;
 					}
 				}
+				$item["LOSSES"] = implode('/', $objLoss);
 
-				$item["LOSSES"] = implode('/', $lossObject);
-
+				$objNorm = [];
+				if ($idsObjects = $orgObjectsIDs[$item['ID']]) {
+					foreach ($idsObjects as $key => $obj) {
+						$objNorm[$obj] = $normObjects[$obj] ?: 0;
+					}
+				}
+				$item["NORMATIV"] = implode('/', $objNorm);
 
 				// dump($item);
 
@@ -497,6 +516,16 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 		// }
 
 		return true;
+	}
+
+	public function sendNormaAction()
+	{
+		$request = $this->getRequest();
+		Bitrix\Main\Diag\Debug::dumpToFile(var_export($request, 1), '$request', 'test.log');
+
+		return LKClass::saveLosses($request['object'], $request['norma'], true);
+
+		// return true;
 	}
 
 	public function editObjectAction()

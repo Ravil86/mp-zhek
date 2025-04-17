@@ -122,7 +122,10 @@ if ($arResult['ACCESS']): ?>
                     </form>
                     <div class="col-auto d-grid d-xl-flex">
                         <button class="ui-btn ui-btn-sm ui-btn-secondary" data-bs-toggle="modal" data-bs-target="#counterModal<?= $value['ID']; ?>">Добавить счётчик</button>
-                        <button class="ui-btn ui-btn-sm ui-btn-light-border" data-bs-toggle="collapse" data-bs-target="#collapseLosses<?= $value['ID']; ?>" role="button" aria-expanded="false" aria-controls="collapseLosses">Потери</button>
+                        <button class="ui-btn ui-btn-sm ui-btn-light-border" data-bs-toggle="collapse"
+                            data-bs-target="#collapseLosses<?= $value['ID']; ?>" role="button">Потери</button>
+                        <button class="ui-btn ui-btn-sm ui-btn-light-border" data-bs-toggle="collapse"
+                            data-bs-target="#collapseStandart<?= $value['ID']; ?>" role="button">Норматив</button>
                     </div>
                 </div>
                 <div class="grid_form">
@@ -202,47 +205,88 @@ if ($arResult['ACCESS']): ?>
                         ],
                     ],*/
                     ];
-                    $APPLICATION->IncludeComponent('bitrix:main.ui.grid', '', $gridParams);
                     ?>
                 </div>
-                <div class="collapse" id="collapseLosses<?= $value['ID']; ?>">
-                    <hr>
-                    <div class="text-center">
-                        <div class="row g-0">
-                            <div class="col-2 col-lg-1">
-                                <div class="card-body px-0">
-                                    <p class="py-0">Месяцы</p>
-                                    <p class="py-3">Потери тепла (Гкал)</p>
+                <div>
+                    <div class="collapse" id="collapseLosses<?= $value['ID']; ?>">
+                        <hr>
+                        <div class="text-center">
+                            <div class="row g-0">
+                                <div class="col-2 col-lg-1">
+                                    <div class="card-body px-0">
+                                        <p class="py-0">Месяцы</p>
+                                        <p class="py-3">Потери (Гкал)</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col">
-                                <div class="card-body">
-                                    <form class="losses_add" id="losses<?= $value['ID'] ?>">
-                                        <input type="hidden" name="object" value="Y">
-                                        <div class="row gx-2">
-                                            <? foreach ($arResult['MONTH'] as $id => $month): ?>
-                                                <div class="col-3 col-lg-2 col-xxl-1">
-                                                    <div class="h6"><?= $month['VALUE'] ?></div>
-                                                    <input class="ui-ctl-element" type="text" name="losses[<?= $id ?>]" onkeyup="validate(this)" value="<?= $arResult['LOSSES'][$value['ID']][$id] ?>">
-                                                </div>
-                                            <? endforeach; ?>
-                                        </div>
-                                        <div class="mt-2">
-                                            <div class="row justify-content-center align-items-end">
-                                                <div class="col-auto">
-                                                    <button type="button" class="ui-btn ui-btn-success" onclick="saveLosses(<?= $value['ID'] ?>)">Сохранить</button>
-                                                </div>
-                                                <div class="col-5 col-xl-3">
-                                                    <div id="mess" class="alert py-2 mb-0 d-none" role="alert">Ошибка</div>
+                                <div class="col">
+                                    <div class="card-body">
+                                        <form class="losses_add" id="losses<?= $value['ID'] ?>">
+                                            <input type="hidden" name="object" value="Y">
+                                            <div class="row gx-2">
+                                                <? foreach ($arResult['MONTH'] as $id => $month): ?>
+                                                    <div class="col-3 col-lg-2 col-xxl-1">
+                                                        <div class="h6"><?= $month['VALUE'] ?></div>
+                                                        <input class="ui-ctl-element" type="text" name="losses[<?= $id ?>]" onkeyup="validate(this)" value="<?= $arResult['LOSSES'][$value['ID']][$id] ?>">
+                                                    </div>
+                                                <? endforeach; ?>
+                                            </div>
+                                            <div class="mt-2">
+                                                <div class="row justify-content-center align-items-end">
+                                                    <div class="col-auto">
+                                                        <button type="button" class="ui-btn ui-btn-success" onclick="saveLosses(<?= $value['ID'] ?>)">Сохранить Потери</button>
+                                                    </div>
+                                                    <div class="col-5 col-xl-3">
+                                                        <div id="mess" class="alert py-2 mb-0 d-none" role="alert">Ошибка</div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </form>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="collapse" id="collapseStandart<?= $value['ID']; ?>">
+                        <hr>
+                        <div class="text-center">
+                            <div class="row g-0">
+                                <div class="col-2 col-lg-1">
+                                    <div class="card-body px-0">
+                                        <p class="py-0">Месяцы</p>
+                                        <p class="py-3">Норматив (Гкал)</p>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="card-body">
+                                        <form class="norma_add" id="norma<?= $value['ID'] ?>">
+                                            <input type="hidden" name="object" value="Y">
+                                            <div class="row gx-2">
+                                                <? foreach ($arResult['MONTH'] as $id => $month): ?>
+                                                    <div class="col-3 col-lg-2 col-xxl-1">
+                                                        <div class="h6"><?= $month['VALUE'] ?></div>
+                                                        <input class="ui-ctl-element" type="text" name="norma[<?= $id ?>]" onkeyup="validate(this)" value="<?= $arResult['NORMATIV'][$value['ID']][$id] ?>">
+                                                    </div>
+                                                <? endforeach; ?>
+                                            </div>
+                                            <div class="mt-2">
+                                                <div class="row justify-content-center align-items-end">
+                                                    <div class="col-auto">
+                                                        <button type="button" class="ui-btn ui-btn-success" onclick="saveNorma(<?= $value['ID'] ?>)">Сохранить Норматив</button>
+                                                    </div>
+                                                    <div class="col-5 col-xl-3">
+                                                        <div id="mess" class="alert py-2 mb-0 d-none" role="alert">Ошибка</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <? $APPLICATION->IncludeComponent('bitrix:main.ui.grid', '', $gridParams); ?>
             </div>
         </div>
         <div class="modal counter-modal fade" id="counterModal<?= $value['ID']; ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-id="<?= $value['ID']; ?>">
@@ -560,6 +604,60 @@ if ($arResult['ACCESS']): ?>
                 mode: "class",
                 data: form_data,
             }).then(function(response) {
+
+                console.log('message', message);
+
+                if (response.status === 'success') {
+
+                    message.removeClass('d-none')
+                        .removeClass('alert-danger')
+                        .addClass('alert-success')
+                        .html('Изменения успешно сохранены');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 5000);
+                } else {
+                    message
+                        .removeClass('d-none')
+                        .removeClass('alert-success')
+                        .addClass('alert-danger')
+                        .html('<span class="text-danger">Произошла ошибка на сервере! Пожалуйста, попробуйте позже.</span>');
+                }
+            })
+            .catch((response) => {
+                // console.log('response_error', response);
+
+                message.removeClass('d-none')
+                    .removeClass('alert-success')
+                    .addClass('alert-danger');
+
+                // msgOk.html('').hide();
+                $.each(response.errors, function() {
+                    message.html(this.message + '<br>');
+                });
+            });
+
+    }
+
+    function saveNorma(id) {
+
+        const form = document.getElementById("norma" + id);
+        // console.log('form', form);
+        let form_data = new FormData(form);
+
+
+        form_data.append('object', id)
+        console.log('form_data', form_data);
+
+        var message = $('#norma' + id + ' #mess');
+
+        // sendLosses
+        BX.ajax.runComponentAction("zhek:master.objects", 'sendNorma', {
+                mode: "class",
+                data: form_data,
+            }).then(function(response) {
+
+                console.log('response', response);
 
                 console.log('message', message);
 
