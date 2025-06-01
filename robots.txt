@@ -7,6 +7,8 @@ Disallow: /*index.php$      # дубли страниц index.php
 Disallow: /auth/            # авторизация
 Disallow: *auth=            # авторизация
 Disallow: /personal/        # личный кабинет
+Disallow: /master/          # личный кабинет
+Disallow: /cabinet/         # личный кабинет
 Disallow: *register=        # регистрация
 Disallow: *forgot_password= # забыли пароль
 Disallow: *change_password= # изменить пароль
@@ -34,23 +36,23 @@ Disallow: *BRAND=
 Disallow: *CLEAR_CACHE=
 Disallow: *ELEMENT_ID=
 Disallow: *price_from=
-Disallow: *price_to=         
+Disallow: *price_to=
 Disallow: *PROPERTY_TYPE=
 Disallow: *PROPERTY_WIDTH=
 Disallow: *PROPERTY_HEIGHT=
 Disallow: *PROPERTY_DIA=
 Disallow: *PROPERTY_OPENING_COUNT=
 Disallow: *PROPERTY_SELL_TYPE=
-Disallow: *PROPERTY_MAIN_TYPE=    
+Disallow: *PROPERTY_MAIN_TYPE=
 Disallow: *PROPERTY_PRICE[*]=
-Disallow: *S_LAST=  
+Disallow: *S_LAST=
 Disallow: *SECTION_ID=
 Disallow: *SECTION[*]=
-Disallow: *SHOWALL= 
+Disallow: *SHOWALL=
 Disallow: *SHOW_ALL=
 Disallow: *SHOWBY=
 Disallow: *SORT=
-Disallow: *SPHRASE_ID=        
+Disallow: *SPHRASE_ID=
 Disallow: *TYPE=
 Disallow: *utm*=            # ссылки с utm-метками
 Disallow: *openstat=        # ссылки с метками openstat

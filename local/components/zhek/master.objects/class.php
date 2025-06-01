@@ -111,7 +111,7 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 
 		// gg($orgObjectsIDs);
 
-		$this->arResult['MONTH'] = LKClass::getMonth();
+		$this->arResult['MONTH'] = LKClass::getMonthEnum();
 
 		$lossesList = LKClass::getLosses();
 		$lossObjects = [];
@@ -152,11 +152,11 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 
 			$this->arResult['DETAIL']['COLUMNS'] = [
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
-				['id' => 'NAME', 'name' => 'Наименование cчетчика', 'default' => true, 'width' => 200, 'editable' => true],
-				['id' => 'NUMBER', 'name' => 'Номер cчетчика', 'default' => true, 'width' => 200, 'editable' => true],
-				['id' => 'DATE', 'name' => 'Дата установки', 'default' => true, 'width' => 150, "editable" => ['TYPE' => 'CUSTOM']],
-				['id' => 'TYPE', 'name' => 'Тип счетчика', 'default' => true, 'width' => 200, "editable" => ['TYPE' => 'MULTISELECT', 'items' => $serviceItems]],
-				['id' => 'CHECK', 'name' => 'Дата оч. поверки', 'default' => true, 'width' => 150, "editable" => ['TYPE' => 'CUSTOM']],
+				['id' => 'NAME', 'name' => 'Наименование ПУ', 'default' => true, 'width' => 250, 'editable' => true, /*'align' => 'right'*/],
+				['id' => 'NUMBER', 'name' => 'Номер ПУ', 'default' => true, 'width' => 200, 'editable' => true],
+				['id' => 'DATE', 'name' => 'Дата установки ПУ', 'default' => true, 'width' => 180, "editable" => ['TYPE' => 'CUSTOM']],
+				['id' => 'TYPE', 'name' => 'Тип ПУ', 'default' => true, 'width' => 200, "editable" => ['TYPE' => 'MULTISELECT', 'items' => $serviceItems]],
+				['id' => 'CHECK', 'name' => 'Дата поверки ПУ', 'default' => true, 'width' => 160, "editable" => ['TYPE' => 'CUSTOM']],
 				// ['id' => 'UF_CHECK', 'name' => 'Дата очередной поверки', 'default' => true, "editable" => ['TYPE' => 'DATE']],
 				// ['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => '130'],
 			];

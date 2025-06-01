@@ -21,13 +21,11 @@ class LKClass
 
     protected static $_HL_Company = "Company"; // HL организации
     protected static $_HL_Objects = "Objects"; // HL Объекты
-
     protected static $_HL_Counters = "Counters"; // HL ПРиборы учёта
     protected static $_HL_Service = "Service"; // HL типы услуг
-
     protected static $_HL_Meter = "Meter"; // HL типы услуг
-
     protected static $_HL_Losses = "Losses"; // HL типы услуг
+    protected static $_HL_Month = "Month"; // HL месяцы
 
     protected static $MASTER = "MASTER"; // код группы Мастер участка
     protected static $ORG = "ORG"; // код группы Организации
@@ -118,7 +116,7 @@ class LKClass
         return $result;
     }
 
-    public static function saveMeter($objectID, $counter, $meter, $note = '')
+    public static function saveMeter($objectID, $month, $counter, $meter, $note = '')
     {
 
         $classHL = \HLWrap::init(self::$_HL_Meter);
@@ -132,7 +130,8 @@ class LKClass
 
         $value = [
             'UF_METER' => $meter,
-            'UF_DATE' => date('d.m.Y H:i:s'),
+            // 'UF_DATE' => date('d.m.Y H:i:s'),
+            'UF_MONTH' => $month,
             'UF_OBJECT' => $objectID,
             'UF_COUNTER' => $counter,
             'UF_NOTE' => $note,
@@ -140,7 +139,8 @@ class LKClass
 
         $filter = [
             'UF_OBJECT' => $objectID,
-            ">=" . "UF_DATE"  => new DateTime(date('01.m.Y') . " 00:00:00"),    //Каждый месяц новое значение
+            'UF_MONTH' => $month,
+            //">=" . "UF_DATE"  => new DateTime(date('01.m.Y') . " 00:00:00"),    //Каждый месяц новое значение
             'UF_COUNTER' => $counter,
         ];
         // dump($filter);
@@ -618,7 +618,7 @@ class LKClass
         return $result;
     }
 
-    public static function getMonth()
+    public static function getMonthEnum()
     {
         HLWrap::init(self::$_HL_Losses);
         $rsFields = HLWrap::getEnumProp('UF_MONTH');
@@ -626,6 +626,21 @@ class LKClass
             $result[$field['ID']] = [
                 'VALUE' => $field['VALUE'],
                 'CODE' => $field['XML_ID'],
+            ];
+        }
+        return $result;
+    }
+
+    public static function getMonth()
+    {
+
+        $classHL = \HLWrap::init(self::$_HL_Month);
+        $rsHLoad = $classHL::getList();
+        while ($month = $rsHLoad->fetch()) {
+            // gg($month);
+            $result[$month['UF_XML_ID']] = [
+                'ID' => $month['ID'],
+                'NAME' => $month['UF_NAME'],
             ];
         }
         return $result;

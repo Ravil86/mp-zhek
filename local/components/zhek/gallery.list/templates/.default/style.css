@@ -1,0 +1,26 @@
+.gallery-item {
+    overflow: hidden;
+}
+
+.gallery-carousel,
+#tns3-iw {
+    /* margin: 0px 10px 0 30px; */
+}
+
+.gallery .carousel__nav .carousel__button {
+    width: 75px;
+    height: 75px;
+}
+
+.carousel__nav .carousel__button.is-prev,
+.carousel__nav .carousel__button.is-next {
+    color: var(--color2);
+}
+
+.carousel__button.is-next {
+    right: -40px;
+}
+
+.carousel__button.is-prev {
+    left: -40px;
+}

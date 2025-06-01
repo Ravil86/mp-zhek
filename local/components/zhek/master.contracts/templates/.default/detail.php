@@ -44,16 +44,16 @@ if ($arResult['ACCESS']): ?>
         }
 
         $dateStr = date('2025-01-01');
-        $dateEnd = date('Y-m-d');
         // $dateStr = date('Y-m-d', strtotime('-3 months'));
-        // $dateEnd = date("Y-m-d", strtotime('+1 month'));
+
+        $dateEnd = date('Y-m-d', strtotime('last day of last month'));
+        // $dateEnd = date("Y-m-d", strtotime('-1 month'));
+
         $begin = new DateTime($dateStr);
         $end = new DateTime($dateEnd);
 
         $selectMonth = trim($arResult['MONTH'] . '-' . $arResult['YEAR']);
-        // gg($selectMonth);
 
-        // gg(date('m'));
         $useDate = false;
         $number = FormatDate("m", MakeTimeStamp('01.' . $arResult['MONTH'] . '.' . $arResult['YEAR']));
         // $number = FormatDate("n", MakeTimeStamp('01.' . $arResult['MONTH'] . '.' . $arResult['YEAR']));
@@ -113,7 +113,7 @@ if ($arResult['ACCESS']): ?>
                                                     <th>Вид услуги</th>
                                                     <!-- <th>ID</th> -->
                                                     <th>Дата очередной поверки ПУ</th>
-                                                    <th>Номер пломбы ПУ</th>
+                                                    <th>Номер ПУ</th>
                                                     <th>Ед. изм.</th>
                                                     <th>Предыдущие показания ПУ</th>
                                                     <th>Текущие показания ПУ</th>

@@ -1,0 +1,33 @@
+.f-carousel {
+    /* --f-carousel-spacing: 10px; */
+    --f-button-width: 4em;
+    --f-button-height: 4em;
+    --f-button-next-pos: -3.5em;
+    --f-button-prev-pos: -3.5em;
+    --f-button-svg-width: 3.5em;
+    --f-button-svg-height: 3.5em;
+    --f-carousel-dots-height: 3em;
+    --f-carousel-dots-width: 2em;
+    --f-carousel-dots-heigh: 2em;
+    --f-carousel-dot-width: 15px;
+    --f-carousel-dot-height: 15px;
+    --f-carousel-dot-color: var(--blue-light);
+}
+
+
+.gallery .carousel__nav .carousel__button {
+    width: 75px;
+    height: 75px;
+}
+
+.carousel__nav .carousel__button.is-prev,
+.carousel__nav .carousel__button.is-next {
+    /* color: var(--color2); */
+}
+
+/* .carousel__button.is-next{
+    right: -40px;
+}
+.carousel__button.is-prev{
+    left: -40px;
+} */

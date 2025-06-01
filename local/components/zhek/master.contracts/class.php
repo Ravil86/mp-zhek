@@ -157,7 +157,8 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 				$this->arResult['YEAR'] = date('Y');
 
 			if (!$this->arResult['MONTH'])
-				$this->arResult['MONTH'] = date('m');
+				$this->arResult['MONTH'] = date('m', strtotime('-1 month'));
+			// $this->arResult['MONTH'] = date('m');
 
 			// gg($this->arResult['YEAR']);
 			// gg($this->arResult['MONTH']);
@@ -200,7 +201,7 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 				$this->arResult['NORMATIV'][$val['OBJECT']][$val['MONTH']] = $val['VALUE'];
 			}
 
-			$this->arResult['MONTH_LIST'] = LKClass::getMonth();
+			$this->arResult['MONTH_LIST'] = LKClass::getMonthEnum();
 			if ($this->arResult['MONTH_LIST'])
 				foreach ($this->arResult['MONTH_LIST'] as $key => $month) {
 					$this->arResult['MONTH_CODE'][$month['CODE']] = $key;
@@ -237,10 +238,9 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 				// gg($prevMetersObject);
 				$this->arResult['PREV_METERS'][$object['ID']] = $prevMetersObject;
 
+
 				$arLastMeters = LKClass::meters($object['ID'], true, $this->arResult['MONTH'], $this->arResult['YEAR']);
 				// $arLastMeters = LKClass::meters($object['ID'], true);
-
-				// gg($arLastMeters);
 
 				foreach ($arLastMeters as $key => $lastMeter) {
 					$lastMetersObject[$lastMeter['COUNTER']][$lastMeter['ID']] = $lastMeter;

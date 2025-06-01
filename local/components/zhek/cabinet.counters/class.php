@@ -74,13 +74,20 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 		$serviceList = LKClass::getService();
 		$myCompany = LKClass::myCompany();
 
+		$getMonth = LKClass::getMonth();
+
 		$day = date("d");
 
 		$dateStart = 1;
 		$dateEnd = 5;
 
-		$editEnd = 25;
-		// gg($day);
+		$editEnd = 20;
+
+		if ($day <= $editEnd) {
+			$prevMonth = date("m", strtotime('-1 month'));
+			$this->arResult['SAVE_MONTH'] = $getMonth[$prevMonth];
+			$arResult['SAVE_MONTH'] = $this->arResult['SAVE_MONTH'];
+		}
 
 		if ($dateStart <= $day && $day <= $dateEnd)
 			$arResult['DATE_USER'] = true;
@@ -90,7 +97,6 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 		$this->arResult['SEND_ADMIN'] = $arResult['DATE_ADMIN'] && $arResult['MODERATOR'] || $arResult['ADMIN'];
 		$this->arResult['SEND_FORM'] = $arResult['DATE_USER'] && !$arResult['MODERATOR'] ?? false;
-		// gg($userActive);
 
 		if ($this->arResult['ADMIN'] || $this->arResult['MODERATOR'])
 			$arObjects = LKClass::getObjects();
@@ -106,16 +112,8 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 			// $this->arResult['DETAIL']['GRID'] =  'object_detail';
 			// $arResult['DETAIL']['GRID'] = $this->arResult['DETAIL']['GRID'];
 
-			// gg($arObjects);
-
-			// gg($objectID);
-
 			if (!array_key_exists($objectID, $arObjects))
 				$this->arResult['WRONG'] = true;
-
-			// gg(!array_key_exists($objectID, $arObjects));
-
-			// gg($this->arResult['WRONG']);
 
 			$this->arResult['DETAIL']['OBJECT'] = $arObjects[$objectID];
 
@@ -128,7 +126,6 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 					$unit = $typeItem['UNIT'];
 					$types[] = '<img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/>';
 				}
-				// gg($unit);
 				$item['UNIT'] = $unit;
 				$item['SERVICE'] = implode(' ', $types);
 
@@ -190,9 +187,9 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
 			$this->arResult['GRID']['COLUMNS'] = [
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 70],
-				['id' => 'NAME', 'name' => 'Наименование объекта', /*'sort' => 'NAME', */ 'default' => true, 'width' => 250],
-				['id' => 'ADDRESS', 'name' => 'Адрес объекта', /*'sort' => 'ADDRESS', */ 'default' => true, 'width' => 300],
-				['id' => 'DOGOVOR', 'name' => 'Договор',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => true, 'width' => 250],
+				['id' => 'NAME', 'name' => 'Наименование объекта', /*'sort' => 'NAME', */ 'default' => true],
+				['id' => 'ADDRESS', 'name' => 'Адрес объекта', /*'sort' => 'ADDRESS', */ 'default' => true, 'width' => 350],
+				//['id' => 'DOGOVOR', 'name' => 'Договор',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => true],
 
 				// ['id' => 'STATUS', 'name' => 'Статус', 'sort' => '', 'default' => true, 'width' => '200'],
 				['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => 130],
@@ -259,12 +256,11 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 		// return $request['METER'];
 
-		Bitrix\Main\Diag\Debug::dumpToFile(var_export($request['METER'], 1), '$request', 'test.log');
-		Bitrix\Main\Diag\Debug::dumpToFile(var_export($request['OBJECT'], 1), '$request', 'test.log');
-		Bitrix\Main\Diag\Debug::dumpToFile(var_export($request['NOTE'], 1), '$request', 'test.log');
+		Bitrix\Main\Diag\Debug::dumpToFile(var_export($request, 1), '$request', 'test.log');
 
 		foreach ($request['METER'] as $kCounter => $meter) {
-			LKClass::saveMeter($request['OBJECT'], $kCounter, $meter, $request['NOTE'][$kCounter]);
+			if ($meter)
+				LKClass::saveMeter($request['OBJECT'], $request['MONTH'], $kCounter, $meter, $request['NOTE'][$kCounter]);
 		}
 
 		return true;

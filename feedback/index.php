@@ -43,4 +43,5 @@ $APPLICATION->SetTitle("Обращения граждан");
         </div>
     </div>
 </div>
- <script>Widget("https://pos.gosuslugi.ru/form", 809)</script><?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
+ <script>Widget("https://pos.gosuslugi.ru/form", 354436)</script>
+<?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

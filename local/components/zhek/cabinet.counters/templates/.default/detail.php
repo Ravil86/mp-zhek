@@ -41,6 +41,7 @@ if ($arResult['ACCESS']):
         <div class="container row!">
             <form id="objectMeter">
                 <input type="hidden" name="OBJECT" value="<?= $arResult['OBJECT_ID'] ?>">
+                <input type="hidden" name="MONTH" value="<?= $arResult['SAVE_MONTH']['ID'] ?>">
                 <?
                 $userSend = false;
                 foreach ($arResult['DETAIL']['LIST'] as $key => $item): ?>
