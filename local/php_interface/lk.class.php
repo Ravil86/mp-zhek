@@ -75,15 +75,20 @@ class LKClass
     {
         $classHL = \HLWrap::init(self::$_HL_Meter);
 
+        // dump(self::getMonth($month));
+
         // $filter = [];
         $filter = ['UF_OBJECT' => $objectID];
         if ($month) {       //c фильтром по кокретному месяцу
             $filterYear = $year ?: 'Y';
             if ($last) {      //только выбранный
-                $filter[">=" . "UF_DATE"] = new DateTime(date('01.' . $month . '.' . $filterYear) . " 00:00:00");
-                $filter["<=" . "UF_DATE"] = new DateTime(date('29.' . $month . '.' . $filterYear) . " 00:00:00");        // для февраля чтоб не захватить март
+                //$filter[">=" . "UF_DATE"] = new DateTime(date('01.01.' . $filterYear) . " 00:00:00");
+                $filter["UF_MONTH"] = self::getMonth($month);
+                // $filter[">=" . "UF_DATE"] = new DateTime(date('01.' . $month . '.' . $filterYear) . " 00:00:00");
+                // $filter["<=" . "UF_DATE"] = new DateTime(date('29.' . $month . '.' . $filterYear) . " 00:00:00");        // для февраля чтоб не захватить март
             } else {
-                $filter["<=" . "UF_DATE"] = new DateTime(date('01.' . $month . '.' . $filterYear) . " 00:00:00");
+                $filter['<' . "UF_MONTH"] = self::getMonth($month);
+                // $filter["<=" . "UF_DATE"] = new DateTime(date('01.' . $month . '.' . $filterYear) . " 00:00:00");
             }
         } else {
             if ($last)
@@ -91,6 +96,7 @@ class LKClass
             else
                 $filter['<=' . 'UF_DATE'] = new DateTime(date('01.m.Y') . " 00:00:00");
         }
+
         // dump($filter);
 
 
@@ -631,7 +637,7 @@ class LKClass
         return $result;
     }
 
-    public static function getMonth()
+    public static function getMonth($code = '')
     {
 
         $classHL = \HLWrap::init(self::$_HL_Month);
@@ -643,7 +649,10 @@ class LKClass
                 'NAME' => $month['UF_NAME'],
             ];
         }
-        return $result;
+        if ($code)
+            return $result[$code]['ID'];
+        else
+            return $result;
     }
 
     /* месяц по году */

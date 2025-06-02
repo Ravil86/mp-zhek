@@ -147,7 +147,7 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 
 			// $uri->addParams(array("foo"=>"bar"));
 
-			// gg($uri);
+
 			$template = $this->arResult['URL_TEMPLATES']['month'];
 
 			$this->arResult['YEAR'] = $this->arResult['VARIABLES']['YEAR'];
@@ -171,6 +171,13 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 				LocalRedirect($this->arResult['FOLDER'] . $template);
 
 			$this->arResult['DETAIL'] = $this->getDocs()[$CONTRACT_ID];
+
+			global $USER;
+			// Проверяем Контракт принадлежит тому ли пользователю
+			if ($this->arResult['DETAIL']['COMPANY']['USER_ID'] !== $USER->GetID() && !$this->arResult['MODERATOR'] && !$this->arResult['ADMIN']) {
+				$this->arResult['ACCESS'] = false;
+			}
+
 
 			if ($this->arResult['DETAIL']['COMPANY'] && $this->arResult['DETAIL']['COMPANY']['USER_ID'])
 				$this->arResult['DETAIL']['COMPANY']['RESPONIBLE'] = LKClass::curentUserFields($this->arResult['DETAIL']['COMPANY']['USER_ID']);
@@ -216,10 +223,6 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 				$prevMetersObject = [];
 				$lastMetersObject = [];
 
-				// gg($this->arResult['MONTH']);
-				// gg(LKClass::meters($object['ID'], true, $this->arResult['MONTH']));
-				// gg(LKClass::meters($object['ID'], false, $this->arResult['MONTH']));
-
 				$arPrevMeters = LKClass::meters($object['ID'], false, $this->arResult['MONTH'], $this->arResult['YEAR']);
 				// gg($arPrevMeters);
 				//$arPrevMeters = LKClass::meters($object['ID']);
@@ -237,7 +240,6 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 
 				// gg($prevMetersObject);
 				$this->arResult['PREV_METERS'][$object['ID']] = $prevMetersObject;
-
 
 				$arLastMeters = LKClass::meters($object['ID'], true, $this->arResult['MONTH'], $this->arResult['YEAR']);
 				// $arLastMeters = LKClass::meters($object['ID'], true);
