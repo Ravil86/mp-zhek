@@ -10,7 +10,8 @@ if ($arResult['ACCESS']):
     <hr>
     <div class="d-flex">
         <div class="col">
-            <h3 class="h4"><?= $arResult['DETAIL']['OBJECT']['NAME'] ?></h3>
+            <h3 class="h4"><?= ($arResult['SEND_ADMIN'] ? '#' . $arResult['DETAIL']['OBJECT']['ID'] . ' ' : '') ?><?= $arResult['DETAIL']['OBJECT']['NAME'] ?></h3>
+            <?= $arResult['DETAIL']['OBJECT']['ADDRESS']; ?>
         </div>
         <div class="col-auto">
             <a class="ui-btn ui-btn-sm ui-btn-no-caps" href="<?= $arResult['FOLDER'] ?>">вернуться назад</a>
@@ -123,7 +124,8 @@ if ($arResult['ACCESS']):
                     </div>
                     <div class="col-<?= !$arResult['SEND_ADMIN'] ? '4' : '5' ?> text-center bg-info-subtle rounded-bottom pb-2">
                         <? if ($arResult['SEND_ADMIN']): ?>
-                            <button type="button" class="ui-btn ui-btn-lg ui-btn-primary-dark" onclick="sendData()" <?= !$userSend && $arResult['MODERATOR'] ? 'disabled' : '' ?>>корректировка показаниий</button>
+                            <button type="button" class="ui-btn ui-btn-lg ui-btn-primary-dark" onclick="sendData()" <? //= !$userSend && $arResult['MODERATOR'] ? 'disabled' : '' 
+                                                                                                                    ?>>корректировка показаниий</button>
                         <? else: ?>
                             <button type="button" class="ui-btn ui-btn-lg ui-btn-primary-dark" onclick="sendData()" <?= $userSend || !$arResult['SEND_FORM'] ? 'disabled' : '' ?>>Внести показания</button>
                         <? endif ?>
@@ -323,28 +325,28 @@ if ($arResult['ACCESS']):
     // dump($arResult['DETAIL']);
     /*
     ?>
-<div id='moderation' class="content">
-    <div class="row align-items-center pb-3 mb-2">
-        <div class="col-5 mb-1 h4"><?= $arResult['DETAIL']['USERNAME'] ?>
-            <? //=TruncateText($arResult['DETAIL']['USERNAME'], 50)
+    <div id='moderation' class="content">
+        <div class="row align-items-center pb-3 mb-2">
+            <div class="col-5 mb-1 h4"><?= $arResult['DETAIL']['USERNAME'] ?>
+                <? //=TruncateText($arResult['DETAIL']['USERNAME'], 50)
                 ?>
-        </div>
-        <div class="col-7 mb-4! card d-flex! flex-row justify-content-between align-items-center px-3 py-2">
-            <div class="d-flex flex-column align-items-center">
-                <div class="col-12 h6 my-0 text-uppercase text-blue"><?= TruncateText($arResult['DETAIL']['COURSE'], 28) ?></div>
-                <div class="col-12 h6 my-0 text-secondary"><?= $arResult['DETAIL']['STREAM']['NAME'] . ' - ' . $arResult['DETAIL']['STREAM']['TEXT'] ?></div>
-                <div class="col-12 small fst-italic text-muted">
-                    <small>Дата изменения: <?= $arResult['DETAIL']['DATE_UPDATE'] ?></small>
-
-                </div>
             </div>
-            <div class="text-end! text-center col-3! badge! small px-4 py-2 rounded-pill text-bg-light! text-bg-<?= $arResult['DETAIL']['STATUS']['VALUE'] ?> lh-sm">
-                <i class="small"><?= $arResult['DETAIL']['STATUS']['TEXT'] ?></i>
+            <div class="col-7 mb-4! card d-flex! flex-row justify-content-between align-items-center px-3 py-2">
+                <div class="d-flex flex-column align-items-center">
+                    <div class="col-12 h6 my-0 text-uppercase text-blue"><?= TruncateText($arResult['DETAIL']['COURSE'], 28) ?></div>
+                    <div class="col-12 h6 my-0 text-secondary"><?= $arResult['DETAIL']['STREAM']['NAME'] . ' - ' . $arResult['DETAIL']['STREAM']['TEXT'] ?></div>
+                    <div class="col-12 small fst-italic text-muted">
+                        <small>Дата изменения: <?= $arResult['DETAIL']['DATE_UPDATE'] ?></small>
+
+                    </div>
+                </div>
+                <div class="text-end! text-center col-3! badge! small px-4 py-2 rounded-pill text-bg-light! text-bg-<?= $arResult['DETAIL']['STATUS']['VALUE'] ?> lh-sm">
+                    <i class="small"><?= $arResult['DETAIL']['STATUS']['TEXT'] ?></i>
+                </div>
             </div>
         </div>
     </div>
-</div>
-*/ ?>
+    */ ?>
 <? else: ?>
     <font class="errortext">Ошибка доступа</font>
 <? endif; ?>
@@ -381,7 +383,7 @@ if ($arResult['ACCESS']):
 					</div>
 			</div>';
 				if($admin && $docVal['ID'] || $useCheck && $docStatus['ID']==1):?>
-<?
+    <?
 					$textCheck = !$admin?'Одобрить':'load';
 					$textRefuse = !$admin?'Отказать':'deny';
 					$result .= '<div class="btn_status">

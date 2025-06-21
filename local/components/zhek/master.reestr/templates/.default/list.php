@@ -39,7 +39,7 @@ use Bitrix\Highloadblock as HL;
                             if (isset($head['colspan']) && $head['colspan'] == 0)
                                 continue;
                             ?>
-                            <th scope='col' <?= $head['colspan'] ? 'colspan="' . $head['colspan'] . '"' : 'rowspan="2"' ?>><?= $head['text'] ?? $head['name'] ?></th>
+                            <th scope='col' <?= $head['width'] ? 'width="' . $head['width'] . '"' : '' ?> <?= $head['colspan'] ? 'colspan="' . $head['colspan'] . '"' : 'rowspan="2"' ?>><?= $head['text'] ?? $head['name'] ?></th>
                             <?
                             //endif;
                             //echo "<th scope='col'>{$head['name']}</th>";
@@ -90,18 +90,9 @@ use Bitrix\Highloadblock as HL;
                                         </div>
                                     <? else: ?>
                                         <?
-                                        // $empty = false;
-                                        // if ($col['id'] == 'EDIT') {
-
-                                        //     foreach ($row['columns']['ALERT'][$key] as $alert) {
-                                        //         if ($alert)
-                                        //             $empty = true;
-                                        //         // break;
-                                        //     }
-                                        // }
-                                        // && count($row['columns']['ALERT']) > 1
-                                        if ($col['id'] == 'EDIT' && $row['columns']['ALERT'][$key])
-                                            continue;
+                                        // Редактирование только если значения введены Организацией
+                                        // if ($col['id'] == 'EDIT' && $row['columns']['ALERT'][$key])
+                                        //     continue;
                                         ?>
                                         <?= $valueTD;
                                         ?>

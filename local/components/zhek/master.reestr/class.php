@@ -74,8 +74,9 @@ class MasterReestr extends CBitrixComponent
 		$this->arResult['CONTRACTS'] = $contracts;
 
 		foreach ($contracts as $contr) {
-			// dump($contr);
+
 			$orgContracts[$contr['COMPANY']][] = [
+				'ID' => $contr['ID'],
 				'NUMBER' => $contr['FULL_NUMBER'],
 				'STATUS' => $contr['STATUS'],
 				'ACTIVE' => $contr['UF_STATUS'] == 14 ?: false,
@@ -106,19 +107,16 @@ class MasterReestr extends CBitrixComponent
 			$nav_params['iNumPage'] = $nav->getCurrentPage();
 
 		$rsEnum = HLWrap::getEnumProp('UF_TYPE');
-		// while ($arEnum = $rsEnum->Fetch()) {
-		// 	//dump($arEnum);
-		// }
 
 		//какую сортировку сохранил пользователь (передаем то, что по умолчанию)
 		$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
 		$this->arResult['GRID']['COLUMNS'] = [
 			// ['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 50, 'resizeable' => false, 'rowspan' => true],
-			['id' => 'UF_NAME', 'name' => 'Организация', /*'sort' => 'NAME', */ 'default' => true, 'rowspan' => true /*'sticked' => true, 'resizeable' => true*/],
+			['id' => 'UF_NAME', 'name' => 'Организация', 'width' => 380, /*'sort' => 'NAME', */ 'default' => true, 'rowspan' => true /*'sticked' => true, 'resizeable' => true*/],
 			// ['id' => 'UF_ADDRESS', 'name' => 'Адрес организации', /*'sort' => 'ADDRESS', */ 'default' => false],
 			// ['id' => 'UF_INN', 'name' => 'ИНН',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => false, 'rowspan' => true],
 			['id' => 'DOGOVOR', 'name' => 'Текущий контракт', 'default' => true, 'rowspan' => true],
-			['id' => 'OBJECT', 'name' => 'Объект', 'default' => true],
+			['id' => 'OBJECT', 'name' => 'Объект', 'default' => true, 'width' => 330],
 			['id' => 'COUNTER', 'name' => 'ПУ', 'default' => true],
 			['id' => 'METER_LAST', 'name' => 'Текущие', 'default' => true, 'colspan' => 4, 'text' => 'Показания', 'color' => '#ddd'],
 			['id' => 'METER_ALL', 'name' => 'Предыдущие', 'default' => true, 'colspan' => 0, 'color' => '#ddd'],
@@ -214,7 +212,8 @@ class MasterReestr extends CBitrixComponent
 			// 	$column['UF_NAME'] = $itemsCompany[$orgID]['UF_NAME'];
 
 			if ($item['CONTRACT']) {
-				$dogovor = '<div class="text-' . $item['CONTRACT']['STATUS']['CODE'] . ' text-center"><small>' . $item['CONTRACT']['NUMBER'] . '</small></div>';
+
+				$dogovor = '<a class="text-' . $item['CONTRACT']['STATUS']['CODE'] . ' text-center link-underline-primary link-underline link-underline-opacity-75 link-offset-1" href="/master/contracts/' . $item['CONTRACT']['ID'] . '" target="_blank"><small>' . $item['CONTRACT']['NUMBER'] . '</small></a>';
 				$column["DOGOVOR"] = $dogovor;
 			}
 
@@ -274,7 +273,7 @@ class MasterReestr extends CBitrixComponent
 
 					//все показания
 					$metersAll = LKClass::meters($object['ID']);
-					// dump($metersAll);
+
 					if ($metersAll) {
 						foreach ($metersAll as $key => $meter) {
 							// gg($meter);
@@ -329,23 +328,21 @@ class MasterReestr extends CBitrixComponent
 					// $curentCounterAll = [];
 
 					//все показания
-
 					$metersAll = LKClass::meters($object['ID']);
-					// dump($metersAll);
+
 					if ($metersAll) {
 						foreach ($metersAll as $key => $meter) {
 							// gg($meter);
 							$arObjMeters[$meter['OBJECT']][$meter['COUNTER']][] = $meter['METER'];
 						}
 					}
-					// dump($arObjMeters);
 
 					// $arType = null;
 					// $curentAll = current(LKClass::meters($object['ID']));
 					// $curentCounterAll = $counterObjects[$curentAll['COUNTER']];
 
 					/*if ($curentCounterAll['UF_TYPE']) {
-						// dump($curentCounterAll['UF_TYPE']);
+
 						foreach ($curentCounterAll['UF_TYPE'] as $type) {
 
 							$arType = $arService[$type];
@@ -353,7 +350,7 @@ class MasterReestr extends CBitrixComponent
 							$servicesAll[] = '<img src="' . $arType['ICON'] . '" width="18"/> ';
 							//$servicesAll[] = $arType['LITERA'] . '<img class="ps-1" src="' . $arType['ICON'] . '" width="20"/> ';
 						}
-						// dump($servicesAll);
+
 						$allIconType = implode('', $servicesAll);
 					}*/
 					//$column['METER_ALL'] =  $allIconType . ' ' . $curentAll['METER']; //все данные
@@ -440,8 +437,6 @@ class MasterReestr extends CBitrixComponent
 		foreach ($this->arResult['ROWS_COLUMNS'] as $key => $value) {
 
 			// $this->arResult['GRID']['ROW_LAYOUT'][$key] = $columns;
-
-			// dump($value);
 			$c = 0;
 
 			foreach ($this->arResult['GRID']['COLUMNS'] as $col) {
@@ -456,7 +451,6 @@ class MasterReestr extends CBitrixComponent
 
 				if (!$value['ROWSPAN']) {
 					// $c = 0;
-					// dump($col['rowspan']);
 
 					if (!$col['rowspan'] || $value['COUNTS'] == 1) {
 						//if (!in_array($col, $rowColumns) || $value['COUNTS'] == 1)
@@ -483,8 +477,6 @@ class MasterReestr extends CBitrixComponent
 			// $this->arResult['GRID']['ROW_LAYOUT'][$key] = $columns;
 		}
 
-		// gg($this->arResult['GRID']['ROW_LAYOUT']);
-
 		// if ($arResult['COUNTER_SHOW']) {
 		// foreach ($this->arResult['GRID']['ROWS'] as $kRow => $row) {
 
@@ -494,13 +486,6 @@ class MasterReestr extends CBitrixComponent
 		// 		unset($this->arResult['ROWS_COLUMNS'][$kRow]);
 		// 	}
 		// }
-		// gg($this->arResult['GRID']['ROWS']);
-		// gg($this->arResult['ROWS_COLUMNS']);
-
-
-		// dump($this->arResult['ROWS_COLUMNS']);
-		// dump($this->arResult['GRID']['ROW_LAYOUT']);
-		// dump($this->arResult['GRID']['ROWS']);
 
 		//return $componentPage;
 		return $this->arResult;
@@ -555,8 +540,6 @@ class MasterReestr extends CBitrixComponent
 		$arRequest = $this->getRequest();
 
 		if ($this->isPost() && check_bitrix_sessid()) {
-
-			// dump($arRequest);
 
 			if ($arRequest["ADD_OBJECT"] == 'Y') {
 				LKClass::addObject($arRequest["FIELDS"]);

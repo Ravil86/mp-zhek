@@ -75,8 +75,6 @@ class LKClass
     {
         $classHL = \HLWrap::init(self::$_HL_Meter);
 
-        // dump(self::getMonth($month));
-
         // $filter = [];
         $filter = ['UF_OBJECT' => $objectID];
         if ($month) {       //c фильтром по кокретному месяцу
@@ -114,6 +112,7 @@ class LKClass
                 'METER' => $value['UF_METER'],
                 'COUNTER' => $value['UF_COUNTER'],
                 'OBJECT' => $value['UF_OBJECT'],
+                'MONTH' => $value['UF_MONTH'],
                 'NOTE' => $value['UF_NOTE'],
                 // 'SERVICE' => $value['UF_SERVICE'],
             ];
@@ -521,14 +520,19 @@ class LKClass
             'select' => ['ID', 'UF_DATE', 'UF_NUMBER'],
             'filter' => [
                 'UF_NUMBER' => $data['UF_NUMBER'],
-                'UF_YEAR'   => $data['UF_YEAR'],
+                'UF_DATE' => $data['UF_DATE'],
+                // 'UF_YEAR'   => $data['UF_YEAR'],
             ],
         ]);
         if ($contract = $rsHLoad->fetch()) {
 
             foreach ($contract as $pid => $value) {
-                $err[] = $pid . ': ' . $value;
+                //$err[] = $pid . ': ' . $value;
             }
+            $err = [
+                'ID'   => 'ИД: #' . $contract['ID'],
+                'UF_NUMBER' => '№ ' . $contract['UF_NUMBER'] . ' от ' . $contract['UF_DATE'],
+            ];
             $error = new \Bitrix\Main\Error('Контракт уже имеется:<br> ' . implode('<br>', $err));
             $errorCollection = new ErrorCollection([$error]);
             return AjaxJson::createError($errorCollection);

@@ -32,16 +32,16 @@ $lastYear = date('Y', strtotime('-1 year'));
                 'FILTER' => $arResult['GRID']['FILTER'],
                 'ENABLE_LIVE_SEARCH' => true,
                 'ENABLE_LABEL' => true,
-                "FILTER_PRESETS" => [
-                    "CURRENT_YEAR" => [
-                        "name" => 'Текущий год',
-                        "default" => true, // если true - пресет по умолчанию
-                        "fields" => [
-                            "DATE_CREATE_datesel" => "YEAR",
-                            "DATE_CREATE_year" => $curentYear,
-                        ]
-                    ],
-                ]
+                // "FILTER_PRESETS" => [
+                //     "CURRENT_YEAR" => [
+                //         "name" => 'Текущий год',
+                //         "default" => true, // если true - пресет по умолчанию
+                //         "fields" => [
+                //             "DATE_CREATE_datesel" => "YEAR",
+                //             "DATE_CREATE_year" => $curentYear,
+                //         ]
+                //     ],
+                // ]
             ]);
 
             ?>

@@ -196,7 +196,6 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 
 			$arObjects = LKClass::getObjects($this->arResult['COMPANY']['ID']);
 
-
 			$lossesList = LKClass::getLosses();
 			// $lossObjects = [];
 			foreach ($lossesList as $val) {
@@ -214,8 +213,6 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 					$this->arResult['MONTH_CODE'][$month['CODE']] = $key;
 				}
 
-			// gg($this->arResult['LOSSES']);
-
 			$this->arResult['PREV_METERS'] = [];
 			$this->arResult['LAST_METERS'] = [];
 			foreach ($arObjects as $object) {
@@ -224,7 +221,6 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 				$lastMetersObject = [];
 
 				$arPrevMeters = LKClass::meters($object['ID'], false, $this->arResult['MONTH'], $this->arResult['YEAR']);
-				// gg($arPrevMeters);
 				//$arPrevMeters = LKClass::meters($object['ID']);
 
 				foreach ($arPrevMeters as $key => $meter) {
@@ -238,19 +234,17 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 				// if ($prevMetersObject)
 				// 	array_shift($prevMetersObject);
 
-				// gg($prevMetersObject);
 				$this->arResult['PREV_METERS'][$object['ID']] = $prevMetersObject;
 
 				$arLastMeters = LKClass::meters($object['ID'], true, $this->arResult['MONTH'], $this->arResult['YEAR']);
 				// $arLastMeters = LKClass::meters($object['ID'], true);
 
 				foreach ($arLastMeters as $key => $lastMeter) {
-					$lastMetersObject[$lastMeter['COUNTER']][$lastMeter['ID']] = $lastMeter;
+
+					$lastMetersObject[$lastMeter['COUNTER']][] = $lastMeter;
+					// $lastMetersObject[$lastMeter['COUNTER']][$lastMeter['ID']] = $lastMeter;
 				}
 				$this->arResult['LAST_METERS'][$object['ID']] = $lastMetersObject;
-
-				// gg($object);
-				// gg($this->arResult['LOSSES'][$object['ID']]);
 
 				$counterObjects = LKClass::getCounters($object['ID']);
 
@@ -278,9 +272,6 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 
 		} else {
 
-
-
-
 			// $this->arResult['GRID_ID'] = 'grid_meter';
 
 			// $arResult['GRID_ID'] = $this->arResult['GRID_ID'];
@@ -306,28 +297,18 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 				'offset' => $nav->getOffset(),
 				'limit' => $nav->getLimit(),
 			];
-			// gg($nav_params);
-			// gg($navParams);
 
 			$arSort = $grid_options->GetSorting(array("sort" => array("UF_DATE" => "desc"), "vars" => array("by" => "by", "order" => "order")));
 
-
-
-			// dump($this->serviceList);
 			foreach ($this->serviceList as $serv) {
 				$arService[$serv['ID']] = $serv['NAME'];
 			}
 
-			// dump(\Bitrix\Main\Grid\Editor\Types::getList());
-			// dump($this->statusList);
 			foreach ($this->statusList as $key => $stat) {
 				$arStatus[$key] = $stat['VALUE'];
 			}
 
 			$arYears = LKClass::getYears();
-
-			// gg($arYears);
-			// gg($this->arResult);
 
 			$this->arResult['GRID']['COLUMNS'] = [
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 60],

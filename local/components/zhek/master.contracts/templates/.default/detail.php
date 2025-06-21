@@ -58,8 +58,13 @@ if ($arResult['ACCESS']): ?>
         $number = FormatDate("m", MakeTimeStamp('01.' . $arResult['MONTH'] . '.' . $arResult['YEAR']));
         // $number = FormatDate("n", MakeTimeStamp('01.' . $arResult['MONTH'] . '.' . $arResult['YEAR']));
 
-        if ($arResult['MONTH'] == date('m') && $arResult['YEAR'] == date('Y')) {
+        // var_dump(date("m", strtotime("-1 month")));
+
+        if ($arResult['MONTH'] == date("m", strtotime("-1 month")) && $arResult['YEAR'] == date('Y')) {
             $useDate = true;
+        }
+
+        if ($arResult['MONTH'] == date('m') && $arResult['YEAR'] == date('Y')) {
             $date = FormatDate("j", MakeTimeStamp(time()));
             $month = date('m');
 
@@ -136,16 +141,22 @@ if ($arResult['ACCESS']): ?>
                         $normativ =  $arResult["NORMATIV"][$key][$arResult["MONTH_CODE"][$month]] ?: null;
 
                         if (is_array($arResult["PREV_METERS"][$key][$value["COUNTER"]["ID"]])) {
+                            // dump($arResult["PREV_METERS"][$key]);
                             $prevMeters = $arResult["PREV_METERS"][$key][$value["COUNTER"]["ID"]][0]["METER"];
                         }
 
-                        if (is_array($arResult["LAST_METERS"][$key][$value["COUNTER"]["ID"]]))
-                            $lastMeters = array_shift($arResult["LAST_METERS"][$key][$value["COUNTER"]["ID"]])["METER"];
+                        if (is_array($arResult["LAST_METERS"][$key][$value["COUNTER"]["ID"]])) {
+
+                            $lastMeters = $arResult["LAST_METERS"][$key][$value["COUNTER"]["ID"]][0]["METER"];
+                            // $lastMeters = array_shift($arResult["LAST_METERS"][$key][$value["COUNTER"]["ID"]])["METER"];
+                        }
+
 
                         if ($prevMeters && $lastMeters)
                             $potreb = $lastMeters - $prevMeters;
 
                         $losses = $arResult["LOSSES"][$key][$arResult["MONTH_CODE"][$month]];
+
                         echo '
                             <tr class="text-center">
                                 <td>' . $i . '</td>
@@ -200,7 +211,7 @@ if ($arResult['ACCESS']): ?>
                             </tr>
                             <tr class="text-center">
                                 <td colspan="3"></td>
-                                <td class="pb-0">"___" __________________ <?= date("Y") ?>г.</td>
+                                <td class="pb-0">"___" __________________ ' . date("Y") . 'г.</td>
                                 <td colspan="3"></td>
                             </tr>
                             <tr class="text-center small">
@@ -238,7 +249,7 @@ if ($arResult['ACCESS']): ?>
                 </div>
             </div>
             <div class="col-auto me-2">
-                <? if ($useDate || $arResult['ADMIN']): ?>
+                <? if ($useDate || $arResult['ADMIN'] || $arResult['MODERATOR']): ?>
                     <!-- <a class="ui-btn ui-btn-primary-dark" onclick="saveButton('<?= $month ?>')">Скачать справки</a> -->
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#renderPDF" onclick="saveButton('<?= $month ?>')">
                         Справки
@@ -306,7 +317,7 @@ $url = $templateFolder . '/ajax.php';
 
         console.log('month', month);
 
-        var filename = '#' + <?= $arResult['COMPANY']['ID'] ?> + '_' + month + '_' + <?= $arResult['DETAIL']['YEAR'] ?> + '_<?= $arResult['DETAIL']['UF_NUMBER'] ?>_<?= TruncateText($arResult['COMPANY']['NAME'], 100) ?>.pdf'
+        var filename = '#' + <?= $arResult['COMPANY']['ID'] ?> + '_' + month + '_' + <?= $arResult['DETAIL']['YEAR'] ?> + '_<?= $arResult['DETAIL']['UF_NUMBER'] ?>_<?= TruncateText($arResult['COMPANY']['NAME'], 55) ?>.pdf'
 
         element = document.getElementById('reestr');
         // var element = document.getElementById('ref' + event);

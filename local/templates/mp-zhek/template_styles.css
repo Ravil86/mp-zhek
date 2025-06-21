@@ -2067,3 +2067,7 @@ button:focus-visible {
 .bg-0{
 background-color: transparent!important;
 }
+
+.link-underline{
+    text-decoration: underline;
+}
