@@ -255,8 +255,14 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 		$request = Application::getInstance()->getContext()->getRequest();
 
 		// return $request['METER'];
+		$log = [
+			'OBJECT' => $request['OBJECT'],
+			'METER' => $request['METER'],
+			'MONTH' => $request['MONTH'],
+			'NOTE' => $request['NOTE']
+		];
 
-		Bitrix\Main\Diag\Debug::dumpToFile(var_export($request, 1), '$request', 'test.log');
+		Bitrix\Main\Diag\Debug::dumpToFile(var_export($log, 1), 'request sendMeter', 'test.log');
 
 		foreach ($request['METER'] as $kCounter => $meter) {
 			if ($meter)

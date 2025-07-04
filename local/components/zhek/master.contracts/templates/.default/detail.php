@@ -55,8 +55,8 @@ if ($arResult['ACCESS']): ?>
         $selectMonth = trim($arResult['MONTH'] . '-' . $arResult['YEAR']);
 
         $useDate = false;
-        $number = FormatDate("m", MakeTimeStamp('01.' . $arResult['MONTH'] . '.' . $arResult['YEAR']));
-        // $number = FormatDate("n", MakeTimeStamp('01.' . $arResult['MONTH'] . '.' . $arResult['YEAR']));
+        //$number = FormatDate("m", MakeTimeStamp('01.' . $arResult['MONTH'] . '.' . $arResult['YEAR']));
+        $number = FormatDate("n", MakeTimeStamp('01.' . $arResult['MONTH'] . '.' . $arResult['YEAR']));
 
         // var_dump(date("m", strtotime("-1 month")));
 
@@ -105,7 +105,7 @@ if ($arResult['ACCESS']): ?>
                         </div>
                         <div class="card! mt-4 mb-1">
                             <div class="card-body!">
-                                <div class="h5 text-center">СПРАВКА № ' . $provider["LITERA"] . '-' . $arResult["DETAIL"]["ID"] . '/' . $number . ' ' . ToLower($monthYear) . 'г </div>';
+                                <div class="h5 text-center">СПРАВКА №' . /*$provider["LITERA"] . '-' . $arResult["DETAIL"]["ID"] . '/' .*/ $number . ' ' . ToLower($monthYear) . 'г </div>';
                 if ($arResult["SERVICE"][$provider["ID"]]["OBJECTS"]) {
                     echo '<div class="' . ($response ? 'table-responsive' : '') . '">
                                         <table class="table table-sm! mb-1">
@@ -250,7 +250,8 @@ if ($arResult['ACCESS']): ?>
             </div>
             <div class="col-auto me-2">
                 <? if ($useDate || $arResult['ADMIN'] || $arResult['MODERATOR']): ?>
-                    <!-- <a class="ui-btn ui-btn-primary-dark" onclick="saveButton('<?= $month ?>')">Скачать справки</a> -->
+                    <!-- <a class="ui-btn ui-btn-primary-dark" onclick="saveButton('<? //= $month
+                                                                                    ?>')">Скачать справки</a> -->
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#renderPDF" onclick="saveButton('<?= $month ?>')">
                         Справки
                     </button>

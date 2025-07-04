@@ -70,7 +70,7 @@ if ($arResult['ACCESS']):
                         $userSend = true;
 
                     ?>
-                    <div class="row card counter-item">
+                    <div class="row card counter-item" id="counter<?= $item['ID'] ?>">
                         <div class="card-body ps-2 pe-1 py-0">
                             <div class="row gx-2 align-items-stretch">
                                 <div class="col-<?= !$arResult['SEND_ADMIN'] ? '3' : '2' ?> py-3 d-flex align-items-center"><?= $item['UF_NAME'] ?></div>
@@ -124,7 +124,7 @@ if ($arResult['ACCESS']):
                     </div>
                     <div class="col-<?= !$arResult['SEND_ADMIN'] ? '4' : '5' ?> text-center bg-info-subtle rounded-bottom pb-2">
                         <? if ($arResult['SEND_ADMIN']): ?>
-                            <button type="button" class="ui-btn ui-btn-lg ui-btn-primary-dark" onclick="sendData()" <? //= !$userSend && $arResult['MODERATOR'] ? 'disabled' : '' 
+                            <button type="button" class="ui-btn ui-btn-lg ui-btn-primary-dark" onclick="sendData()" <? //= !$userSend && $arResult['MODERATOR'] ? 'disabled' : ''
                                                                                                                     ?>>корректировка показаниий</button>
                         <? else: ?>
                             <button type="button" class="ui-btn ui-btn-lg ui-btn-primary-dark" onclick="sendData()" <?= $userSend || !$arResult['SEND_FORM'] ? 'disabled' : '' ?>>Внести показания</button>
@@ -291,7 +291,7 @@ if ($arResult['ACCESS']):
 
 
             $('.null-meter').change(function() {
-                console.log($(this).data('switch-id'));
+                //console.log($(this).data('switch-id'));
 
                 let switchID = $(this).data('switch-id'),
                     inputID = $('#inputMeter' + switchID)
@@ -301,9 +301,11 @@ if ($arResult['ACCESS']):
                 $(this).closest('.counter-item').find('.changeDiff').html(0)
 
                 if ($(this).is(':checked')) {
-                    inputID.prop('disabled', true)
+                    inputID.prop('readonly', true).addClass('bg-secondary-subtle')
+                    // inputID.prop('disabled', true)
                 } else {
-                    inputID.prop('disabled', false)
+                    inputID.prop('readonly', false).removeClass('bg-secondary-subtle')
+                    // inputID.prop('disabled', false)
                 }
             });
 

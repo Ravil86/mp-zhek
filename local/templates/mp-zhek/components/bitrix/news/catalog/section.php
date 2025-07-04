@@ -1,4 +1,4 @@
-<?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
+<? if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 /** @var array $arParams */
 /** @var array $arResult */
 /** @global CMain $APPLICATION */
@@ -12,26 +12,26 @@
 /** @var CBitrixComponent $component */
 $this->setFrameMode(true);
 ?>
-<?if($arParams["USE_RSS"]=="Y"):?>
+<? if ($arParams["USE_RSS"] == "Y"): ?>
 	<?
-	$rss_url = CComponentEngine::makePathFromTemplate($arResult["FOLDER"].$arResult["URL_TEMPLATES"]["rss_section"], array_map("urlencode", $arResult["VARIABLES"]));
-	if(method_exists($APPLICATION, 'addheadstring'))
-		$APPLICATION->AddHeadString('<link rel="alternate" type="application/rss+xml" title="'.$rss_url.'" href="'.$rss_url.'" />');
+	$rss_url = CComponentEngine::makePathFromTemplate($arResult["FOLDER"] . $arResult["URL_TEMPLATES"]["rss_section"], array_map("urlencode", $arResult["VARIABLES"]));
+	if (method_exists($APPLICATION, 'addheadstring'))
+		$APPLICATION->AddHeadString('<link rel="alternate" type="application/rss+xml" title="' . $rss_url . '" href="' . $rss_url . '" />');
 	?>
-	<a href="<?=$rss_url?>" title="rss" target="_self"><img alt="RSS" src="<?=$templateFolder?>/images/gif-light/feed-icon-16x16.gif" border="0" align="right" /></a>
-<?endif?>
+	<a href="<?= $rss_url ?>" title="rss" target="_self"><img alt="RSS" src="<?= $templateFolder ?>/images/gif-light/feed-icon-16x16.gif" border="0" align="right" /></a>
+<? endif ?>
 
-<?if($arParams["USE_SEARCH"]=="Y"):?>
-<?=GetMessage("SEARCH_LABEL")?><?$APPLICATION->IncludeComponent(
-	"bitrix:search.form",
-	"flat",
-	Array(
-		"PAGE" => $arResult["FOLDER"].$arResult["URL_TEMPLATES"]["search"]
-	),
-	$component
-);?>
-<br />
-<?endif?>
+<? if ($arParams["USE_SEARCH"] == "Y"): ?>
+	<?= GetMessage("SEARCH_LABEL") ?><? $APPLICATION->IncludeComponent(
+											"bitrix:search.form",
+											"flat",
+											array(
+												"PAGE" => $arResult["FOLDER"] . $arResult["URL_TEMPLATES"]["search"]
+											),
+											$component
+										); ?>
+	<br />
+<? endif ?>
 <?/*if($arParams["USE_FILTER"]=="Y"):?>
 <?$APPLICATION->IncludeComponent(
 	"bitrix:catalog.filter",
@@ -51,36 +51,36 @@ $this->setFrameMode(true);
 );
 ?>
 <br />
-<?endif*/?>
+<?endif*/ ?>
 <div class="row">
-	<div class="col-lg-4 col-md-5">
-			<?
-			$APPLICATION->IncludeComponent(
-				"zhek:catalog.section.list",
-				"vertical-menu",
-				array(
-					"IBLOCK_TYPE" => $arParams["IBLOCK_TYPE"],
-					"IBLOCK_ID" => $arParams["IBLOCK_ID"],
-					"SECTION_ID" => $arResult["VARIABLES"]["SECTION_ID"],
-					"SECTION_CODE" => $arResult["VARIABLES"]["SECTION_CODE"],
-					"CACHE_TYPE" => $arParams["CACHE_TYPE"],
-					"CACHE_TIME" => $arParams["CACHE_TIME"],
-					"CACHE_GROUPS" => $arParams["CACHE_GROUPS"],
-					"COUNT_ELEMENTS" => 'N',
-					"TOP_DEPTH" => 1,
-					"SECTION_URL" => $arResult["FOLDER"].$arResult["URL_TEMPLATES"]["section"],
-					"VIEW_MODE" => $arParams["SECTIONS_VIEW_MODE"],
-					"SHOW_PARENT_NAME" => 'N',
-					"HIDE_SECTION_NAME" => "N",
-					"ADD_SECTIONS_CHAIN" => "N",
-					"SECTION_USER_FIELDS" => ["UF_LINK","UF_TABNAME"]
-				),
-				$component,
-				//array("HIDE_ICONS" => "Y")
-			);
-			?>
-		</div>
-	<div class="col-lg-8 col-md-7">
+
+	<?
+	$APPLICATION->IncludeComponent(
+		"zhek:catalog.section.list",
+		"vertical-menu",
+		array(
+			"IBLOCK_TYPE" => $arParams["IBLOCK_TYPE"],
+			"IBLOCK_ID" => $arParams["IBLOCK_ID"],
+			"SECTION_ID" => $arResult["VARIABLES"]["SECTION_ID"],
+			"SECTION_CODE" => $arResult["VARIABLES"]["SECTION_CODE"],
+			"CACHE_TYPE" => $arParams["CACHE_TYPE"],
+			"CACHE_TIME" => $arParams["CACHE_TIME"],
+			"CACHE_GROUPS" => $arParams["CACHE_GROUPS"],
+			"COUNT_ELEMENTS" => 'N',
+			"TOP_DEPTH" => 1,
+			"SECTION_URL" => $arResult["FOLDER"] . $arResult["URL_TEMPLATES"]["section"],
+			"VIEW_MODE" => $arParams["SECTIONS_VIEW_MODE"],
+			"SHOW_PARENT_NAME" => 'N',
+			"HIDE_SECTION_NAME" => "N",
+			"ADD_SECTIONS_CHAIN" => "N",
+			"SECTION_USER_FIELDS" => ["UF_LINK", "UF_TABNAME"]
+		),
+		$component,
+		array("HIDE_ICONS" => "Y")
+	);
+	?>
+
+
 	<?
 	$APPLICATION->IncludeComponent(
 		"zhek:catalog.section.list",
@@ -95,24 +95,23 @@ $this->setFrameMode(true);
 			"CACHE_GROUPS" => $arParams["CACHE_GROUPS"],
 			"COUNT_ELEMENTS" => 'N',
 			"TOP_DEPTH" => 5,
-			"SECTION_URL" => $arResult["FOLDER"].$arResult["URL_TEMPLATES"]["section"],
+			"SECTION_URL" => $arResult["FOLDER"] . $arResult["URL_TEMPLATES"]["section"],
 			"VIEW_MODE" => $arParams["SECTIONS_VIEW_MODE"],
 			"SHOW_PARENT_NAME" => 'Y',
 			"HIDE_SECTION_NAME" => (isset($arParams["SECTIONS_HIDE_SECTION_NAME"]) ? $arParams["SECTIONS_HIDE_SECTION_NAME"] : "N"),
 			"ADD_SECTIONS_CHAIN" => (isset($arParams["ADD_SECTIONS_CHAIN"]) ? $arParams["ADD_SECTIONS_CHAIN"] : ''),
-			"SECTION_USER_FIELDS" => ["UF_LINK","UF_DESC","UF_TABNAME"],
+			"SECTION_USER_FIELDS" => ["UF_LINK", "UF_DESC", "UF_TABNAME"],
 			"SORT_BY1" => $arParams["SORT_BY1"],
 			"SORT_ORDER1" => $arParams["SORT_ORDER1"],
 			"SORT_BY2" => $arParams["SORT_BY2"],
 			"SORT_ORDER2" => $arParams["SORT_ORDER2"],
 		),
 		$component,
-		//array("HIDE_ICONS" => "Y")
+		array("HIDE_ICONS" => "Y")
 	);
 	?>
-	</div>
 </div>
-<?	
+<?
 /*$APPLICATION->IncludeComponent(
 	"bitrix:news.list",
 	"",

@@ -200,6 +200,19 @@ class MasterReestr extends CBitrixComponent
 
 		$i = 0;
 
+		foreach ($itemsCompany as $keyCompany => $item) {
+			if ($item['OBJECTS']) {
+				foreach ($item['OBJECTS'] as $oKey => $object) {
+					$arrObjects[$oKey] = $oKey;
+				}
+			}
+		}
+		// dump($arrObjects);
+
+		$counterObjects = LKClass::getCounters($arrObjects);
+
+		// dump($counterObjects);
+
 		// foreach ($orgContracts as $orgID => &$item) {	// записи по контрактам
 		foreach ($itemsCompany as $keyCompany => &$item) {		// записи по всем организации
 			$countObjects = 0;
@@ -238,13 +251,13 @@ class MasterReestr extends CBitrixComponent
 
 					$column['EDIT'] = '<a class="text-center" href="/master/counter/' . $object['ID'] . '" target="_blank"><i class="revicon-pencil-1"></i></a>';
 
-					$counterObjects = LKClass::getCounters($object['ID']);
+					//$counterObjects = LKClass::getCounters($object['ID']);
 
 					$column['COUNTER'] = [];
 					$countersObject = [];
 					$arType = null;
 
-					foreach ($counterObjects as $key => $value) {
+					foreach ($counterObjects[$object['ID']] as $key => $value) {
 
 						$servicesImage = [];
 						if ($value['UF_TYPE']) {
@@ -306,7 +319,7 @@ class MasterReestr extends CBitrixComponent
 							$curentAllMeter = current($allMeters);
 						$column['METER_ALL'][$key] =  $curentAllMeter ?? '-';
 
-						$column['METER_RAZNOST'][$key] = $lastMeter && $curentAllMeter ? ($lastMeter - $curentAllMeter) : '-';
+						$column['METER_RAZNOST'][$key] = $lastMeter && $curentAllMeter ? round($lastMeter - $curentAllMeter, 2) : '-';
 
 						// $column['EDIT'][$key] = '<a href="/master/counter/' . $key . '" target="_blank">i</a><i class="bi bi-pencil"></i>';
 					}
@@ -328,14 +341,14 @@ class MasterReestr extends CBitrixComponent
 					// $curentCounterAll = [];
 
 					//все показания
-					$metersAll = LKClass::meters($object['ID']);
+					/*$metersAll = LKClass::meters($object['ID']);
 
 					if ($metersAll) {
 						foreach ($metersAll as $key => $meter) {
 							// gg($meter);
 							$arObjMeters[$meter['OBJECT']][$meter['COUNTER']][] = $meter['METER'];
 						}
-					}
+					}*/
 
 					// $arType = null;
 					// $curentAll = current(LKClass::meters($object['ID']));

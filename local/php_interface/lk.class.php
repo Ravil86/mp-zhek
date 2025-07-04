@@ -351,15 +351,10 @@ class LKClass
 
         $result = [];
         while ($counter = $rsHLoad->fetch()) {
-            // $value = [
-            //     'ID' => $counter['ID'],
-            //     'NAME' => $counter['UF_NAME'],
-            //     'NUMBER' => $counter['UF_NUMBER'],
-            //     'ORG' => $counter['UF_ORG'],
-            //     'TYPE' => $counter['UF_TYPE'],
-            // ];
-            $result[$counter['ID']] = $counter;
-            // $result[$counter['ID']] = $value;
+            if (is_array($objectID))
+                $result[$counter['UF_OBJECT']][$counter['ID']] = $counter;
+            else
+                $result[$counter['ID']] = $counter;
         }
 
         return $result;
