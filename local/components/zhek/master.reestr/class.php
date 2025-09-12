@@ -319,7 +319,7 @@ class MasterReestr extends CBitrixComponent
 							$curentAllMeter = current($allMeters);
 						$column['METER_ALL'][$key] =  $curentAllMeter ?? '-';
 
-						$column['METER_RAZNOST'][$key] = $lastMeter && $curentAllMeter ? round($lastMeter - $curentAllMeter, 2) : '-';
+						$column['METER_RAZNOST'][$key] = $lastMeter && $curentAllMeter ? round($lastMeter - $curentAllMeter, 3) : '-';
 
 						// $column['EDIT'][$key] = '<a href="/master/counter/' . $key . '" target="_blank">i</a><i class="bi bi-pencil"></i>';
 					}

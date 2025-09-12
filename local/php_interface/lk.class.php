@@ -199,7 +199,7 @@ class LKClass
 
         $classHL = \HLWrap::init(self::$_HL_Counters);
 
-        $data['UF_DATE'] = new DateTime(date('d.m.Y'));
+        // $data['UF_DATE'] = new DateTime(date('d.m.Y'));
 
         $result = $classHL::update($counterID, $data);
 

@@ -5128,9 +5128,10 @@ div.pp_default .pp_close:hover {
 }
 
 .revolution-slider h4 {
-	font-size: 22px;
+	font-size: 20px;
 	text-align: center;
 	font-weight: 400;
+	/* text-transform: none; */
 }
 
 .revolution-slider h2,
@@ -5156,7 +5157,7 @@ div.pp_default .pp_close:hover {
 .revolution-slider .tp-bgimg::after {
 	content: '';
 	position: absolute;
-	background-color: rgba(37, 40, 42, 0.7);
+	background-color: rgba(37, 40, 42, 0.4);
 	height: 100%;
 	width: 100%;
 }
@@ -5166,6 +5167,12 @@ div.pp_default .pp_close:hover {
 .tp-revslider-mainul .tp-loop-wrap,
 .tp-revslider-mainul .tp-mask-wrap {
 	width: 100% !important;
+}
+
+.tp-parallax-wrap{z-index: 999!important;}
+
+.main-caption{
+	background-color: rgba(37, 40, 42, 0.35);
 }
 
 .tp-caption a,

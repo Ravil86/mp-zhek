@@ -29,7 +29,7 @@ if ($arResult['ACCESS']):
             <div class="py-2 small col"><?= !$arResult['SEND_ADMIN'] ? 'Показания на ' : '' ?>начало месяца</div>
             <div class="py-2 small col"><?= !$arResult['SEND_ADMIN'] ? 'Разность за текущий месяц' : 'разность' ?></div>
             <div class="py-2 small col"><?= !$arResult['SEND_ADMIN'] ? 'Конечные показания' : 'конечные' ?></div>
-            <div class="py-2 col-<?= !$arResult['SEND_ADMIN'] ? '4' : '5' ?> text-center bg-info-subtle rounded-top">
+            <div class="py-2 col-12 col-lg-<?= !$arResult['SEND_ADMIN'] ? '4' : '5' ?> text-center bg-info-subtle rounded-top">
                 <div class="fs-5 mt-1">Ввод показаний</div>
                 <div class="row gx-2 mt-3">
                     <? if (!$arResult['SEND_ADMIN']): ?><div class="col small">Нулевой расход</div><? endif; ?>
@@ -78,7 +78,7 @@ if ($arResult['ACCESS']):
                                 <div class="col py-3 d-flex align-items-center justify-content-center current_use"><?= $prevMeterFormat ?></div>
                                 <div class="col py-3 d-flex align-items-center justify-content-center"><?= $raznostFormat ?></div>
                                 <div class="col py-3 d-flex align-items-center justify-content-center"><?= $lastMeter ? $lastMeterFormat : $prevMeterFormat ?></div>
-                                <div class="col-<?= !$arResult['SEND_ADMIN'] ? '4' : '5' ?> bg-info-subtle">
+                                <div class="col-12 col-lg-<?= !$arResult['SEND_ADMIN'] ? '4' : '5' ?> bg-info-subtle">
                                     <div class="d-flex align-items-center py-2">
                                         <? if (!$arResult['SEND_ADMIN']): ?>
                                             <div class="col-3 d-flex justify-content-center">
@@ -89,18 +89,20 @@ if ($arResult['ACCESS']):
                                                 </div>
                                             </div>
                                         <? else: ?>
-                                            <div class="col">&nbsp;&nbsp;</div>
+                                            <div class="col"></div>
                                         <? endif; ?>
-                                        <input id="inputMeter<?= $item['ID'] ?>" type="text" name="METER[<?= $item['ID'] ?>]" class="meter form-control" onkeyup="validate(this)" onclick="moveCaretToStart(this)"
-                                            min="<?= $lastMeter ?:  $prevMeter ?>" <?= $arResult['SEND_FORM'] && $userSend || !$arResult['SEND_FORM'] && !$arResult['SEND_ADMIN'] ? 'disabled' : '' ?> value="<?= $lastMeter ?:  $prevMeter ?>" data-current="<?= $prevMeterFormat ?>">
+                                        <div class="col-auto">
+                                            <input id="inputMeter<?= $item['ID'] ?>" type="text" name="METER[<?= $item['ID'] ?>]" class="meter form-control" onkeyup="validate(this)" onclick="moveCaretToStart(this)"
+                                                min="<?= $lastMeter ?:  $prevMeter ?>" <?= $arResult['SEND_FORM'] && $userSend || !$arResult['SEND_FORM'] && !$arResult['SEND_ADMIN'] ? 'disabled' : '' ?> value="<?/*= $lastMeter ?:  $prevMeter*/ ?>" data-current="<?= $prevMeterFormat ?>">
+                                        </div>
                                         <div class="col-<?= !$arResult['SEND_ADMIN'] ? '4' : '3' ?> d-flex justify-content-center align-items-end"><span class="fw-bold changeDiff">0</span><small class="ps-1"><?= $item['UNIT'] ?></small></div>
                                         <? if ($arResult['SEND_ADMIN']): ?>
-                                            <div class="col">
-                                                <div class="ui-ctl ui-ctl-textarea ui-ctl-xs">
+                                            <div class="col-auto">
+                                                <div class="ui-ctl ui-ctl-textarea ui-ctl-xs ui-ctl-resize-x">
                                                     <textarea class="ui-ctl-element" name="NOTE[<?= $item['ID'] ?>]" <?= $noteMeter ? 'readonly' : '' ?>><?= $noteMeter ?></textarea>
                                                 </div>
                                             </div>
-                                            <div class="col">&nbsp;&nbsp;</div>
+                                            <div class="col"></div>
                                         <? endif; ?>
                                     </div>
 
@@ -243,27 +245,53 @@ if ($arResult['ACCESS']):
                 event.preventDefault();
             });
 
-            $('.meter').keyup(function() {
+            $('.meter').each(function() {
 
-                var last = $(this).val()
+                $(this).keyup($.debounce(function() {
 
-                let current = $(this).data('current');
+                    let $this = $(this);
+                    // console.log('$this', $(this));
 
-                let diff_span = $(this).closest('.counter-item').find('.changeDiff')
+                    let diff_span = $this.closest('.counter-item').find('.changeDiff')
 
-                // var diff_val = Math.round(+last - +current )
-                // var diff_val = (+last - +current).toFixed(3)
+                    var last = $this.val()
 
-                // var diff_val = clear(last - current)
-                var diff_val = subtractFloats(last, current);
+                    let current = $this.data('current');
 
-                diff_span.html(diff_val)
-                console.log('diff_val', diff_val);
+                    var min = $this.attr('min');
 
-                // console.log($(this).val());
+                    var diff_val = subtractFloats(last, current);
+                    // console.log('diff_span', diff_val);
 
-                //$(this).val() // get the current value of the input field.
-            });
+                    // var diff_val = Math.round(+last - +current )
+                    // var diff_val = (+last - +current).toFixed(3)
+                    // var diff_val = clear(last - current)
+
+                    if (diff_val < 0) {
+
+                        $this.val(min);
+                        diff_val = subtractFloats(min, current);
+                        diff_span.html(diff_val)
+                    }
+                    diff_span.html(diff_val)
+
+                }, 1000));
+            })
+
+            /*$(".meter").focusout(function(e) {
+                var $this = $(this);
+                var val = $this.val();
+                // var max = $this.attr("max");
+                var min = $this.attr("min");
+
+                if (max > 0 && val > max) {
+                    e.preventDefault();
+                    $this.val(max);
+                } else if (min > 0 && val < min) {
+                    e.preventDefault();
+                    $this.val(min);
+                }
+            });*/
 
             function subtractFloats(float1, float2) {
                 // Преобразуем числа в строки
@@ -310,7 +338,7 @@ if ($arResult['ACCESS']):
             });
 
             function moveCaretToStart(inputObject) {
-                inputObject.setSelectionRange(0, 0)
+                // inputObject.setSelectionRange(0, 0)
             }
             // $(".meter").mask("9.9?99");
         </script>

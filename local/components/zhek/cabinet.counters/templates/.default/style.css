@@ -31,10 +31,18 @@
 --ui-field-size: 16px;
 
 }
+.ui-ctl-textarea{
+ width: 100%;
+}
 .ui-ctl-textarea.ui-ctl-xs{
-  width: 180px;
+  /* width: 180px; */
 }
 
 .ui-ctl-xs textarea{
 font-size: .75em;
+}
+
+.form-control{
+min-width: 100px;
+max-width: 150px;
 }

@@ -115,13 +115,17 @@ function getFileArray($fileId, $onlyPath = false)
 AddEventHandler("iblock", "OnBeforeIBlockElementDelete", "OnBeforeIBlockElementDeleteHandler");
 function OnBeforeIBlockElementDeleteHandler($ID)
 {
+	global $USER;
+
 	// Получаем данные об удаляемом элементе
 	$rsElement = CIBlockElement::GetByID($ID);
 	$arElement = $rsElement->Fetch();
-	if ($arElement["IBLOCK_ID"] == 2 || $arElement["IBLOCK_ID"] == 4 || $arElement["IBLOCK_ID"] == 8) {
-		global $APPLICATION;
-		$APPLICATION->ThrowException("Вы не можете удалить этот элемент инфоблока");
-		return false;
+	if (!$USER->IsAdmin()) {
+		if ($arElement["IBLOCK_ID"] == 2 || $arElement["IBLOCK_ID"] == 4 || $arElement["IBLOCK_ID"] == 8) {
+			global $APPLICATION;
+			$APPLICATION->ThrowException("Вы не можете удалить этот элемент инфоблока");
+			return false;
+		}
 	}
 }
 

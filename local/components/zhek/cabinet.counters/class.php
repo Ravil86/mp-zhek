@@ -74,26 +74,42 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 		$serviceList = LKClass::getService();
 		$myCompany = LKClass::myCompany();
 
-		$getMonth = LKClass::getMonth();
+		$monthList = LKClass::getMonth();
+
+		$selfMonth = date("m");
+		$prevMonth = date("m", strtotime('-1 month'));
 
 		$day = date("d");
+		$day = 25;
 
-		$dateStart = 1;
-		$dateEnd = 5;
+		$dateStart = 25;
+		$dateEnd = date('t');
 
-		$editEnd = 20;
+		// $dateStart = 1;
+		// $dateEnd = 5;
 
-		if ($day <= $editEnd) {
-			$prevMonth = date("m", strtotime('-1 month'));
-			$this->arResult['SAVE_MONTH'] = $getMonth[$prevMonth];
-			$arResult['SAVE_MONTH'] = $this->arResult['SAVE_MONTH'];
+		$editEnd = 5;
+
+		if ($dateStart <= $day && $day <= $dateEnd) {		//период подачи пользователем до конца месяца
+			$this->arResult['SAVE_MONTH'] = $monthList[$selfMonth];
+			$arResult['DATE_USER'] = true;
+		} elseif ($day == 1) {								//период подачи пользователем 1 числа
+			$this->arResult['SAVE_MONTH'] = $monthList[$prevMonth];
+			$arResult['DATE_USER'] = true;
+		} elseif ($day > 1 && $day <= $editEnd) {
+			$this->arResult['SAVE_MONTH'] = $monthList[$prevMonth];
+			$arResult['DATE_ADMIN'] = true;
+		} elseif ($day > $editEnd && $day < $dateStart) {
+			$this->arResult['SAVE_MONTH'] = $monthList[$selfMonth];
 		}
 
-		if ($dateStart <= $day && $day <= $dateEnd)
-			$arResult['DATE_USER'] = true;
+		$arResult['SAVE_MONTH'] = $this->arResult['SAVE_MONTH'];
 
-		if ($dateEnd < $day && $day <= $editEnd)
-			$arResult['DATE_ADMIN'] = true;
+		// if ($dateStart <= $day && $day <= $dateEnd)
+		// 	$arResult['DATE_USER'] = true;
+
+		// if ($dateEnd < $day && $day <= $editEnd)
+		// 	$arResult['DATE_ADMIN'] = true;
 
 		$this->arResult['SEND_ADMIN'] = $arResult['DATE_ADMIN'] && $arResult['MODERATOR'] || $arResult['ADMIN'];
 		$this->arResult['SEND_FORM'] = $arResult['DATE_USER'] && !$arResult['MODERATOR'] ?? false;

@@ -29,6 +29,9 @@ use Bitrix\Highloadblock as HL;
         </div>
     </div>
     <div class="col-md-12">
+        <!-- <div class="ui-ctl ui-ctl-textbox ui-ctl-lg! col-3 mb-2">
+            <input id="search" class="ui-ctl-element form-control" type="text" placeholder="найти организацию">
+        </div> -->
         <div class="table-responsive">
             <table id="table-reestr" class="table table-bordered align-middle">
                 <thead class="table-light text-center">
@@ -68,20 +71,20 @@ use Bitrix\Highloadblock as HL;
                         // if (empty($row['columns']['COUNTER']))
                         //     continue;
                         // gg($arResult['GRID']['ROW_LAYOUT'][$rKey]);
-
+                        // gg($arResult['GRID']['ROW_LAYOUT'][$rKey]);
                         echo '<tr>';
 
                         foreach ($arResult['GRID']['COLUMNS'] as $cKey => $col) : ?>
                             <?
                             $layout =  $arResult['GRID']['ROW_LAYOUT'][$rKey][$cKey];
 
-                            // gg($row['columns']['ALERT']);
-
                             if ($layout['column'] == $col['id']):
                             ?>
-                                <? $valueTD = $row['columns'][$col['id']]; ?>
+                                <? $valueTD = $row['columns'][$col['id']];
+                                // gg($layout);
+                                ?>
                                 <td scope="row" <?= $layout['rowspan'] ? 'rowspan="' . $layout['rowspan'] . '"' : '' ?>
-                                    class="<?= is_array($valueTD) ? 'p-0 border-bottom-0 align-baseline!' : '' ?><?= isset($col['colspan']) || $col['center'] ? ' text-center' : '' ?>">
+                                    class="<?= $layout['column'] == 'UF_NAME' ? 'name' : '' ?><?= is_array($valueTD) ? 'p-0 border-bottom-0 align-baseline!' : '' ?><?= isset($col['colspan']) || $col['center'] ? ' text-center' : '' ?>">
                                     <? if (is_array($valueTD)): ?>
                                         <div class="table mb-0 d-flex flex-column gy-1 h-100">
                                             <? foreach ($valueTD as $key => $value): ?>
@@ -104,6 +107,10 @@ use Bitrix\Highloadblock as HL;
                         echo '</tr>';
                     }
                     ?>
+                    <!-- Отобразить этот <tr>, если при поиске не найдено ни одной записи -->
+                    <tr class='notfound'>
+                        <td colspan='4'>Запись не найдена</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -112,58 +119,55 @@ use Bitrix\Highloadblock as HL;
     <font class="errortext">нет доступа</font>
 <? endif; ?>
 <script>
-    const addCompany = new bootstrap.Modal('#addCompany')
-    const addUser = new bootstrap.Modal('#addUser')
+    $(document).ready(function() {
 
-    var splitButton = new BX.UI.SplitButton({
-        text: "Добавить организацию",
-        color: BX.UI.Button.Color.PRIMARY,
-        // size: BX.UI.Button.Size.LARGE,
-        // icon: BX.UI.Button.Icon.BUSINESS,
-        menu: {
-            items: [{
-                    text: "Добавить пользователя",
-                    onclick: function(button, event) {
-                        addUser.show()
-                    },
-                },
-                // {
-                //     delimiter: true
-                // },
-                // {
-                //     text: "Закрыть",
-                //     onclick: function(event, item) {
-                //         item.getMenuWindow().close();
-                //     }
-                // }
-            ],
-        },
-        mainButton: {
-            onclick: function(button, event) {
-                addCompany.show()
-            },
-            // props: {
-            //     href: "/"
-            // },
-            // tag: BX.UI.Button.Tag.LINK
-        },
-        menuButton: {
-            onclick: function(button, event) {
-                button.setActive(!button.isActive());
-            },
-            props: {
-                "data-abc": "123"
-            },
-            events: {
-                mouseenter: function(button, event) {
-                    console.log("menu button mouseenter", button, event);
-                }
-            },
-        },
+        // Поиск только по столбцу с именами
+        /*
+        $('#search').keyup(function() {
+            // Текст для поиска
+            var search = $(this).val();
+
+            // Скрыть все строки tbody таблицы
+            $('table tbody tr').hide();
+
+            // Подсчитываем общее количество результатов поиска
+            var len = $('table tbody tr:not(.notfound) td.name:contains("' + search + '")').length;
+
+            if (len > 0) {
+                // Поиск текста в столбцах и отображение соответствующей строки
+                $('table tbody tr:not(.notfound) td.name:contains("' + search + '")').each(function() {
+                    $(this).closest('tr').show();
+                });
+            } else {
+                $('.notfound').show();
+            }
+
+        });
+
     });
 
-    (function() {
-        var container = document.getElementById("button");
-        //splitButton.renderTo(container);
-    })();
+    // Поиск без учета регистра (Примечание: удалите приведенный ниже скрипт для поиска с учетом регистра)
+    $.expr[":"].contains = $.expr.createPseudo(function(arg) {
+        return function(elem) {
+            return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+        };
+*/
+
+        /*$("#search").on("keyup", function() {
+                var value = $(this).val();
+                console.log(value);
+
+                $("table tr").each(function(index) {
+                    if (index != 0) {
+                        $row = $(this);
+                        var id = $row.find("td:first").text();
+                        if (id.indexOf(value) != 0) {
+                            $(this).hide();
+                        } else {
+                            $(this).show();
+                        }
+                    }
+                });
+            });*/
+    });
 </script>
