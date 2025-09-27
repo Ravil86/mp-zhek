@@ -143,7 +143,7 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 					$types[] = '<img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/>';
 				}
 				$item['UNIT'] = $unit;
-				$item['SERVICE'] = implode(' ', $types);
+				$item['SERVICE'] = '<div>' . implode(' ', $types) . '</div>';
 
 				$this->arResult['DETAIL']['LIST'][$item['ID']] = $item;
 			}
