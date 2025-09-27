@@ -26,6 +26,7 @@ class LKClass
     protected static $_HL_Meter = "Meter"; // HL типы услуг
     protected static $_HL_Losses = "Losses"; // HL типы услуг
     protected static $_HL_Month = "Month"; // HL месяцы
+    protected static $_HL_Related = "RelatedCounters"; // HL месяцы
 
     protected static $MASTER = "MASTER"; // код группы Мастер участка
     protected static $ORG = "ORG"; // код группы Организации
@@ -327,6 +328,7 @@ class LKClass
                 'ADDRESS' => $object['UF_ADRES'],
                 'DOGOVOR' => $object['UF_DOGOVOR'],
                 'ORG' => $object['UF_ORG'],
+                'ACTIVE' => $object['UF_ACTIVE'],
             ];
             $result[$object['ID']] = $value;
         }
@@ -336,12 +338,13 @@ class LKClass
     }
 
 
-    public static function getCounters($objectID)
+    public static function getCounters($objectID = null)
     {
 
         $classHL = \HLWrap::init(self::$_HL_Counters);
-
-        $filter = ['UF_OBJECT' => $objectID];
+        $filter = [];
+        if ($objectID)
+            $filter['UF_OBJECT'] = $objectID;
 
         $rsHLoad = $classHL::getList([
             'select' => ['*'],
@@ -747,5 +750,39 @@ class LKClass
         $arUser['FULL_NAME'] = ($arUser["LAST_NAME"] ? $arUser["LAST_NAME"] . ' ' : '') . $arUser["NAME"] . ($arUser['SECOND_NAME'] ? ' ' . $arUser['SECOND_NAME'] : '');
 
         return $arUser;
+    }
+
+    public static function getRelated($norma = false)
+    {
+
+        $classHL = \HLWrap::init(self::$_HL_Related);
+
+        $filter = [];
+
+        // if ($norma)
+        //     $filter['UF_NORM'] = true;
+        // else
+        //     $filter['UF_NORM'] = false;
+
+        $rsHLoad = $classHL::getList([
+            'select' => ['*'],
+            'filter' => $filter,
+            'order' => []
+        ]);
+
+        $result = [];
+        while ($fields = $rsHLoad->fetch()) {
+
+            // $value = [
+            //     'ID' => $losses['ID'],
+            //     'NAME' => $losses['UF_NAME'],
+            //     'OBJECT' => $losses['UF_OBJECT'],
+            //     'VALUE' => $losses['UF_VALUE'],
+            //     'MONTH' => $losses['UF_MONTH'],
+            // ];
+            $result[$fields['UF_OBJECT']] = $fields;
+        }
+        // gg($result);
+        return $result;
     }
 }

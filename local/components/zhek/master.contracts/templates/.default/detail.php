@@ -43,11 +43,16 @@ if ($arResult['ACCESS']): ?>
             return $a['DATE'] <=> $b['DATE'];
         }
 
-        $dateStr = date('2025-01-01');
-        // $dateStr = date('Y-m-d', strtotime('-3 months'));
+        if (date("n") > 2)
+            $dateStr = date('Y' . '-01-01');
+        else
+            $dateStr = date('Y-' . '11' . '-d', strtotime('-1 year'));  //Ноябрь прошлого года если сейчас январь месяц
 
-        $dateEnd = date('Y-m-d', strtotime('last day of last month'));
-        // $dateEnd = date("Y-m-d", strtotime('-1 month'));
+        // $dateStr = date('Y-m-d', strtotime('-3 months'));    //нельзя
+
+        $dateEnd = date('Y-m-' . '25');  //текущий месяц 25 число
+        // $dateEnd = date('Y-m-d', strtotime('last day of last month'));  //последний день прошлого месяца
+        // $dateEnd = date("Y-m-d", strtotime('-1 month')); //текущий день прошлого месяца
 
         $begin = new DateTime($dateStr);
         $end = new DateTime($dateEnd);
@@ -58,9 +63,11 @@ if ($arResult['ACCESS']): ?>
         //$number = FormatDate("m", MakeTimeStamp('01.' . $arResult['MONTH'] . '.' . $arResult['YEAR']));
         $number = FormatDate("n", MakeTimeStamp('01.' . $arResult['MONTH'] . '.' . $arResult['YEAR']));
 
-        // var_dump(date("m", strtotime("-1 month")));
-
-        if ($arResult['MONTH'] == date("m", strtotime("-1 month")) && $arResult['YEAR'] == date('Y')) {
+        if (
+            ($arResult['MONTH'] == date("m") && date("d") >= 25 && $arResult['YEAR'] == date('Y')) ||
+            ($arResult['MONTH'] == date("m", strtotime("-1 month")) && $arResult['YEAR'] == date('Y'))
+        ) {
+            // if ($arResult['MONTH'] == date("m", strtotime("-1 month")) && $arResult['YEAR'] == date('Y')) {
             $useDate = true;
         }
 

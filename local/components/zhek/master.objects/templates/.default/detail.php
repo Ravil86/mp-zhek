@@ -94,8 +94,7 @@ if ($arResult['ACCESS']): ?>
     // ];
 
     foreach ($arResult['ITEMS'] as $key => $value): ?>
-
-        <div class="card my-2">
+        <div class="card my-2<?= !$value['ACTIVE'] && $value['ACTIVE'] != null ? ' border-warning' : '' ?>">
             <div class="card-body">
                 <div class="row gx-1">
                     <form class="col-8 col-lg edit-block">
@@ -120,69 +119,72 @@ if ($arResult['ACCESS']): ?>
                             </div>
                         </div>
                     </form>
-                    <div class="col-auto d-grid d-xl-flex">
-                        <button class="ui-btn ui-btn-sm ui-btn-secondary" data-bs-toggle="modal" data-bs-target="#counterModal<?= $value['ID']; ?>">Добавить счётчик</button>
-                        <button class="ui-btn ui-btn-sm ui-btn-light-border" data-bs-toggle="collapse"
-                            data-bs-target="#collapseLosses<?= $value['ID']; ?>" role="button">Потери</button>
-                        <button class="ui-btn ui-btn-sm ui-btn-light-border" data-bs-toggle="collapse"
-                            data-bs-target="#collapseStandart<?= $value['ID']; ?>" role="button">Норматив</button>
-                    </div>
+                    <? if ($value['ACTIVE'] == null || $value['ACTIVE'] != false): ?>
+                        <div class="col-auto d-grid d-xl-flex">
+                            <button class="ui-btn ui-btn-sm ui-btn-secondary" data-bs-toggle="modal" data-bs-target="#counterModal<?= $value['ID']; ?>">Добавить счётчик</button>
+                            <button class="ui-btn ui-btn-sm ui-btn-light-border" data-bs-toggle="collapse"
+                                data-bs-target="#collapseLosses<?= $value['ID']; ?>" role="button">Потери</button>
+                            <button class="ui-btn ui-btn-sm ui-btn-light-border" data-bs-toggle="collapse"
+                                data-bs-target="#collapseStandart<?= $value['ID']; ?>" role="button">Норматив</button>
+                        </div>
+                    <? endif; ?>
                 </div>
-                <div class="grid_form">
-                    <?
-                    $grid_options = new CGridOptions($arResult["GRID_DETAIL"]);
+                <? if ($value['ACTIVE'] == null || $value['ACTIVE'] != false): ?>
+                    <div class="grid_form">
+                        <?
+                        $grid_options = new CGridOptions($arResult["GRID_DETAIL"]);
 
-                    // dump($controlPanel);
-                    //$controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getForAllCheckbox();
+                        // dump($controlPanel);
+                        //$controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getForAllCheckbox();
 
-                    // $controlPanel['GROUPS'][1]['ITEMS'][] = [
-                    //     'ID'       => 'edit',
-                    //     'TYPE'     => 'BUTTON',
-                    //     'TEXT'        => 'добавить',
-                    //     'CLASS'        => 'icon edit',
-                    //     'ONCHANGE' => ''
-                    // ];
+                        // $controlPanel['GROUPS'][1]['ITEMS'][] = [
+                        //     'ID'       => 'edit',
+                        //     'TYPE'     => 'BUTTON',
+                        //     'TEXT'        => 'добавить',
+                        //     'CLASS'        => 'icon edit',
+                        //     'ONCHANGE' => ''
+                        // ];
 
-                    $gridParams = [
-                        'GRID_ID' => $arResult['DETAIL']['GRID'] . '_' . $value['ID'],
-                        'COLUMNS' => $arResult['DETAIL']['COLUMNS'],
-                        'ROWS' => $value['ROWS'],
-                        // 'FOOTER' => [
-                        //     'TOTAL_ROWS_COUNT' => $arResult['GRID']['COUNT'],
-                        // ],
-                        'NAV_OBJECT' => $nav,
-                        'AJAX_MODE' => 'N',     //не обновляет
-                        'AJAX_ID' => 'AJAX_' . $arResult['GRID_ID'],
-                        //'AJAX_ID' => \CAjax::getComponentID('bitrix:main.ui.grid', '.default', ''),
-                        'PAGE_SIZES' => [
-                            ['NAME' => "5", 'VALUE' => '5'],
-                            ['NAME' => '10', 'VALUE' => '10'],
-                            ['NAME' => '20', 'VALUE' => '20'],
-                            ['NAME' => '50', 'VALUE' => '50'],
-                            ['NAME' => '100', 'VALUE' => '100']
-                        ],
-                        'SHOW_ROW_CHECKBOXES'       => true,    //Разрешает отображение чекбоксов для строк.
-                        'AJAX_OPTION_JUMP'          => 'N',
-                        'SHOW_CHECK_ALL_CHECKBOXES' => false,    //Разрешает отображение чекбоксов "Выбрать все"
-                        'SHOW_ROW_ACTIONS_MENU'     => true,    //Разрешает отображение меню действий строки
-                        'SHOW_GRID_SETTINGS_MENU'   => true,    //Разрешает отображение меню настройки грида (кнопка с шестеренкой)
-                        'SHOW_NAVIGATION_PANEL'     => false,    //Разрешает отображение кнопки панели навигации. (Постраничка, размер страницы и т. д.)
-                        'SHOW_PAGINATION'           => false,    //Разрешает отображение постраничной навигации
-                        'SHOW_SELECTED_COUNTER'     => false,   //Разрешает отображение счетчика выделенных строк
-                        'SHOW_TOTAL_COUNTER'        => false,    //Разрешает отображение счетчика общего количества строк на всех страницах
-                        'SHOW_PAGESIZE'             => false,    //Разрешает отображение выпадающего списка с выбором размера страницы
-                        'SHOW_ACTION_PANEL'         => true,    //Разрешает отображение панели групповых действий
-                        'ALLOW_COLUMNS_SORT'        => true,    //Разрешает сортировку колонок перетаскиванием
-                        'ALLOW_COLUMNS_RESIZE'      => true,    //Разрешает изменение размера колонок
-                        'ALLOW_HORIZONTAL_SCROLL'   => true,    //Разрешает горизонтальную прокрутку, если грид не помещается по ширине
-                        'ALLOW_SORT'                => true,    //Разрешает сортировку по клику на заголовок колонки
-                        'ALLOW_PIN_HEADER'          => true,    //Разрешает закрепление шапки грида к верху окна браузера при прокрутке
-                        'AJAX_OPTION_HISTORY'       => 'N',
-                        'SHOW_GROUP_EDIT_BUTTON'    => true,    //Разрешает вывод стандартной кнопки "Редактировать" в панель групповых действий
-                        'ALLOW_INLINE_EDIT'         => true,    //Разрешает инлайн-редактирование строк
-                        'ALLOW_CONTEXT_MENU'        => true,    //Разрешает вывод контекстного меню по клику правой кнопкой на строку
-                        'ACTION_PANEL'              => $controlPanel,
-                        /*'ACTION_PANEL'              => [
+                        $gridParams = [
+                            'GRID_ID' => $arResult['DETAIL']['GRID'] . '_' . $value['ID'],
+                            'COLUMNS' => $arResult['DETAIL']['COLUMNS'],
+                            'ROWS' => $value['ROWS'],
+                            // 'FOOTER' => [
+                            //     'TOTAL_ROWS_COUNT' => $arResult['GRID']['COUNT'],
+                            // ],
+                            'NAV_OBJECT' => $nav,
+                            'AJAX_MODE' => 'N',     //не обновляет
+                            'AJAX_ID' => 'AJAX_' . $arResult['GRID_ID'],
+                            //'AJAX_ID' => \CAjax::getComponentID('bitrix:main.ui.grid', '.default', ''),
+                            'PAGE_SIZES' => [
+                                ['NAME' => "5", 'VALUE' => '5'],
+                                ['NAME' => '10', 'VALUE' => '10'],
+                                ['NAME' => '20', 'VALUE' => '20'],
+                                ['NAME' => '50', 'VALUE' => '50'],
+                                ['NAME' => '100', 'VALUE' => '100']
+                            ],
+                            'SHOW_ROW_CHECKBOXES'       => true,    //Разрешает отображение чекбоксов для строк.
+                            'AJAX_OPTION_JUMP'          => 'N',
+                            'SHOW_CHECK_ALL_CHECKBOXES' => false,    //Разрешает отображение чекбоксов "Выбрать все"
+                            'SHOW_ROW_ACTIONS_MENU'     => true,    //Разрешает отображение меню действий строки
+                            'SHOW_GRID_SETTINGS_MENU'   => true,    //Разрешает отображение меню настройки грида (кнопка с шестеренкой)
+                            'SHOW_NAVIGATION_PANEL'     => false,    //Разрешает отображение кнопки панели навигации. (Постраничка, размер страницы и т. д.)
+                            'SHOW_PAGINATION'           => false,    //Разрешает отображение постраничной навигации
+                            'SHOW_SELECTED_COUNTER'     => false,   //Разрешает отображение счетчика выделенных строк
+                            'SHOW_TOTAL_COUNTER'        => false,    //Разрешает отображение счетчика общего количества строк на всех страницах
+                            'SHOW_PAGESIZE'             => false,    //Разрешает отображение выпадающего списка с выбором размера страницы
+                            'SHOW_ACTION_PANEL'         => true,    //Разрешает отображение панели групповых действий
+                            'ALLOW_COLUMNS_SORT'        => true,    //Разрешает сортировку колонок перетаскиванием
+                            'ALLOW_COLUMNS_RESIZE'      => true,    //Разрешает изменение размера колонок
+                            'ALLOW_HORIZONTAL_SCROLL'   => true,    //Разрешает горизонтальную прокрутку, если грид не помещается по ширине
+                            'ALLOW_SORT'                => true,    //Разрешает сортировку по клику на заголовок колонки
+                            'ALLOW_PIN_HEADER'          => true,    //Разрешает закрепление шапки грида к верху окна браузера при прокрутке
+                            'AJAX_OPTION_HISTORY'       => 'N',
+                            'SHOW_GROUP_EDIT_BUTTON'    => true,    //Разрешает вывод стандартной кнопки "Редактировать" в панель групповых действий
+                            'ALLOW_INLINE_EDIT'         => true,    //Разрешает инлайн-редактирование строк
+                            'ALLOW_CONTEXT_MENU'        => true,    //Разрешает вывод контекстного меню по клику правой кнопкой на строку
+                            'ACTION_PANEL'              => $controlPanel,
+                            /*'ACTION_PANEL'              => [
                         'GROUPS' => [
                             'TYPE' => [
                                 'ITEMS' => [
@@ -204,89 +206,90 @@ if ($arResult['ACCESS']): ?>
                             ]
                         ],
                     ],*/
-                    ];
-                    ?>
-                </div>
-                <div>
-                    <div class="collapse" id="collapseLosses<?= $value['ID']; ?>">
-                        <hr>
-                        <div class="text-center">
-                            <div class="row g-0">
-                                <div class="col-2 col-lg-1">
-                                    <div class="card-body px-0">
-                                        <p class="py-0">Месяцы</p>
-                                        <p class="py-3">Потери (Гкал)</p>
+                        ];
+                        ?>
+                    </div>
+                    <div>
+                        <div class="collapse" id="collapseLosses<?= $value['ID']; ?>">
+                            <hr>
+                            <div class="text-center">
+                                <div class="row g-0">
+                                    <div class="col-2 col-lg-1">
+                                        <div class="card-body px-0">
+                                            <p class="py-0">Месяцы</p>
+                                            <p class="py-3">Потери (Гкал)</p>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col">
-                                    <div class="card-body">
-                                        <form class="losses_add" id="losses<?= $value['ID'] ?>">
-                                            <input type="hidden" name="object" value="Y">
-                                            <div class="row gx-2">
-                                                <? foreach ($arResult['MONTH'] as $id => $month): ?>
-                                                    <div class="col-3 col-lg-2 col-xxl-1">
-                                                        <div class="h6"><?= $month['VALUE'] ?></div>
-                                                        <input class="ui-ctl-element" type="text" name="losses[<?= $id ?>]" onkeyup="validate(this)" value="<?= $arResult['LOSSES'][$value['ID']][$id] ?>">
-                                                    </div>
-                                                <? endforeach; ?>
-                                            </div>
-                                            <div class="mt-2">
-                                                <div class="row justify-content-center align-items-end">
-                                                    <div class="col-auto">
-                                                        <button type="button" class="ui-btn ui-btn-success" onclick="saveLosses(<?= $value['ID'] ?>)">Сохранить Потери</button>
-                                                    </div>
-                                                    <div class="col-5 col-xl-3">
-                                                        <div id="mess" class="alert py-2 mb-0 d-none" role="alert">Ошибка</div>
+                                    <div class="col">
+                                        <div class="card-body">
+                                            <form class="losses_add" id="losses<?= $value['ID'] ?>">
+                                                <input type="hidden" name="object" value="Y">
+                                                <div class="row gx-2">
+                                                    <? foreach ($arResult['MONTH'] as $id => $month): ?>
+                                                        <div class="col-3 col-lg-2 col-xxl-1">
+                                                            <div class="h6"><?= $month['VALUE'] ?></div>
+                                                            <input class="ui-ctl-element" type="text" name="losses[<?= $id ?>]" onkeyup="validate(this)" value="<?= $arResult['LOSSES'][$value['ID']][$id] ?>">
+                                                        </div>
+                                                    <? endforeach; ?>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <div class="row justify-content-center align-items-end">
+                                                        <div class="col-auto">
+                                                            <button type="button" class="ui-btn ui-btn-success" onclick="saveLosses(<?= $value['ID'] ?>)">Сохранить Потери</button>
+                                                        </div>
+                                                        <div class="col-5 col-xl-3">
+                                                            <div id="mess" class="alert py-2 mb-0 d-none" role="alert">Ошибка</div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </form>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="collapse" id="collapseStandart<?= $value['ID']; ?>">
-                        <hr>
-                        <div class="text-center">
-                            <div class="row g-0">
-                                <div class="col-2 col-lg-1">
-                                    <div class="card-body px-0">
-                                        <p class="py-0">Месяцы</p>
-                                        <p class="py-3">Норматив (Гкал)</p>
+                        <div class="collapse" id="collapseStandart<?= $value['ID']; ?>">
+                            <hr>
+                            <div class="text-center">
+                                <div class="row g-0">
+                                    <div class="col-2 col-lg-1">
+                                        <div class="card-body px-0">
+                                            <p class="py-0">Месяцы</p>
+                                            <p class="py-3">Норматив (Гкал)</p>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col">
-                                    <div class="card-body">
-                                        <form class="norma_add" id="norma<?= $value['ID'] ?>">
-                                            <input type="hidden" name="object" value="Y">
-                                            <div class="row gx-2">
-                                                <? foreach ($arResult['MONTH'] as $id => $month): ?>
-                                                    <div class="col-3 col-lg-2 col-xxl-1">
-                                                        <div class="h6"><?= $month['VALUE'] ?></div>
-                                                        <input class="ui-ctl-element" type="text" name="norma[<?= $id ?>]" onkeyup="validate(this)" value="<?= $arResult['NORMATIV'][$value['ID']][$id] ?>">
-                                                    </div>
-                                                <? endforeach; ?>
-                                            </div>
-                                            <div class="mt-2">
-                                                <div class="row justify-content-center align-items-end">
-                                                    <div class="col-auto">
-                                                        <button type="button" class="ui-btn ui-btn-success" onclick="saveNorma(<?= $value['ID'] ?>)">Сохранить Норматив</button>
-                                                    </div>
-                                                    <div class="col-5 col-xl-3">
-                                                        <div id="mess" class="alert py-2 mb-0 d-none" role="alert">Ошибка</div>
+                                    <div class="col">
+                                        <div class="card-body">
+                                            <form class="norma_add" id="norma<?= $value['ID'] ?>">
+                                                <input type="hidden" name="object" value="Y">
+                                                <div class="row gx-2">
+                                                    <? foreach ($arResult['MONTH'] as $id => $month): ?>
+                                                        <div class="col-3 col-lg-2 col-xxl-1">
+                                                            <div class="h6"><?= $month['VALUE'] ?></div>
+                                                            <input class="ui-ctl-element" type="text" name="norma[<?= $id ?>]" onkeyup="validate(this)" value="<?= $arResult['NORMATIV'][$value['ID']][$id] ?>">
+                                                        </div>
+                                                    <? endforeach; ?>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <div class="row justify-content-center align-items-end">
+                                                        <div class="col-auto">
+                                                            <button type="button" class="ui-btn ui-btn-success" onclick="saveNorma(<?= $value['ID'] ?>)">Сохранить Норматив</button>
+                                                        </div>
+                                                        <div class="col-5 col-xl-3">
+                                                            <div id="mess" class="alert py-2 mb-0 d-none" role="alert">Ошибка</div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </form>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <? $APPLICATION->IncludeComponent('bitrix:main.ui.grid', '', $gridParams); ?>
+                    <? $APPLICATION->IncludeComponent('bitrix:main.ui.grid', '', $gridParams); ?>
+                <? endif; ?>
             </div>
         </div>
         <div class="modal counter-modal fade" id="counterModal<?= $value['ID']; ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-id="<?= $value['ID']; ?>">

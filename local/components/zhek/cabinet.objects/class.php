@@ -64,13 +64,13 @@ class CabinetObjects extends CBitrixComponent
 
 		$myCompany = LKClass::myCompany();
 
-
 		if ($myCompany)
 			$arObjects = LKClass::getObjects($myCompany['ID']);
 
 		if ($this->arResult['VARIABLES']) {
 
 			$objectID = $this->arResult['VARIABLES']['DETAIL_ID'];
+			$this->arResult['DETAIL']['ID'] = $objectID;
 
 			$this->arResult['DETAIL']['GRID'] =  $this->arResult['GRID_ID'] . '_detail';
 			$arResult['DETAIL']['GRID'] = $this->arResult['DETAIL']['GRID'];
@@ -78,8 +78,8 @@ class CabinetObjects extends CBitrixComponent
 			$this->arResult['DETAIL']['OBJECT'] = $arObjects[$objectID];
 
 			$countersObject = LKClass::getCounters($this->arResult['VARIABLES']['DETAIL_ID']);
-
-			// dump($countersObject);
+			$this->arResult['COUNTERS'] = LKClass::getCounters();
+			// gg($this->arResult['COUNTERS']);
 
 			$grid_options = new CGridOptions($this->arResult['DETAIL']['GRID']);
 			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
@@ -120,6 +120,10 @@ class CabinetObjects extends CBitrixComponent
 					'data' => $item
 				];
 			}
+			$this->arResult['RELATED'] = LKClass::getRelated();
+			$this->arResult['OBJECTS'] = LKClass::getObjects();
+			$this->arResult['COMPANY'] = LKClass::getCompany();
+			// gg(LKClass::getRelated());
 
 			// $this->arResult['DETAIL'] = $arItems[$this->arResult['VARIABLES']['DETAIL_ID']];
 

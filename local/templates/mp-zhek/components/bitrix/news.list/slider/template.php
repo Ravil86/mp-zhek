@@ -30,7 +30,7 @@ $this->setFrameMode(true);
 						data-x="center"
 						data-y="<?= $arItem['PROPERTIES']['LINK']['VALUE'] ? "['100', '80', '60', '40']" : "['125', '100', '70', '50']" ?>">
 
-						<div class="row! d-flex justify-content-center z-2">
+						<div class="row! d-flex justify-content-center z-2!">
 							<div class="col-9 main-caption p-4">
 								<h2 class="h1!">
 									<? if ($arItem['PROPERTIES']['LINK']['VALUE']): ?><a href="<?= $arItem['PROPERTIES']['LINK']['VALUE'] ?>" title="<?= $arItem["NAME"] ?>"><? endif; ?>

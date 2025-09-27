@@ -260,12 +260,12 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 											BX.Event.bind(button, "click", () => getPicker().show());
 										})();
 									</script>';
-
+					// gg($key);
 
 					$item['ROWS'][$key] = [
 						'columns' => $column,
 						'data' => $data,		//Данные для инлайн-редактирования
-
+						// 'editable' => false
 						//'actions' => [ //Действия над ними
 						// [
 						// 	'text'    => 'Редактировать',
@@ -447,20 +447,39 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 				$item["DETAIL"] = $status;
 
 				$objLoss = [];
+				$countLoss = 0;
 				if ($idsObjects = $orgObjectsIDs[$item['ID']]) {
 					foreach ($idsObjects as $key => $obj) {
 						$objLoss[$obj] = $lossObjects[$obj] ?: 0;
+						if ($lossObjects[$obj])
+							$countLoss += 1;
 					}
 				}
-				$item["LOSSES"] = implode('/', $objLoss);
+
+				//$item["LOSSES"] = '<div class="mt-1 ui-counter ui-counter-light gray! ms-2"><div class="ui-counter-inner px-1 py-2">' . $countLoss . '</div></div>/';
+				$item["LOSSES"] .= '<div class="ui-counter ui-counter-gray">
+										<div class="ui-counter-inner px-2 py-3 rounded-circle">
+											<span>' . $countLoss . '</span>/<span class="fw-bold fs-6!"> ' . count($objLoss) . '</span>
+										</div>
+									</div>';
+				// $item["LOSSES"] = implode('/', $objLoss);
 
 				$objNorm = [];
+				$countNorm = 0;
 				if ($idsObjects = $orgObjectsIDs[$item['ID']]) {
 					foreach ($idsObjects as $key => $obj) {
 						$objNorm[$obj] = $normObjects[$obj] ?: 0;
+						if ($normObjects[$obj])
+							$countNorm += 1;
 					}
 				}
-				$item["NORMATIV"] = implode('/', $objNorm);
+				$item["NORMATIV"] = '<div class="mt-1 ui-counter ui-counter-light ms-2">
+										<div class="ui-counter-inner px-2 py-3 rounded-circle">
+											<span>' . $countNorm . '</span>/<span class="fw-bold fs-6!"> ' . count($objLoss) . '</span>
+										</div>
+									</div>';
+				// $item["NORMATIV"] .= '<div class="ui-counter ui-counter-gray"><div class="ui-counter-inner">' . count($objNorm) . '</div></div>';
+				// $item["NORMATIV"] = implode('/', $objNorm);
 
 				// dump($item);
 

@@ -131,30 +131,36 @@ if ($arResult['ACCESS']): ?>
     // $arhiveUrl = $uri->getUri();
 
     // dump($arResult['DETAIL']);
-    /*
+    //gg($arResult['DETAIL']['ID']);
     ?>
-<div id='moderation' class="content">
-    <div class="row align-items-center pb-3 mb-2">
-        <div class="col-5 mb-1 h4"><?= $arResult['DETAIL']['USERNAME'] ?>
-            <? //=TruncateText($arResult['DETAIL']['USERNAME'], 50)
-                ?>
-        </div>
-        <div class="col-7 mb-4! card d-flex! flex-row justify-content-between align-items-center px-3 py-2">
-            <div class="d-flex flex-column align-items-center">
-                <div class="col-12 h6 my-0 text-uppercase text-blue"><?= TruncateText($arResult['DETAIL']['COURSE'], 28) ?></div>
-                <div class="col-12 h6 my-0 text-secondary"><?= $arResult['DETAIL']['STREAM']['NAME'] . ' - ' . $arResult['DETAIL']['STREAM']['TEXT'] ?></div>
-                <div class="col-12 small fst-italic text-muted">
-                    <small>Дата изменения: <?= $arResult['DETAIL']['DATE_UPDATE'] ?></small>
-
-                </div>
+    <? if ($arResult['RELATED'][$arResult['DETAIL']['ID']]): ?>
+        <?
+        $relateCounter = $arResult['RELATED'][$arResult['DETAIL']['ID']]["UF_COUNTER"];
+        // gg($arResult['COMPANY']);
+        ?>
+        <div class="content card mt-3">
+            <div class="card-body">
+                <div class="fs-5">Связанные объекты по ПУ #<?= $relateCounter ?> - <span class="fs-4"> <?= $arResult['COUNTERS'][$relateCounter]['UF_NUMBER'] ?>&nbsp;-&nbsp;<?= $arResult['COUNTERS'][$relateCounter]['UF_NAME'] ?></span></div>
+                <table class="table mt-3">
+                    <thead>
+                        <tr>
+                            <th scope="col">Объект</th>
+                            <th scope="col">Процент занимаемого объема/площади, %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?
+                        foreach ($arResult['RELATED'] as $key => $value): ?>
+                            <tr>
+                                <td><?= $arResult['OBJECTS'][$value['UF_OBJECT']]['NAME'] ?><br><?= $arResult['COMPANY'][$arResult['OBJECTS'][$value['UF_OBJECT']]['ORG']]["UF_NAME"] ?></td>
+                                <td><?= $value['UF_PERCENT'] ?></td>
+                            </tr>
+                        <? endforeach; ?>
+                    </tbody>
+                </table>
             </div>
-            <div class="text-end! text-center col-3! badge! small px-4 py-2 rounded-pill text-bg-light! text-bg-<?= $arResult['DETAIL']['STATUS']['VALUE'] ?> lh-sm">
-                <i class="small"><?= $arResult['DETAIL']['STATUS']['TEXT'] ?></i>
-            </div>
         </div>
-    </div>
-</div>
-*/ ?>
+    <? endif; ?>
 <? else: ?>
     <font class="errortext">Ошибка доступа</font>
 <? endif; ?>

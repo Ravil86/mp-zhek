@@ -5169,7 +5169,9 @@ div.pp_default .pp_close:hover {
 	width: 100% !important;
 }
 
-.tp-parallax-wrap{z-index: 999!important;}
+.tp-parallax-wrap{
+z-index: 0;
+}
 
 .main-caption{
 	background-color: rgba(37, 40, 42, 0.35);

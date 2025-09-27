@@ -24,7 +24,7 @@ if ($arResult['ACCESS']):
         </div>
     <? else: ?>
         <div class="row align-items-end text-center mt-2 px-1 gx-2 gy-3">
-            <div class="py-2 small col-<?= !$arResult['SEND_ADMIN'] ? '3' : '2' ?>">Примечание</div>
+            <div class="py-2 small col-<?= !$arResult['SEND_ADMIN'] ? '3' : '2' ?>">ПУ - примечание</div>
             <div class="py-2 small col"><?= !$arResult['SEND_ADMIN'] ? 'Участвует в расчете услуг' : '' ?></div>
             <div class="py-2 small col"><?= !$arResult['SEND_ADMIN'] ? 'Показания на ' : '' ?>начало месяца</div>
             <div class="py-2 small col"><?= !$arResult['SEND_ADMIN'] ? 'Разность за текущий месяц' : 'разность' ?></div>
@@ -73,7 +73,7 @@ if ($arResult['ACCESS']):
                     <div class="row card counter-item" id="counter<?= $item['ID'] ?>">
                         <div class="card-body ps-2 pe-1 py-0">
                             <div class="row gx-2 align-items-stretch">
-                                <div class="col-<?= !$arResult['SEND_ADMIN'] ? '3' : '2' ?> py-3 d-flex align-items-center"><?= $item['UF_NAME'] ?></div>
+                                <div class="col-<?= !$arResult['SEND_ADMIN'] ? '3' : '2' ?> py-3 d-flex align-items-center"><?= $item['UF_NUMBER']; ?>&nbsp;-&nbsp;<i class="small"><?= $item['UF_NAME'] ?></i></div>
                                 <div class="col py-3 d-flex align-items-center justify-content-center"><?= $item['SERVICE'] ?></div>
                                 <div class="col py-3 d-flex align-items-center justify-content-center current_use"><?= $prevMeterFormat ?></div>
                                 <div class="col py-3 d-flex align-items-center justify-content-center"><?= $raznostFormat ?></div>
