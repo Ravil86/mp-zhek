@@ -128,16 +128,19 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 			$normObjects[$val['OBJECT']] += 1;
 		}
 
-		// gg($lossObjects);
-
 		if ($this->arResult['VARIABLES']) {
 
 			$orgID = $this->arResult['VARIABLES']['DETAIL_ID'];
-
+			// $this->arResult['DETAIL']['ID'] = $orgID;
 			$this->arResult['DETAIL']['ORG'] =  $arItems[$orgID];
 
 			$this->arResult['DETAIL']['GRID'] =  $this->arResult['GRID_ID'] . '_detail';
 			$arResult['DETAIL']['GRID'] = $this->arResult['DETAIL']['GRID'];
+
+			$this->arResult['RELATED'] = LKClass::getRelated();
+			$this->arResult['COUNTERS'] = LKClass::getCounters();
+			$this->arResult['OBJECTS'] = LKClass::getObjects();
+			$this->arResult['COMPANY'] = LKClass::getCompany();
 
 			$objectList = $arObjects[$orgID];
 			// dump($objectList);
@@ -162,7 +165,7 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 			];
 
 			$snippet = new Bitrix\Main\Grid\Panel\Snippet();
-
+			$related = null;
 			foreach ($objectList as $key => &$item) {
 
 				$objectID = $item['ID'];
@@ -170,11 +173,40 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 				$countersObject = LKClass::getCounters($objectID);
 
 				$data = [];
+
+				$related = $this->arResult['RELATED'][$objectID];
+				if ($related && !$related['UF_MAIN']) {
+					// gg('UF_OBJECT ' . $objectID);
+					$relateCounter = $this->arResult['COUNTERS'][$related['UF_COUNTER']];
+					// gg($relateCounter['UF_TYPE']);
+
+					$relatetypes = [];
+					foreach ($relateCounter['UF_TYPE'] as $value) {
+						$typeItem = $serviceList[$value];
+						$relatetypes[] = '<div class="d-flex"><img class="mb-1@" src="' . $typeItem['ICON'] . '" width="20" height="20" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'] . '</span></div>';
+					}
+
+					$counter = [
+						'ID' => $relateCounter['ID'],
+						'NAME' => $relateCounter['UF_NAME'],
+						'NUMBER' => $relateCounter['UF_NUMBER'],
+						'DATE' => $relateCounter['UF_DATE'],
+						'CHECK' => $relateCounter['UF_CHECK'],
+						'TYPE' => '<div class="row gy-1">' . implode('', $relatetypes) . '</div>',
+
+					];
+
+					$item['ROWS'][$related['UF_COUNTER']] = [
+						'data' => $counter,
+						'editable' => false
+						// 'data' => $data,
+					];
+				}
+
+				// gg($this->arResult['RELATED']);
 				foreach ($countersObject as $key => $counter) {
 
 					$types = [];
-					// $editTypes = [];
-
 					$column = $counter;
 
 					$column['NAME'] = $counter['UF_NAME'];
@@ -260,7 +292,6 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 											BX.Event.bind(button, "click", () => getPicker().show());
 										})();
 									</script>';
-					// gg($key);
 
 					$item['ROWS'][$key] = [
 						'columns' => $column,

@@ -342,7 +342,10 @@ class LKClass
     {
 
         $classHL = \HLWrap::init(self::$_HL_Counters);
-        $filter = [];
+
+        // $filter = [];
+        $filter['!UF_OBJECT'] = null;
+
         if ($objectID)
             $filter['UF_OBJECT'] = $objectID;
 

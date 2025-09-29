@@ -119,6 +119,11 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 		elseif ($myCompany)
 			$arObjects = LKClass::getObjects($myCompany['ID']);
 
+		//NEW  detail to LIST
+
+		$this->arResult['COUNTER_OBJECTS'] = $arObjects;
+
+
 		if ($this->arResult['VARIABLES']) {
 
 			$objectID = $this->arResult['VARIABLES']['DETAIL_ID'];
@@ -175,7 +180,44 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 			$this->arResult['DETAIL']['PREV_METERS'] = $arPrevMeters;
 			$this->arResult['DETAIL']['LAST_METERS'] = $arLastMeters;
 			$this->arResult['DETAIL']['NOTE_METERS'] = $noteMeter;
-		} else {
+			// end DETAIL
+		} else { //LIST
+
+			$prevMeters = [];
+			$lastMeters = [];
+
+			foreach ($this->arResult['COUNTER_OBJECTS'] as $key => &$object) {
+
+				$objectID = $object['ID'];
+
+				$object['LIST']  = LKClass::getCounters($objectID);
+				foreach ($object['LIST'] as $key => &$item) {
+
+					$types = [];
+					foreach ($item['UF_TYPE'] as $value) {
+						$typeItem = $serviceList[$value];
+						$unit = $typeItem['UNIT'];
+						$types[] = '<img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/>';
+					}
+					$item['UNIT'] = $unit;
+					$item['SERVICE'] = '<div>' . implode(' ', $types) . '</div>';
+				}
+
+
+				$prevMeters = LKClass::meters($objectID);
+				$lastMeters = LKClass::meters($objectID, true);
+
+				foreach ($prevMeters as $value) {
+					$arPrevMeters[$value['COUNTER']][] = $value['METER'];
+				}
+				foreach ($lastMeters as $key => $value) {
+					$arLastMeters[$value['COUNTER']] = $value['METER'];
+					$noteMeter[$value['COUNTER']] = $value['NOTE'];
+				}
+				$object['PREV_METERS'] = $arPrevMeters;
+				$object['LAST_METERS'] = $arLastMeters;
+				$object['NOTE_METERS'] = $noteMeter;
+			}
 
 			$this->arResult['GRID_ID'] = str_replace('.', '_', str_replace(':', '_', $this->GetName()));
 

@@ -81,16 +81,20 @@ class CabinetObjects extends CBitrixComponent
 			$this->arResult['COUNTERS'] = LKClass::getCounters();
 			// gg($this->arResult['COUNTERS']);
 
+			$this->arResult['RELATED'] = LKClass::getRelated();
+			$this->arResult['OBJECTS'] = LKClass::getObjects();
+			$this->arResult['COMPANY'] = LKClass::getCompany();
+
 			$grid_options = new CGridOptions($this->arResult['DETAIL']['GRID']);
 			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
 
 			$this->arResult['DETAIL']['COLUMNS'] = [
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 70],
-				['id' => 'UF_NAME', 'name' => 'Наименование', 'default' => true, 'width' => 220],
-				['id' => 'UF_NUMBER', 'name' => 'Номер cчетчика', 'default' => true, 'width' => 230],
-				['id' => 'UF_DATE', 'name' => 'Дата установки', 'default' => false],
-				['id' => 'SERVICE', 'name' => 'Тип счетчика', 'default' => true, 'width' => 230],
-				['id' => 'UF_CHECK', 'name' => 'Дата очередной поверки', 'default' => true, 'width' => 200],
+				['id' => 'UF_NAME', 'name' => 'Наименование', 'default' => true, 'width' => 200],
+				['id' => 'UF_NUMBER', 'name' => 'Номер cчетчика', 'default' => true, 'width' => 200],
+				['id' => 'UF_DATE', 'name' => 'Дата установки', 'default' => true],
+				['id' => 'SERVICE', 'name' => 'Тип счетчика', 'default' => true, 'width' => 250],
+				['id' => 'UF_CHECK', 'name' => 'Дата поверки', 'default' => true, 'width' => 180],
 				// ['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => '130'],
 			];
 
@@ -120,9 +124,7 @@ class CabinetObjects extends CBitrixComponent
 					'data' => $item
 				];
 			}
-			$this->arResult['RELATED'] = LKClass::getRelated();
-			$this->arResult['OBJECTS'] = LKClass::getObjects();
-			$this->arResult['COMPANY'] = LKClass::getCompany();
+
 			// gg(LKClass::getRelated());
 
 			// $this->arResult['DETAIL'] = $arItems[$this->arResult['VARIABLES']['DETAIL_ID']];
@@ -150,7 +152,7 @@ class CabinetObjects extends CBitrixComponent
 			//какую сортировку сохранил пользователь (передаем то, что по умолчанию)
 			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
 			$this->arResult['GRID']['COLUMNS'] = [
-				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 70],
+				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
 				['id' => 'NAME', 'name' => 'Наименование объекта', /*'sort' => 'NAME', */ 'default' => true, 'width' => 300],
 				['id' => 'ADDRESS', 'name' => 'Адрес объекта', /*'sort' => 'ADDRESS', */ 'default' => true, 'width' => 350],
 				//['id' => 'DOGOVOR', 'name' => 'Договор',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => true, 'width' => '150'],

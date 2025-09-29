@@ -8,7 +8,7 @@ $APPLICATION->SetTitle("Кабинет");
 if (LKClass::isMaster())
 	LocalRedirect("/master/");
 else
-	LocalRedirect("/cabinet/objects/");
+	LocalRedirect("/cabinet/counters/");
 ?>
 <?/* $APPLICATION->IncludeComponent(
 	"zhek:cabinet.company",

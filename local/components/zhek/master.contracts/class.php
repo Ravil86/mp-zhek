@@ -156,8 +156,12 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 			if (!$this->arResult['YEAR'])
 				$this->arResult['YEAR'] = date('Y');
 
-			if (!$this->arResult['MONTH'])
-				$this->arResult['MONTH'] = date('m', strtotime('-1 month'));
+			if (!$this->arResult['MONTH']) {
+				if (date("d") >= 25)
+					$this->arResult['MONTH'] = date('m');
+				else
+					$this->arResult['MONTH'] = date('m', strtotime('-1 month'));
+			}
 			// $this->arResult['MONTH'] = date('m');
 
 			// gg($this->arResult['YEAR']);

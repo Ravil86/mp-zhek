@@ -337,7 +337,7 @@ $arSite = $rsSites->Fetch();
                 <div class="container<?= defined('WIDE') ? ' container-xxl' : '' ?> page-content page-margin-top-section padding-bottom-100">
                     <? if (!defined('NOT_MENU') && !defined('ERROR_404')): ?>
                         <div class="row gx-3">
-                            <div class="col-12 col-md-3<?= defined('LK') ? ' col-xxl-auto' : '' ?> mb-4">
+                            <div class="col-12 col-md-3<?= defined('LK') ? ' col-xxl-2 col-xxl-auto!' : '' ?> mb-4">
                                 <? if (defined('LK')): ?>
 
                                     <? if ($USER->IsAuthorized()): ?>

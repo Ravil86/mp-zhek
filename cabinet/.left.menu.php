@@ -1,6 +1,13 @@
 <?
 $aMenuLinks = array(
 	array(
+		"Внести показания",
+		"/cabinet/counters/",
+		array(),
+		array(),
+		'LKClass::isOperator()'
+	),
+	array(
 		"Объекты предприятия",
 		"/cabinet/objects/",
 		array(),
@@ -14,13 +21,6 @@ $aMenuLinks = array(
 	// 	array(),
 	// 	'LKClass::isOperator()'
 	// ),
-	array(
-		"Внести показания",
-		"/cabinet/counters/",
-		array(),
-		array(),
-		'LKClass::isOperator()'
-	),
 	array(
 		"Контракты (справки)",
 		"/cabinet/contracts/",

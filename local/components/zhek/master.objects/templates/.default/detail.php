@@ -93,22 +93,22 @@ if ($arResult['ACCESS']): ?>
     //     'VALUE' => '<button class="ui-btn ui-btn-sm ui-btn-secondary" data-bs-toggle="modal" data-bs-target="#counterModal">добавить счётчик</button>',
     // ];
 
-    foreach ($arResult['ITEMS'] as $key => $value): ?>
-        <div class="card my-2<?= !$value['ACTIVE'] && $value['ACTIVE'] != null ? ' border-warning' : '' ?>">
+    foreach ($arResult['ITEMS'] as $key => $object): ?>
+        <div class="card my-2<?= !$object['ACTIVE'] && $object['ACTIVE'] != null ? ' border-warning' : '' ?>">
             <div class="card-body">
                 <div class="row gx-1">
                     <form class="col-8 col-lg edit-block">
                         <div class="row gx-1">
                             <div class="col-auto pt-1"><?= $i ?>.</div>
                             <div class="col-auto object-name">
-                                <h5 class="card-title"><?= $value['NAME']; ?> (#<?= $value['ID']; ?>)</h5>
-                                <div class="h6 card-subtitle mb-2 text-body-secondary"><?= $value['ADDRESS']; ?></div>
+                                <h5 class="card-title"><?= $object['NAME']; ?> (#<?= $object['ID']; ?>)</h5>
+                                <div class="h6 card-subtitle mb-2 text-body-secondary"><?= $object['ADDRESS']; ?></div>
                             </div>
                             <div class="col-8 col-xl-auto object-edit d-none!" style="display:none">
                                 <div class="ui-ctl ui-ctl-textarea">
-                                    <input type="hidden" name="OBJECT" value="<?= $value['ID'] ?>">
-                                    <textarea class="ui-ctl-element form-control" name="object[UF_NAME]" placeholder="Наименование объекта" required><?= $value['NAME']; ?></textarea>
-                                    <textarea class="ui-ctl-element form-control" name="object[UF_ADRES]" placeholder="Адрес"><?= $value['ADDRESS']; ?></textarea>
+                                    <input type="hidden" name="OBJECT" value="<?= $object['ID'] ?>">
+                                    <textarea class="ui-ctl-element form-control" name="object[UF_NAME]" placeholder="Наименование объекта" required><?= $object['NAME']; ?></textarea>
+                                    <textarea class="ui-ctl-element form-control" name="object[UF_ADRES]" placeholder="Адрес"><?= $object['ADDRESS']; ?></textarea>
                                 </div>
                             </div>
                             <div class="col-auto d-flex align-items-end! flex-column justify-content-between! mt-2!">
@@ -119,17 +119,17 @@ if ($arResult['ACCESS']): ?>
                             </div>
                         </div>
                     </form>
-                    <? if ($value['ACTIVE'] == null || $value['ACTIVE'] != false): ?>
+                    <? if ($object['ACTIVE'] == null || $object['ACTIVE'] != false): ?>
                         <div class="col-auto d-grid d-xl-flex">
-                            <button class="ui-btn ui-btn-sm ui-btn-secondary" data-bs-toggle="modal" data-bs-target="#counterModal<?= $value['ID']; ?>">Добавить счётчик</button>
+                            <button class="ui-btn ui-btn-sm ui-btn-secondary" data-bs-toggle="modal" data-bs-target="#counterModal<?= $object['ID']; ?>">Добавить счётчик</button>
                             <button class="ui-btn ui-btn-sm ui-btn-light-border" data-bs-toggle="collapse"
-                                data-bs-target="#collapseLosses<?= $value['ID']; ?>" role="button">Потери</button>
+                                data-bs-target="#collapseLosses<?= $object['ID']; ?>" role="button">Потери</button>
                             <button class="ui-btn ui-btn-sm ui-btn-light-border" data-bs-toggle="collapse"
-                                data-bs-target="#collapseStandart<?= $value['ID']; ?>" role="button">Норматив</button>
+                                data-bs-target="#collapseStandart<?= $object['ID']; ?>" role="button">Норматив</button>
                         </div>
                     <? endif; ?>
                 </div>
-                <? if ($value['ACTIVE'] == null || $value['ACTIVE'] != false): ?>
+                <? if ($object['ACTIVE'] == null || $object['ACTIVE'] != false): ?>
                     <div class="grid_form">
                         <?
                         $grid_options = new CGridOptions($arResult["GRID_DETAIL"]);
@@ -146,9 +146,9 @@ if ($arResult['ACCESS']): ?>
                         // ];
 
                         $gridParams = [
-                            'GRID_ID' => $arResult['DETAIL']['GRID'] . '_' . $value['ID'],
+                            'GRID_ID' => $arResult['DETAIL']['GRID'] . '_' . $object['ID'],
                             'COLUMNS' => $arResult['DETAIL']['COLUMNS'],
-                            'ROWS' => $value['ROWS'],
+                            'ROWS' => $object['ROWS'],
                             // 'FOOTER' => [
                             //     'TOTAL_ROWS_COUNT' => $arResult['GRID']['COUNT'],
                             // ],
@@ -210,7 +210,7 @@ if ($arResult['ACCESS']): ?>
                         ?>
                     </div>
                     <div>
-                        <div class="collapse" id="collapseLosses<?= $value['ID']; ?>">
+                        <div class="collapse" id="collapseLosses<?= $object['ID']; ?>">
                             <hr>
                             <div class="text-center">
                                 <div class="row g-0">
@@ -222,20 +222,20 @@ if ($arResult['ACCESS']): ?>
                                     </div>
                                     <div class="col">
                                         <div class="card-body">
-                                            <form class="losses_add" id="losses<?= $value['ID'] ?>">
+                                            <form class="losses_add" id="losses<?= $object['ID'] ?>">
                                                 <input type="hidden" name="object" value="Y">
                                                 <div class="row gx-2">
                                                     <? foreach ($arResult['MONTH'] as $id => $month): ?>
                                                         <div class="col-3 col-lg-2 col-xxl-1">
                                                             <div class="h6"><?= $month['VALUE'] ?></div>
-                                                            <input class="ui-ctl-element" type="text" name="losses[<?= $id ?>]" onkeyup="validate(this)" value="<?= $arResult['LOSSES'][$value['ID']][$id] ?>">
+                                                            <input class="ui-ctl-element" type="text" name="losses[<?= $id ?>]" onkeyup="validate(this)" value="<?= $arResult['LOSSES'][$object['ID']][$id] ?>">
                                                         </div>
                                                     <? endforeach; ?>
                                                 </div>
                                                 <div class="mt-2">
                                                     <div class="row justify-content-center align-items-end">
                                                         <div class="col-auto">
-                                                            <button type="button" class="ui-btn ui-btn-success" onclick="saveLosses(<?= $value['ID'] ?>)">Сохранить Потери</button>
+                                                            <button type="button" class="ui-btn ui-btn-success" onclick="saveLosses(<?= $object['ID'] ?>)">Сохранить Потери</button>
                                                         </div>
                                                         <div class="col-5 col-xl-3">
                                                             <div id="mess" class="alert py-2 mb-0 d-none" role="alert">Ошибка</div>
@@ -249,7 +249,7 @@ if ($arResult['ACCESS']): ?>
                             </div>
                         </div>
 
-                        <div class="collapse" id="collapseStandart<?= $value['ID']; ?>">
+                        <div class="collapse" id="collapseStandart<?= $object['ID']; ?>">
                             <hr>
                             <div class="text-center">
                                 <div class="row g-0">
@@ -261,20 +261,20 @@ if ($arResult['ACCESS']): ?>
                                     </div>
                                     <div class="col">
                                         <div class="card-body">
-                                            <form class="norma_add" id="norma<?= $value['ID'] ?>">
+                                            <form class="norma_add" id="norma<?= $object['ID'] ?>">
                                                 <input type="hidden" name="object" value="Y">
                                                 <div class="row gx-2">
                                                     <? foreach ($arResult['MONTH'] as $id => $month): ?>
                                                         <div class="col-3 col-lg-2 col-xxl-1">
                                                             <div class="h6"><?= $month['VALUE'] ?></div>
-                                                            <input class="ui-ctl-element" type="text" name="norma[<?= $id ?>]" onkeyup="validate(this)" value="<?= $arResult['NORMATIV'][$value['ID']][$id] ?>">
+                                                            <input class="ui-ctl-element" type="text" name="norma[<?= $id ?>]" onkeyup="validate(this)" value="<?= $arResult['NORMATIV'][$object['ID']][$id] ?>">
                                                         </div>
                                                     <? endforeach; ?>
                                                 </div>
                                                 <div class="mt-2">
                                                     <div class="row justify-content-center align-items-end">
                                                         <div class="col-auto">
-                                                            <button type="button" class="ui-btn ui-btn-success" onclick="saveNorma(<?= $value['ID'] ?>)">Сохранить Норматив</button>
+                                                            <button type="button" class="ui-btn ui-btn-success" onclick="saveNorma(<?= $object['ID'] ?>)">Сохранить Норматив</button>
                                                         </div>
                                                         <div class="col-5 col-xl-3">
                                                             <div id="mess" class="alert py-2 mb-0 d-none" role="alert">Ошибка</div>
@@ -290,15 +290,53 @@ if ($arResult['ACCESS']): ?>
                     </div>
                     <? $APPLICATION->IncludeComponent('bitrix:main.ui.grid', '', $gridParams); ?>
                 <? endif; ?>
+
+                <? //gg($arResult);
+                ?>
+                <? //gg($arResult['RELATED'][$object['ID']]);
+                ?>
+                <? if ($arResult['RELATED'][$object['ID']]): ?>
+                    <?
+                    $relateCounter = $arResult['RELATED'][$object['ID']]["UF_COUNTER"];
+                    // gg($object['ROWS']);
+                    ?>
+                    <div class="content col-12 col-xxl-10">
+                        <div class="card-body pt-0">
+                            <div class="fs-6">Связанные объекты <i>#<?= $relateCounter ?></i> <span class="fs-6"><?= $arResult['COUNTERS'][$relateCounter]['UF_NUMBER'] ?></span> <i class=""><?= $arResult['COUNTERS'][$relateCounter]['UF_NAME'] ?></i></div>
+                            <table class="table mt-1">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Объект</th>
+                                        <th scope="col">Организация</th>
+                                        <th scope="col">Процент занимаемого объема/площади, %</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?
+                                    foreach ($arResult['RELATED'] as $key => $object): ?>
+                                        <tr>
+                                            <td><?= $object['UF_OBJECT'] ?></td>
+                                            <td><?= $arResult['OBJECTS'][$object['UF_OBJECT']]['NAME'] ?></td>
+                                            <td><?= $arResult['COMPANY'][$arResult['OBJECTS'][$object['UF_OBJECT']]['ORG']]["UF_NAME"] ?></td>
+                                            <td><?= $object['UF_PERCENT'] ?></td>
+                                        </tr>
+                                    <? endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                <? endif; ?>
+
             </div>
         </div>
-        <div class="modal counter-modal fade" id="counterModal<?= $value['ID']; ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-id="<?= $value['ID']; ?>">
+        <div class="modal counter-modal fade" id="counterModal<?= $object['ID']; ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-id="<?= $object['ID']; ?>">
             <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content">
                     <form class="counter_add needs-validation" method="post" novalidate>
                         <div class="modal-header">
                             <div class="modal-title">Добавить счётчик для
-                                <h4 class="modal-title"><?= $value['NAME']; ?></h4>
+                                <h4 class="modal-title"><?= $object['NAME']; ?></h4>
                             </div>
 
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -307,7 +345,7 @@ if ($arResult['ACCESS']): ?>
 
                             <input type="hidden" name="ADD_COUNTER" value="Y">
                             <input type="hidden" name="FIELDS[UF_ORG]" value="<?= $arResult['DETAIL']['ORG']['ID']; ?>">
-                            <input type="hidden" name="FIELDS[UF_OBJECT]" value="<?= $value['ID']; ?>">
+                            <input type="hidden" name="FIELDS[UF_OBJECT]" value="<?= $object['ID']; ?>">
                             <?= bitrix_sessid_post() ?>
                             <div class="row gx-2">
                                 <div class="col-12 col-md">
@@ -331,8 +369,8 @@ if ($arResult['ACCESS']): ?>
                                     <div class="ui-ctl-dropdown! ui-ctl! ui-ctl-after-icon! ui-ctl-w100">
                                         <!-- <div class="ui-ctl-after ui-ctl-icon-angle"></div> -->
                                         <select class="selectpicker" data-width="100%" data-style="ui-btn ui-btn-no-caps ui-btn-dropdown ui-btn-light-border" multiple name="FIELDS[UF_TYPE][]" required>
-                                            <? foreach ($arResult['SERVICE_LIST'] as $key => $value): ?>
-                                                <option value="<?= $key ?>"><?= $value['NAME'] ?></option>
+                                            <? foreach ($arResult['SERVICE_LIST'] as $key => $object): ?>
+                                                <option value="<?= $key ?>"><?= $object['NAME'] ?></option>
                                             <? endforeach ?>
                                         </select>
                                     </div>
