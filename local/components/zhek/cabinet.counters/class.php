@@ -123,6 +123,8 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 		$this->arResult['COUNTER_OBJECTS'] = $arObjects;
 
+		$this->arResult['COUNTERS'] = LKClass::getCounters();
+		$this->arResult['RELATED'] = LKClass::getRelated();
 
 		if ($this->arResult['VARIABLES']) {
 
@@ -138,14 +140,55 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 			$this->arResult['DETAIL']['OBJECT'] = $arObjects[$objectID];
 
+			$related = $this->arResult['RELATED'][$objectID];
+			// gg($related);
+			if ($related) {
+
+				$relateCounter = $this->arResult['COUNTERS'][$related['UF_COUNTER']];
+
+				$relatetypes = [];
+				foreach ($relateCounter['UF_TYPE'] as $value) {
+					$typeItem = $serviceList[$value];
+					$unit = $typeItem['UNIT'];
+					$relatetypes[] = '<div class="d-flex"><img class="mb-1@" src="' . $typeItem['ICON'] . '" width="23" height="23" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '" data-bs-toggle="tooltip"
+							data-bs-title="' . $typeItem['NAME'] . '"/></div>';
+				}
+
+				$counter = $related;
+				// gg($relateCounter);
+
+				$counter['RELATED'] = true;
+				// $counter['ID'] = $relateCounter['ID'];
+				$counter['UF_NUMBER'] =  $relateCounter['UF_NUMBER'];
+				$counter['UF_NAME'] = '<div class="d-flex align-items-center">' . $relateCounter['UF_NAME'] . '<a role="button" class="ps-1 text-danger"
+							data-bs-toggle="tooltip"
+							data-bs-title="Расчет потребления производится от процента занимаемой объема/площади - ' . $related['UF_PERCENT'] . '%">
+							<i class="bi bi-link-45deg fs-5"></i></a></div>';
+				$counter['UF_DATE'] = $relateCounter['UF_DATE'];
+				$counter['UF_CHECK'] = $relateCounter['UF_CHECK'];
+				$counter['SERVICE'] = '<div class="row gy-1">' . implode('', $relatetypes) . '</div>';
+				$counter['UNIT'] = $unit;
+
+				if (!$related['UF_MAIN'])
+					$this->arResult['DETAIL']['LIST'][$related['UF_COUNTER']] = $counter;
+			}
+
 			$countersObject  = LKClass::getCounters($objectID);
+
+			if ($related['UF_MAIN'])
+				$countersObject[$related['UF_COUNTER']]['MAIN_RELATED'] = $counter;
+
 			foreach ($countersObject as $key => &$item) {
+
+				if ($item['UF_ACTIVE'] !== null && !$item['UF_ACTIVE'])	//Отключаем неактивные
+					continue;
 
 				$types = [];
 				foreach ($item['UF_TYPE'] as $value) {
 					$typeItem = $serviceList[$value];
 					$unit = $typeItem['UNIT'];
-					$types[] = '<img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/>';
+					$types[] = '<img src="' . $typeItem['ICON'] . '" width="23" height="23" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '" data-bs-toggle="tooltip"
+							data-bs-title="' . $typeItem['NAME'] . '"/>';
 				}
 				$item['UNIT'] = $unit;
 				$item['SERVICE'] = '<div>' . implode(' ', $types) . '</div>';
@@ -155,6 +198,8 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 			$prevMeters = LKClass::meters($objectID);
 			$lastMeters = LKClass::meters($objectID, true);
+			// dump($lastMeters);
+			// dump($prevMeters);
 
 			foreach ($prevMeters as $key => $value) {
 
@@ -165,6 +210,8 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 				// 'COUNTER' => $value['COUNTER']
 				// ];
 			}
+
+			// dump($lastMeters);
 			foreach ($lastMeters as $key => $value) {
 				$arLastMeters[$value['COUNTER']] = $value['METER'];
 
@@ -175,8 +222,8 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 				// 	'COUNTER' => $value['COUNTER']
 				// ];
 			}
-			// dump($arPrevMeters);
 			// dump($arLastMeters);
+
 			$this->arResult['DETAIL']['PREV_METERS'] = $arPrevMeters;
 			$this->arResult['DETAIL']['LAST_METERS'] = $arLastMeters;
 			$this->arResult['DETAIL']['NOTE_METERS'] = $noteMeter;
@@ -189,9 +236,71 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 			foreach ($this->arResult['COUNTER_OBJECTS'] as $key => &$object) {
 
 				$objectID = $object['ID'];
-
 				$object['LIST']  = LKClass::getCounters($objectID);
+
+				$related = $this->arResult['RELATED'][$objectID];
+
+
+
+				if ($related/* && !$related['UF_MAIN']*/) {
+
+					// gg($related);
+
+					$relateCounter = $this->arResult['COUNTERS'][$related['UF_COUNTER']];
+
+					$relatetypes = [];
+					foreach ($relateCounter['UF_TYPE'] as $value) {
+						$typeItem = $serviceList[$value];
+						$unit = $typeItem['UNIT'];
+						$relatetypes[] = '<div class="d-flex"><img class="mb-1@" src="' . $typeItem['ICON'] . '" width="23" height="23" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'] . '</span></div>';
+					}
+
+					$counter = $related;
+
+					$counter['RELATED'] = true;
+					// $counter['ID'] = $relateCounter['ID'];
+					$counter['UF_NUMBER'] =  $relateCounter['UF_NUMBER'];
+					$counter['UF_NAME'] = '<div class="d-flex align-items-center">' . $relateCounter['UF_NAME'] . '<a role="button" class="ps-1 text-danger"
+							data-bs-toggle="tooltip"
+							data-bs-title="Расчет потребления производится от процента занимаемой объема/площади - ' . $related['UF_PERCENT'] . '%">
+							<i class="bi bi-link-45deg fs-5"></i></a></div>';
+					$counter['UF_DATE'] = $relateCounter['UF_DATE'];
+					$counter['UF_CHECK'] = $relateCounter['UF_CHECK'];
+					$counter['SERVICE'] = '<div class="row gy-1">' . implode('', $relatetypes) . '</div>';
+					$counter['UNIT'] = $unit;
+
+					// $counter = [
+					// 	'RELATED' => true,
+					// 	'ID' => $relateCounter['ID'],
+					// 	'UF_NAME' => '<div class="d-flex align-items-center">' . $relateCounter['UF_NAME'] . '<a role="button" class="ps-1 text-danger"
+					// 		data-bs-toggle="tooltip"
+					// 		data-bs-title="Расчет потребления производится от процента занимаемой объема/площади - ' . $related['UF_PERCENT'] . '%">
+					// 		<i class="bi bi-link-45deg fs-5"></i></a></div>',
+					// 	'UF_NUMBER' =>  $relateCounter['UF_NUMBER'],
+					// 	'UF_DATE' => $relateCounter['UF_DATE'],
+					// 	'UF_CHECK' => $relateCounter['UF_CHECK'],
+					// 	'SERVICE' => '<div class="row gy-1">' . implode('', $relatetypes) . '</div>',
+					// ];
+
+					if (!$related['UF_MAIN'])
+						$object['LIST'][0] = $counter;
+					// $object['RELATED'][] = $counter;
+				}
+
+
+				// gg($related);
+
+				if ($related['UF_MAIN'])
+					$object['LIST'][$related['UF_COUNTER']]['MAIN_RELATED'] = $counter;
+
+
 				foreach ($object['LIST'] as $key => &$item) {
+
+
+					// gg($item['UF_ACTIVE']);
+
+					if ($item['UF_ACTIVE'] !== null && !$item['UF_ACTIVE'])	//Отключаем неактивные
+						unset($object['LIST'][$key]);
 
 					$types = [];
 					foreach ($item['UF_TYPE'] as $value) {
@@ -210,6 +319,7 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 				foreach ($prevMeters as $value) {
 					$arPrevMeters[$value['COUNTER']][] = $value['METER'];
 				}
+				// gg($lastMeters);
 				foreach ($lastMeters as $key => $value) {
 					$arLastMeters[$value['COUNTER']] = $value['METER'];
 					$noteMeter[$value['COUNTER']] = $value['NOTE'];
@@ -252,45 +362,6 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 				// ['id' => 'STATUS', 'name' => 'Статус', 'sort' => '', 'default' => true, 'width' => '200'],
 				['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => 130],
 			];
-
-			// $filterOption = new Bitrix\Main\UI\Filter\Options($this->arResult["GRID_ID"]);
-			// $filterData = $filterOption->GetFilter();
-
-			/*
-			$useFilter = false;
-
-			if (isset($filterData["DATE_MODIFY_from"])) {
-				$userFilter["DATE_MODIFY_FROM"] = $filterData["DATE_MODIFY_from"];
-				$userFilter["DATE_MODIFY_TO"] = $filterData["DATE_MODIFY_to"];
-			}
-
-			if (isset($filterData["FIND"])) {
-				if (isset($filterData["NAME"]))
-					$userFilter["NAME"] = "%" . $filterData["NAME"] . "%";
-				else
-					$userFilter["NAME"] = "%" . $filterData["FIND"] . "%";
-			}
-			if (isset($filterData["DATE_CREATE_from"])) {
-				$userFilter[">=DATE_CREATE"] = $filterData["DATE_CREATE_from"];
-			}
-			if (isset($filterData["DATE_CREATE_to"])) {
-				$userFilter["<=DATE_CREATE"] = $filterData["DATE_CREATE_to"];
-			}
-			if (isset($filterData["COURSE"])) {
-				$userFilter["PROPERTY_COURSE"] = $filterData["COURSE"];
-			}
-			if (isset($filterData["COURSE"]))
-				$userFilter["PROPERTY_COURSE"] = $filterData["COURSE"];
-
-			if (isset($filterData["MO"]))
-				$userFilter["PROPERTY_MO"] = $filterData["MO"];
-
-			if (!$nav_params['nPageSize'])
-				$nav_params['nPageSize'] = 500;
-
-			if ($arSort['sort']['TIMESTAMP_X'])
-				$arSort['sort']['DATE_CREATE'] = $arSort['sort']['TIMESTAMP_X'];
-			*/
 
 			foreach ($arObjects as $key => &$item) {
 

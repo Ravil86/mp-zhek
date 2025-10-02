@@ -72,12 +72,18 @@ class LKClass
             return false;
     }
 
-    public static function meters($objectID, $last = false, $month = '', $year = '')
+    public static function meters($objectID, $last = false, $month = '', $year = '', $counter = null)
     {
         $classHL = \HLWrap::init(self::$_HL_Meter);
 
-        // $filter = [];
-        $filter = ['UF_OBJECT' => $objectID];
+        $filter = [];
+
+        if ($objectID)
+            $filter['UF_OBJECT'] = $objectID;
+
+        if ($counter)
+            $filter['UF_COUNTER'] = $counter;
+
         if ($month) {       //c фильтром по кокретному месяцу
             $filterYear = $year ?: 'Y';
             if ($last) {      //только выбранный
@@ -90,10 +96,26 @@ class LKClass
                 // $filter["<=" . "UF_DATE"] = new DateTime(date('01.' . $month . '.' . $filterYear) . " 00:00:00");
             }
         } else {
-            if ($last)
+
+            $currentDay = date('j');
+            // $currentDay = 25; //тест
+
+            if ($last) {
+                if ($currentDay >= 25)
+                    $filter[">" . "UF_MONTH"] = date('n', strtotime("-1 month"));
+                else
+                    $filter[">=" . "UF_MONTH"] = date('n', strtotime("-1 month"));
+            } else {
+                if ($currentDay >= 25)
+                    $filter['<=' . 'UF_MONTH'] = date('n', strtotime("-1 month"));
+                else
+                    $filter['<' . 'UF_MONTH'] = date('n', strtotime("-1 month"));
+            }
+
+            /*if ($last)
                 $filter[">=" . "UF_DATE"] = new DateTime(date('01.m.Y') . " 00:00:00");
             else
-                $filter['<=' . 'UF_DATE'] = new DateTime(date('01.m.Y') . " 00:00:00");
+                $filter['<=' . 'UF_DATE'] = new DateTime(date('01.m.Y') . " 00:00:00");*/
         }
 
         // dump($filter);
@@ -102,7 +124,8 @@ class LKClass
         $rsHLoad = $classHL::getList([
             'select' => ['*'],
             'filter' => $filter,
-            'order' => ['UF_DATE' => 'DESC']
+            'order' => ['UF_MONTH' => 'DESC']
+            // 'order' => ['UF_DATE' => 'DESC']
         ]);
 
         $result = [];
@@ -117,7 +140,10 @@ class LKClass
                 'NOTE' => $value['UF_NOTE'],
                 // 'SERVICE' => $value['UF_SERVICE'],
             ];
+            // if (!$counter)
             $result[$value['ID']] = $meter;
+            // else
+            //     $result = $meter;
         }
         return $result;
     }
@@ -776,13 +802,33 @@ class LKClass
         $result = [];
         while ($fields = $rsHLoad->fetch()) {
 
-            // $value = [
-            //     'ID' => $losses['ID'],
-            //     'NAME' => $losses['UF_NAME'],
-            //     'OBJECT' => $losses['UF_OBJECT'],
-            //     'VALUE' => $losses['UF_VALUE'],
-            //     'MONTH' => $losses['UF_MONTH'],
-            // ];
+            $fields['PREV_METER'] = '';
+            $fields['LAST_METER'] = '';
+            $fields['METER'] = '';
+
+            $arLastRelated = self::meters(false, 1, '', '', $fields['UF_COUNTER']);
+            $arPrevRelated = self::meters(false, 0, '', '', $fields['UF_COUNTER']);
+
+            // gg($prevRelated);
+
+            if ($arLastRelated)
+                $lastRelated = array_slice($arLastRelated, 0, 1)[0]['METER'];    //  $lastRelated['METER']
+
+
+            if ($arPrevRelated) {
+                // gg($prevRelated);
+                $prevRelated = array_slice($arPrevRelated, 0, 1)[0]['METER'];  //$prevRelated['METER']
+            }
+
+
+            if ($lastRelated && $prevRelated) {
+                $fields['LAST_METER'] = $lastRelated;
+                $fields['PREV_METER'] = $prevRelated;
+                $diffRelated = $lastRelated - $prevRelated;
+                $fields['DIFF_METER'] = $diffRelated;
+                $fields['METER'] = round($diffRelated / 100 * $fields['UF_PERCENT'], 3);
+            }
+            // gg($fields);
             $result[$fields['UF_OBJECT']] = $fields;
         }
         // gg($result);

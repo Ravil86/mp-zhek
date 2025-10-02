@@ -176,8 +176,11 @@ require($_SERVER['DOCUMENT_ROOT'] . '/includes/modal_feedback.php');
 					event.preventDefault()
 				}
 				form.classList.add('was-validated')
-}, false)
+			}, false)
 		})
+
+	const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+	const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 </script>
 </body>
 

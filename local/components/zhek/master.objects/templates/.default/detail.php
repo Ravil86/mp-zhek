@@ -4,6 +4,7 @@ use Bitrix\Main\Application,
     Bitrix\Main\Web\Uri;
 
 \Bitrix\Main\UI\Extension::load("ui.forms");
+\Bitrix\Main\UI\Extension::load("ui.hint");
 
 if ($arResult['ACCESS']): ?>
 
@@ -113,7 +114,7 @@ if ($arResult['ACCESS']): ?>
                             </div>
                             <div class="col-auto d-flex align-items-end! flex-column justify-content-between! mt-2!">
                                 <div class="col">
-                                    <a role="button" class="editObject btn btn-link btn-sm text-center"><i class="revicon-pencil-1"></i></a>
+                                    <a role="button" class="editObject btn btn-link btn-sm text-center"><i class="revicon-pencil-1! bi bi-pencil-square"></i></a>
                                 </div>
                                 <button class="editSubmit btn btn-link btn-sm text-center" style="display:none">Применить</button>
                             </div>
@@ -290,17 +291,11 @@ if ($arResult['ACCESS']): ?>
                     </div>
                     <? $APPLICATION->IncludeComponent('bitrix:main.ui.grid', '', $gridParams); ?>
                 <? endif; ?>
-
-                <? //gg($arResult);
-                ?>
-                <? //gg($arResult['RELATED'][$object['ID']]);
-                ?>
                 <? if ($arResult['RELATED'][$object['ID']]): ?>
                     <?
                     $relateCounter = $arResult['RELATED'][$object['ID']]["UF_COUNTER"];
-                    // gg($object['ROWS']);
                     ?>
-                    <div class="content col-12 col-xxl-10">
+                    <div class="mt-2 content col-12 col-xxl-10">
                         <div class="card-body pt-0">
                             <div class="fs-6">Связанные объекты <i>#<?= $relateCounter ?></i> <span class="fs-6"><?= $arResult['COUNTERS'][$relateCounter]['UF_NUMBER'] ?></span> <i class=""><?= $arResult['COUNTERS'][$relateCounter]['UF_NAME'] ?></i></div>
                             <table class="table mt-1">

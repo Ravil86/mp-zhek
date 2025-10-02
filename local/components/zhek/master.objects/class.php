@@ -84,7 +84,7 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 
 	private function run()
 	{
-		//gg(Context::getCurrent()->getRequest()->getRequestUri());
+
 		$this->arResult['PAGE_SIZE'] = 10;
 
 		$this->arResult['ACCESS'] = $this->checkAccess();
@@ -108,8 +108,6 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 			$arObjects[$value['ORG']][] = $value;
 			$orgObjectsIDs[$value['ORG']][$value['ID']] = $value['ID'];
 		}
-
-		// gg($orgObjectsIDs);
 
 		$this->arResult['MONTH'] = LKClass::getMonthEnum();
 
@@ -155,8 +153,8 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 
 			$this->arResult['DETAIL']['COLUMNS'] = [
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
-				['id' => 'NAME', 'name' => 'Наименование ПУ', 'default' => true, 'width' => 250, 'editable' => true, /*'align' => 'right'*/],
-				['id' => 'NUMBER', 'name' => 'Номер ПУ', 'default' => true, 'width' => 200, 'editable' => true],
+				['id' => 'NAME', 'name' => 'Наименование ПУ', 'default' => true, 'width' => 230, 'editable' => true, /*'align' => 'right'*/],
+				['id' => 'NUMBER', 'name' => 'Номер ПУ', 'default' => true, 'width' => 210, 'editable' => true],
 				['id' => 'DATE', 'name' => 'Дата установки ПУ', 'default' => true, 'width' => 180, "editable" => ['TYPE' => 'CUSTOM']],
 				['id' => 'TYPE', 'name' => 'Тип ПУ', 'default' => true, 'width' => 200, "editable" => ['TYPE' => 'MULTISELECT', 'items' => $serviceItems]],
 				['id' => 'CHECK', 'name' => 'Дата поверки ПУ', 'default' => true, 'width' => 160, "editable" => ['TYPE' => 'CUSTOM']],
@@ -176,20 +174,24 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 
 				$related = $this->arResult['RELATED'][$objectID];
 				if ($related && !$related['UF_MAIN']) {
-					// gg('UF_OBJECT ' . $objectID);
+
 					$relateCounter = $this->arResult['COUNTERS'][$related['UF_COUNTER']];
-					// gg($relateCounter['UF_TYPE']);
 
 					$relatetypes = [];
 					foreach ($relateCounter['UF_TYPE'] as $value) {
 						$typeItem = $serviceList[$value];
-						$relatetypes[] = '<div class="d-flex"><img class="mb-1@" src="' . $typeItem['ICON'] . '" width="20" height="20" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'] . '</span></div>';
+						$relatetypes[] = '<div class="d-flex align-items-center"><img class="mb-1@" src="' . $typeItem['ICON'] . '" width="20" height="20" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'] . '</span></div>';
 					}
 
 					$counter = [
-						'ID' => $relateCounter['ID'],
-						'NAME' => $relateCounter['UF_NAME'],
-						'NUMBER' => $relateCounter['UF_NUMBER'],
+						// 'ID' => $relateCounter['ID'],
+						'NAME' => '<div class="d-flex align-items-center">Связаннный ПУ <a role="button" class="ps-1 text-danger"
+							data-bs-toggle="tooltip"
+							data-bs-html="true"
+							data-bs-title="Процент занимаемого объема/площади - ' . $related['UF_PERCENT'] . '%">
+							<i class="bi bi-link-45deg fs-5"></i></a></div>',
+						'NUMBER' => $relateCounter['UF_NUMBER'] . ' / ' . $relateCounter['UF_NAME'],
+						//'NUMBER' => $relateCounter['UF_NUMBER'],
 						'DATE' => $relateCounter['UF_DATE'],
 						'CHECK' => $relateCounter['UF_CHECK'],
 						'TYPE' => '<div class="row gy-1">' . implode('', $relatetypes) . '</div>',
@@ -197,17 +199,27 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 					];
 
 					$item['ROWS'][$related['UF_COUNTER']] = [
+						/*'custom' =>  '<div class="d-flex align-items-center"><div class="col-1"></div>
+						<div class="col-auto">Связаннный ПУ</div>
+						<div class="col">#' . $relateCounter['ID'] . ' / ' . $counter['NUMBER'] . ' <small>' . $counter['NAME'] . '</small></div>
+						<div class="col-auto">' . $counter['TYPE'] . '</div>
+						<div class="col">' . $counter['DATE'] . ' / ' . $counter['CHECK'] . '</div>
+						<div class="col-1"></div>
+						</div>',*/
 						'data' => $counter,
 						'editable' => false
-						// 'data' => $data,
 					];
 				}
 
-				// gg($this->arResult['RELATED']);
 				foreach ($countersObject as $key => $counter) {
 
 					$types = [];
 					$column = $counter;
+
+					if ($counter['UF_ACTIVE'] !== null && !$counter['UF_ACTIVE'])
+						continue;
+
+					$column['ID'] =  $column['UF_ACTIVE'] == null || $column['UF_ACTIVE'] ? $counter['ID'] : '';
 
 					$column['NAME'] = $counter['UF_NAME'];
 					$column['NUMBER'] = $counter['UF_NUMBER'];
@@ -215,7 +227,7 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 					foreach ($counter['UF_TYPE'] as $value) {
 
 						$typeItem = $serviceList[$value];
-						$types[] = '<div class="d-flex"><img class="mb-1@" src="' . $typeItem['ICON'] . '" width="20" height="20" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'] . '</span></div>';
+						$types[] = '<div class="d-flex align-items-center"><img class="mb-1@" src="' . $typeItem['ICON'] . '" width="20" height="20" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'] . '</span></div>';
 						// $types[] = '<img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/>';
 						// $editTypes[] = $value;
 					}
@@ -296,7 +308,7 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 					$item['ROWS'][$key] = [
 						'columns' => $column,
 						'data' => $data,		//Данные для инлайн-редактирования
-						// 'editable' => false
+						'editable' => $column['UF_ACTIVE'] == null || $column['UF_ACTIVE']  ? true : false
 						//'actions' => [ //Действия над ними
 						// [
 						// 	'text'    => 'Редактировать',
@@ -339,7 +351,6 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 				$userList[$user['ID']] = $user;
 				$userItems[$user['ID']] = $user['SHORT_NAME'];
 			}
-			// gg($userItems);
 
 			$grid_options = new CGridOptions($this->arResult["GRID_ID"]);
 			$nav_params = $grid_options->GetNavParams(array("nPageSize" => $this->arResult['PAGE_SIZE']));

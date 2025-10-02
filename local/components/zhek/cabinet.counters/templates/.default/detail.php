@@ -23,6 +23,8 @@ if ($arResult['ACCESS']):
             Ошибка доступа ввода показаний приборов учёта
         </div>
     <? else: ?>
+        <?
+        ?>
         <div class="row align-items-end text-center mt-2 px-1 gx-2 gy-3">
             <div class="py-2 small col-<?= !$arResult['SEND_ADMIN'] ? '3' : '2' ?>">ПУ - примечание</div>
             <div class="py-2 small col"><?= !$arResult['SEND_ADMIN'] ? 'Участвует в расчете услуг' : '' ?></div>
@@ -31,11 +33,11 @@ if ($arResult['ACCESS']):
             <div class="py-2 small col"><?= !$arResult['SEND_ADMIN'] ? 'Конечные показания' : 'конечные' ?></div>
             <div class="py-2 col-12 col-lg-<?= !$arResult['SEND_ADMIN'] ? '4' : '5' ?> text-center bg-info-subtle rounded-top">
                 <div class="fs-5 mt-1">Ввод показаний</div>
-                <div class="row gx-2 mt-3">
-                    <? if (!$arResult['SEND_ADMIN']): ?><div class="col small">Нулевой расход</div><? endif; ?>
-                    <div class="col small">Текущие показания</div>
-                    <div class="col small">Разность</div>
-                    <? if ($arResult['SEND_ADMIN']): ?> <div class="col-5 small">Комментарий</div><? endif; ?>
+                <div class="row d-flex! mx-1 gx-2 mt-3">
+                    <? if (!$arResult['SEND_ADMIN']): ?><div class="col-3 small">Нулевой расход</div><? else: ?><div class="col-auto"></div><? endif; ?>
+                    <div class="<?= !$arResult['SEND_ADMIN'] ? 'col' : 'col-4' ?> small">Текущие показания</div>
+                    <div class="<?= !$arResult['SEND_ADMIN'] ? 'col-4' : 'col-3' ?> small">Разность</div>
+                    <? if ($arResult['SEND_ADMIN']): ?> <div class="col-4 small">Комментарий</div><? endif; ?>
                 </div>
             </div>
         </div>
@@ -45,10 +47,14 @@ if ($arResult['ACCESS']):
                 <input type="hidden" name="MONTH" value="<?= $arResult['SAVE_MONTH']['ID'] ?>">
                 <?
                 $userSend = false;
+
+                // $related = $this->arResult['RELATED'][$objectID];
+                // $prevRelated = LKClass::meters(false, 0, '', '', 47);
+                // gg($prevRelated);
                 foreach ($arResult['DETAIL']['LIST'] as $key => $item): ?>
                     <?
+
                     $noteMeter = '';
-                    // gg($item['ID']);
                     $raznost = 0;
 
                     if (is_array($arResult['DETAIL']['PREV_METERS'][$item['ID']]))
@@ -56,6 +62,9 @@ if ($arResult['ACCESS']):
 
                     //$prevMeter = $arResult['DETAIL']['PREV_METERS'][$item['ID']];
                     $lastMeter = $arResult['DETAIL']['LAST_METERS'][$item['ID']];
+
+                    // gg($prevMeter);
+
 
                     if ($lastMeter && $prevMeter)
                         $raznost = $lastMeter - $prevMeter;
@@ -69,18 +78,31 @@ if ($arResult['ACCESS']):
                     if ($lastMeter)
                         $userSend = true;
 
+                    // gg($item['MAIN_RELATED']);
                     ?>
                     <div class="row card counter-item" id="counter<?= $item['ID'] ?>">
                         <div class="card-body ps-2 pe-1 py-0">
-                            <div class="row gx-2 align-items-stretch">
-                                <div class="col-<?= !$arResult['SEND_ADMIN'] ? '3' : '2' ?> py-3 d-flex align-items-center"><?= $item['UF_NUMBER']; ?>&nbsp;-&nbsp;<i class="small"><?= $item['UF_NAME'] ?></i></div>
-                                <div class="col py-3 d-flex align-items-center justify-content-center"><?= $item['SERVICE'] ?></div>
-                                <div class="col py-3 d-flex align-items-center justify-content-center current_use"><?= $prevMeterFormat ?></div>
-                                <div class="col py-3 d-flex align-items-center justify-content-center"><?= $raznostFormat ?></div>
-                                <div class="col py-3 d-flex align-items-center justify-content-center"><?= $lastMeter ? $lastMeterFormat : $prevMeterFormat ?></div>
+                            <div class="row gx-2 align-items-stretch align-items-center!">
+                                <div class="col-3<? //= !$arResult['SEND_ADMIN'] ? '3' : '2';
+                                                    ?> py-3 d-flex align-items-center">
+                                    <?= $arResult['SEND_ADMIN'] ? '# ' . ($item['RELATED'] ? $item['UF_COUNTER'] . '-' : '') . $item['ID'] : '' ?> <?= $item['UF_NUMBER']; ?>&nbsp;-&nbsp;<i class="small"><?= $item['UF_NAME'] ?></i>
+                                    <? if ($item['MAIN_RELATED']): ?>
+                                        <span role="button" class="ps-1 text-danger"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-title="Расчет потребления производится от процента занимаемой объема/площади - <?= $item['MAIN_RELATED']['UF_PERCENT'] ?>%">
+                                            <i class="bi bi-link-45deg fs-5"></i></span>
+                                    <? endif; ?>
+                                </div>
+                                <div class="<?= !$arResult['SEND_ADMIN'] ? 'col' : 'col-auto'; ?> py-3 d-flex align-items-center justify-content-center"><?= $item['SERVICE'] ?></div>
+                                <div class="col py-3 d-flex align-items-center justify-content-center current_use">
+                                    <?= !$item['RELATED'] ? $prevMeterFormat : $item['PREV_METER'] ?></div>
+                                <div class="col py-3 d-flex align-items-center justify-content-center">
+                                    <?= !$item['RELATED'] ? $raznostFormat : $item['DIFF_METER'] ?></div>
+                                <div class="col py-3 d-flex align-items-center justify-content-center">
+                                    <?= !$item['RELATED'] ? ($lastMeter ? $lastMeterFormat : $prevMeterFormat) : $item['LAST_METER'] ?></div>
                                 <div class="col-12 col-lg-<?= !$arResult['SEND_ADMIN'] ? '4' : '5' ?> bg-info-subtle">
-                                    <div class="d-flex align-items-center py-2">
-                                        <? if (!$arResult['SEND_ADMIN']): ?>
+                                    <div class="d-flex align-items-center h-100 py-2!">
+                                        <? if (!$arResult['SEND_ADMIN'] && !$item['RELATED']): ?>
                                             <div class="col-3 d-flex justify-content-center">
                                                 <div class="form-check form-switch">
                                                     <input class="form-check-input null-meter" type="checkbox" role="button" data-switch-id="<?= $item['ID'] ?>"
@@ -89,14 +111,28 @@ if ($arResult['ACCESS']):
                                                 </div>
                                             </div>
                                         <? else: ?>
-                                            <div class="col"></div>
+                                            <div class="col-3 text-center"><? if ($item['RELATED']): ?><?= $item['UF_PERCENT'] ?>%<? endif; ?></div>
                                         <? endif; ?>
-                                        <div class="col-auto">
-                                            <input id="inputMeter<?= $item['ID'] ?>" type="text" name="METER[<?= $item['ID'] ?>]" class="meter form-control" onkeyup="validate(this)" onclick="moveCaretToStart(this)"
-                                                min="<?= $lastMeter ?:  $prevMeter ?>" <?= $arResult['SEND_FORM'] && $userSend || !$arResult['SEND_FORM'] && !$arResult['SEND_ADMIN'] ? 'disabled' : '' ?> value="<?/*= $lastMeter ?:  $prevMeter*/ ?>" data-current="<?= $prevMeterFormat ?>">
-                                        </div>
-                                        <div class="col-<?= !$arResult['SEND_ADMIN'] ? '4' : '3' ?> d-flex justify-content-center align-items-end"><span class="fw-bold changeDiff">0</span><small class="ps-1"><?= $item['UNIT'] ?></small></div>
-                                        <? if ($arResult['SEND_ADMIN']): ?>
+                                        <? if (!$item['RELATED']): ?>
+                                            <?
+                                            $disabled = $arResult['SEND_FORM'] && $userSend || !$arResult['SEND_FORM'] && !$arResult['SEND_ADMIN'] ? true : false;
+
+                                            // gg($item['MAIN_RELATED']['METER']);
+                                            ?>
+                                            <div class="col-auto">
+                                                <input id="inputMeter<?= $item['ID'] ?>" type="text" name="METER[<?= $item['ID'] ?>]" class="meter form-control" onkeyup="validate(this)" onclick="moveCaretToStart(this)"
+                                                    min="<?= $lastMeter ?:  $prevMeter ?>" <?= $disabled ? 'disabled' : '' ?> value="<?= $disabled ? ($item['MAIN_RELATED'] ? $item['MAIN_RELATED']['METER'] : $lastMeter) : '' /*$prevMeter*/ ?>" data-current="<?= $prevMeterFormat ?>">
+                                            </div>
+                                            <div class="col-<?= !$arResult['SEND_ADMIN'] ? '4' : '3' ?> d-flex justify-content-center align-items-end"><span class="fw-bold changeDiff"><?= $disabled ? ($item['MAIN_RELATED'] ? $item['MAIN_RELATED']['METER'] : $lastMeter) : 0 ?></span><small class="ps-1"><?= $item['UNIT'] ?></small></div>
+                                        <? else: ?>
+                                            <div class="col-5 text-center">
+                                                <?= $item['METER'] ?>
+                                            </div>
+                                            <div class="col text-center">
+                                                <span class="fw-bold"><?= $item['METER'] ?></span><small class="ps-1"><?= $item['UNIT'] ?></small>
+                                            </div>
+                                        <? endif; ?>
+                                        <? if ($arResult['SEND_ADMIN'] && !$item['RELATED']): ?>
                                             <div class="col-auto">
                                                 <div class="ui-ctl ui-ctl-textarea ui-ctl-xs ui-ctl-resize-x">
                                                     <textarea class="ui-ctl-element" name="NOTE[<?= $item['ID'] ?>]" <?= $noteMeter ? 'readonly' : '' ?>><?= $noteMeter ?></textarea>
@@ -343,95 +379,6 @@ if ($arResult['ACCESS']):
             // $(".meter").mask("9.9?99");
         </script>
     <? endif; ?>
-    <?
-
-    // $request = Application::getInstance()->getContext()->getRequest();
-    // $uriString = $request->getRequestUri();
-    // $uri = new Uri($uriString);
-    // $isArhive = $request->getQuery('arhive');
-    // $uri->addParams(array("arhive"=>"Y"));
-    // $arhiveUrl = $uri->getUri();
-
-    // dump($arResult['DETAIL']);
-    /*
-    ?>
-    <div id='moderation' class="content">
-        <div class="row align-items-center pb-3 mb-2">
-            <div class="col-5 mb-1 h4"><?= $arResult['DETAIL']['USERNAME'] ?>
-                <? //=TruncateText($arResult['DETAIL']['USERNAME'], 50)
-                ?>
-            </div>
-            <div class="col-7 mb-4! card d-flex! flex-row justify-content-between align-items-center px-3 py-2">
-                <div class="d-flex flex-column align-items-center">
-                    <div class="col-12 h6 my-0 text-uppercase text-blue"><?= TruncateText($arResult['DETAIL']['COURSE'], 28) ?></div>
-                    <div class="col-12 h6 my-0 text-secondary"><?= $arResult['DETAIL']['STREAM']['NAME'] . ' - ' . $arResult['DETAIL']['STREAM']['TEXT'] ?></div>
-                    <div class="col-12 small fst-italic text-muted">
-                        <small>Дата изменения: <?= $arResult['DETAIL']['DATE_UPDATE'] ?></small>
-
-                    </div>
-                </div>
-                <div class="text-end! text-center col-3! badge! small px-4 py-2 rounded-pill text-bg-light! text-bg-<?= $arResult['DETAIL']['STATUS']['VALUE'] ?> lh-sm">
-                    <i class="small"><?= $arResult['DETAIL']['STATUS']['TEXT'] ?></i>
-                </div>
-            </div>
-        </div>
-    </div>
-    */ ?>
 <? else: ?>
     <font class="errortext">Ошибка доступа</font>
 <? endif; ?>
-<?
-/*function templateItems($docVal, $useCheck, $admin = false){
-	$Format=ToLower(substr($docVal['FILE_NAME'], strrpos($docVal['FILE_NAME'], '.') + 1));
-	// dump($docVal[DESC]);
-	$result = '<div class="col-12 col-sm-6 col-md-4 col-lg mt-4 mt-md-0">
-		<div class="row"><div class="col doc_title small!">'.($docVal['DESC']?:TruncateText($docVal['NAME'], 28)).'</div></div>';
-		if(!$docVal['STATUS']){
-			$result .= '<div class="row">
-				<span class="col">не загружен</span>
-			</div>';
-		}
-		else{
-			$docStatus = $docVal['STATUS'];
-			$result .= '<div class="row g-2" >
-				<div class="col-auto">';
-					$result .= '<a class="mb-2 pt-2 btn btn-sm icon_file border-'.$docStatus['UF_CODE'].' text-'.$docStatus['UF_CODE'].'" data-fancybox '.($Format=='pdf'? 'data-type="iframe" data-options=\'{"iframe\" : {\"preload\" : true, \"css\" : {\"height\" : \"80%\"}}}\'':'').' data-src="'.$docVal['SRC'].'" href="javascript:;">
-							<i class="bi bi bi-file-earmark-'.$docStatus['UF_XML_ID'].' image text-'.$docStatus['UF_CODE'].'"></i><div class="small"><small><small>'.TruncateText($docStatus['UF_NAME'], 8).'</small></small></div>
-						</a>
-					</div>
-					<div class="col-8" id="'.$docVal['ID'].'">';
-
-							$result .= '<div class="mt-1 mb-2 text-muted">';
-							$result .= '<div class=""><span>'.TruncateText($docVal['FILE_NAME'], 35).'</span></div>';
-							//$result .= '<div class="text-'.$docStatus['UF_CODE'].'"><i class="bi bi-file-earmark-'.$docStatus['UF_XML_ID'].'" style="font-size: 1.3rem;"></i><span>'.$docStatus['UF_NAME'].'</span></div>';
-							$result .= '<div class="info_status_inner info_item_date mt-1 pl-0"><span class="">'.$docVal['DATE'].'</span></div>';
-										if($docStatus['ID']==3 && $docVal['INFO']):
-											$result .= '<div class="mt-1 ms-1 info_status_note"><div class="ps-3">'.$docVal['INFO'].'</div></div>';
-										endif;
-									$result .= '</div>
-
-					</div>
-			</div>';
-				if($admin && $docVal['ID'] || $useCheck && $docStatus['ID']==1):?>
-    <?
-					$textCheck = !$admin?'Одобрить':'load';
-					$textRefuse = !$admin?'Отказать':'deny';
-					$result .= '<div class="btn_status">
-								<a class="btn_yes btn button-outline mb-1'.($admin?' w-auto':'').'" data-id="'.$docVal['ID'].'">
-								<i class="bi bi-check2'.(!$admin?' fs-6':'').'"></i>
-									'.$textCheck.'</a>
-								<a class="btn_no open_popup btn button-outline mb-1'.($admin?' w-auto':'').'" data-id="'.$docVal['ID'].'">
-									<i class="bi bi-x'.(!$admin?' fs-6':'').'"></i>
-									'.$textRefuse.'</a>';
-						if($admin){
-							$result .= '<a class="btn_load btn button-outline ms-1 mb-1'.($admin?' w-auto':'').'" data-id="'.$docVal['ID'].'">
-							<i class="bi bi-arrow-down"></i></a>';
-						}
-								//<!--button class="btn_no open_popup" data-id="'.$docVal['VALUE'].'">Отказать</!--button-->
-						$result .= '</div><!--btn-status-->';
-				endif;
-		}
-	$result .= '</div>';
-	return $result;
-}*/
-?>

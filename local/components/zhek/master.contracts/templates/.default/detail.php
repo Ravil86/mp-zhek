@@ -160,7 +160,7 @@ if ($arResult['ACCESS']): ?>
 
 
                         if ($prevMeters && $lastMeters)
-                            $potreb = $lastMeters - $prevMeters;
+                            $potreb =  round($lastMeters - $prevMeters, 3);
 
                         $losses = $arResult["LOSSES"][$key][$arResult["MONTH_CODE"][$month]];
 

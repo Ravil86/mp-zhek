@@ -67,10 +67,15 @@ class CabinetObjects extends CBitrixComponent
 		if ($myCompany)
 			$arObjects = LKClass::getObjects($myCompany['ID']);
 
+
 		if ($this->arResult['VARIABLES']) {
 
 			$objectID = $this->arResult['VARIABLES']['DETAIL_ID'];
 			$this->arResult['DETAIL']['ID'] = $objectID;
+
+			if ($arObjects)
+				if (!array_key_exists($objectID, $arObjects))
+					$this->arResult['WRONG'] = true;
 
 			$this->arResult['DETAIL']['GRID'] =  $this->arResult['GRID_ID'] . '_detail';
 			$arResult['DETAIL']['GRID'] = $this->arResult['DETAIL']['GRID'];
@@ -79,7 +84,6 @@ class CabinetObjects extends CBitrixComponent
 
 			$countersObject = LKClass::getCounters($this->arResult['VARIABLES']['DETAIL_ID']);
 			$this->arResult['COUNTERS'] = LKClass::getCounters();
-			// gg($this->arResult['COUNTERS']);
 
 			$this->arResult['RELATED'] = LKClass::getRelated();
 			$this->arResult['OBJECTS'] = LKClass::getObjects();
@@ -93,18 +97,52 @@ class CabinetObjects extends CBitrixComponent
 				['id' => 'UF_NAME', 'name' => 'Наименование', 'default' => true, 'width' => 200],
 				['id' => 'UF_NUMBER', 'name' => 'Номер cчетчика', 'default' => true, 'width' => 200],
 				['id' => 'UF_DATE', 'name' => 'Дата установки', 'default' => true],
-				['id' => 'SERVICE', 'name' => 'Тип счетчика', 'default' => true, 'width' => 250],
+				['id' => 'SERVICE', 'name' => 'Тип счетчика', 'default' => true, 'width' => 200],
 				['id' => 'UF_CHECK', 'name' => 'Дата поверки', 'default' => true, 'width' => 180],
 				// ['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => '130'],
 			];
+
+
+			$related = $this->arResult['RELATED'][$objectID];
+			if ($related && !$related['UF_MAIN']) {
+
+				$relateCounter = $this->arResult['COUNTERS'][$related['UF_COUNTER']];
+
+				$relatetypes = [];
+				foreach ($relateCounter['UF_TYPE'] as $value) {
+					$typeItem = $serviceList[$value];
+					$relatetypes[] = '<div class="d-flex"><img class="mb-1@" src="' . $typeItem['ICON'] . '" width="23" height="23" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'] . '</span></div>';
+				}
+
+				$counter = [
+					'ID' => $relateCounter['ID'],
+					'UF_NAME' => '<div class="d-flex align-items-center">' . $relateCounter['UF_NAME'] . '<a role="button" class="ps-1 text-danger"
+							data-bs-toggle="tooltip"
+							data-bs-title="Расчет потребления производится от процента занимаемой объема/площади - ' . $related['UF_PERCENT'] . '%">
+							<i class="bi bi-link-45deg fs-5"></i></a></div>',
+					'UF_NUMBER' =>  $relateCounter['UF_NUMBER'],
+					'UF_DATE' => $relateCounter['UF_DATE'],
+					'UF_CHECK' => $relateCounter['UF_CHECK'],
+					'SERVICE' => '<div class="row gy-1">' . implode('', $relatetypes) . '</div>',
+				];
+
+				$this->arResult['DETAIL']['ROWS'][$related['UF_COUNTER']] = [
+					'data' => $counter,
+				];
+			}
 
 			foreach ($countersObject as $key => &$item) {
 
 				$types = [];
 
+				// gg($item);
+
+				if ($item['UF_ACTIVE'] !== null && !$item['UF_ACTIVE'])
+					continue;
+
 				foreach ($item['UF_TYPE'] as $value) {
 					$typeItem = $serviceList[$value];
-					$types[] = '<div><img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'] . '</span></div>';
+					$types[] = '<div><img src="' . $typeItem['ICON'] . '" width="23" height="23" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'] . '</span></div>';
 					// $types[] = '<img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/>';
 				}
 
@@ -124,8 +162,6 @@ class CabinetObjects extends CBitrixComponent
 					'data' => $item
 				];
 			}
-
-			// gg(LKClass::getRelated());
 
 			// $this->arResult['DETAIL'] = $arItems[$this->arResult['VARIABLES']['DETAIL_ID']];
 

@@ -77,6 +77,8 @@ $arSite = $rsSites->Fetch();
         //SITE_TEMPLATE_PATH . '/css/special.css',
         // SITE_TEMPLATE_PATH.'/css/special.min.css',
 
+        '//cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css',
+
         // '//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/2.0.0-beta1/css/bootstrap-select.min.css',
         SITE_TEMPLATE_PATH . '/lib/bootstrap-select/css/bootstrap-select.min.css',
 
