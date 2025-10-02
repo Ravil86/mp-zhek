@@ -102,17 +102,20 @@ if ($arResult['ACCESS']):
                                     <?= !$item['RELATED'] ? ($lastMeter ? $lastMeterFormat : $prevMeterFormat) : $item['LAST_METER'] ?></div>
                                 <div class="col-12 col-lg-<?= !$arResult['SEND_ADMIN'] ? '4' : '5' ?> bg-info-subtle">
                                     <div class="d-flex align-items-center h-100 py-2!">
-                                        <? if (!$arResult['SEND_ADMIN'] && !$item['RELATED']): ?>
-                                            <div class="col-3 d-flex justify-content-center">
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input null-meter" type="checkbox" role="button" data-switch-id="<?= $item['ID'] ?>"
-                                                        <?= $arResult['SEND_FORM'] && $userSend || !$arResult['SEND_FORM'] && !$arResult['SEND_ADMIN']  ? 'disabled' : '' ?>
-                                                        title="Оставить показания без изменений">
+                                        <? if (!$arResult['SEND_ADMIN']): ?>
+                                            <? if (!$item['RELATED']): ?>
+                                                <div class="col-3 d-flex justify-content-center">
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input null-meter" type="checkbox" role="button" data-switch-id="<?= $item['ID'] ?>"
+                                                            <?= $arResult['SEND_FORM'] && $userSend || !$arResult['SEND_FORM'] && !$arResult['SEND_ADMIN']  ? 'disabled' : '' ?>
+                                                            title="Оставить показания без изменений">
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        <? else: ?>
-                                            <div class="col-3 text-center"><? if ($item['RELATED']): ?><?= $item['UF_PERCENT'] ?>%<? endif; ?></div>
+                                            <? else: ?>
+                                                <div class="col-3 text-center"><?= $item['UF_PERCENT'] ?>%</div>
+                                            <? endif; ?>
                                         <? endif; ?>
+
                                         <? if (!$item['RELATED']): ?>
                                             <?
                                             $disabled = $arResult['SEND_FORM'] && $userSend || !$arResult['SEND_FORM'] && !$arResult['SEND_ADMIN'] ? true : false;
