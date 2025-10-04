@@ -28,9 +28,12 @@
 }
 
 .ui-ctl-xs{
---ui-field-size: 16px;
-
+	--ui-field-size: 16px;
 }
+.ui-ctl-md{
+	--ui-field-size: 38px;
+}
+
 .ui-ctl-textarea{
  width: 100%;
 }
@@ -44,5 +47,5 @@ font-size: .75em;
 
 .form-control{
 min-width: 100px;
-max-width: 150px;
+/* max-width: 150px; */
 }

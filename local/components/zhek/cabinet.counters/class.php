@@ -270,7 +270,7 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 					foreach ($item['UF_TYPE'] as $value) {
 						$typeItem = $serviceList[$value];
 						$unit = $typeItem['UNIT'];
-						$types[] = '<img class="me-1" src="' . $typeItem['ICON'] . '" width="23" height="23" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '" data-bs-toggle="tooltip"
+						$types[] = '<img class="me-1" src="' . $typeItem['ICON'] . '" width="22" height="22" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '" data-bs-toggle="tooltip"
 							data-bs-title="' . $typeItem['NAME'] . '"/>';
 					}
 					$item['UNIT'] = $unit;
@@ -293,7 +293,7 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 							foreach ($relateCounter['UF_TYPE'] as $value) {
 								$typeItem = $serviceList[$value];
 								$unit = $typeItem['UNIT'];
-								$relatetypes[] = '<img class="me-1" src="' . $typeItem['ICON'] . '" width="23" height="23" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"
+								$relatetypes[] = '<img class="me-1" src="' . $typeItem['ICON'] . '" width="22" height="22" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"
 							data-bs-toggle="tooltip"
 							data-bs-title="' . $typeItem['NAME'] . '"
 							/>';
