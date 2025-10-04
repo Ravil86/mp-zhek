@@ -291,35 +291,65 @@ if ($arResult['ACCESS']): ?>
                     </div>
                     <? $APPLICATION->IncludeComponent('bitrix:main.ui.grid', '', $gridParams); ?>
                 <? endif; ?>
-                <? if ($arResult['RELATED'][$object['ID']]): ?>
-                    <?
-                    $relateCounter = $arResult['RELATED'][$object['ID']]["UF_COUNTER"];
-                    ?>
-                    <div class="mt-2 content col-12 col-xxl-10">
-                        <div class="card-body pt-0">
-                            <div class="fs-6">Связанные объекты <i>#<?= $relateCounter ?></i> <span class="fs-6"><?= $arResult['COUNTERS'][$relateCounter]['UF_NUMBER'] ?></span> <i class=""><?= $arResult['COUNTERS'][$relateCounter]['UF_NAME'] ?></i></div>
-                            <table class="table mt-1">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">Объект</th>
-                                        <th scope="col">Организация</th>
-                                        <th scope="col">Процент занимаемого объема/площади, %</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?
-                                    foreach ($arResult['RELATED'] as $key => $object): ?>
+                <? // gg($arResult['RELATED']);
+
+                $arrObjectRelate = $arResult['RELATED'][$object['ID']];
+                ?>
+                <? if ($arrObjectRelate && is_array($arrObjectRelate)): ?>
+                    <div class="row gx-4 list-group list-group-flush">
+                        <?
+                        $countRelate = count($arrObjectRelate);
+                        foreach ($arrObjectRelate as $key => $counter) {
+                            $relateCounter =  $counter["UF_COUNTER"];
+                            $arRelated = $arResult['RELATED_COUNTER'][$relateCounter];
+                            //gg($arRelated);
+                        ?>
+                            <div class="col-12 fs-6! small list-group-item">
+                                <div class="row">
+                                    <div class="col-2"><i>#<?= $relateCounter ?></i> <span class="fw-bold"><?= $arResult['COUNTERS'][$relateCounter]['UF_NUMBER'] ?></span>
+                                        <i class=""><?= $arResult['COUNTERS'][$relateCounter]['UF_NAME'] ?></i>
+                                    </div>
+                                    <div class="col">
+                                        <div class="row gx-5">
+                                            <? foreach ($arRelated as $key => $object) { ?>
+                                                <div class="col">
+                                                    <div class="row gx-0 !align-items-center">
+                                                        <div class="col">#<?= $object['UF_OBJECT'] ?> <?= $arResult['OBJECTS'][$object['UF_OBJECT']]['NAME'] ?><br>
+                                                            <small><?= $arResult['COMPANY'][$arResult['OBJECTS'][$object['UF_OBJECT']]['ORG']]["UF_NAME"] ?></small>
+                                                        </div>
+                                                        <div class="col-auto flex-nowrap"><?= $object['UF_PERCENT'] ?></div>
+                                                    </div>
+
+                                                </div>
+                                            <? } ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <?/* <table class="table table-sm mt-1">
+                                   <thead class="small">
                                         <tr>
-                                            <td><?= $object['UF_OBJECT'] ?></td>
-                                            <td><?= $arResult['OBJECTS'][$object['UF_OBJECT']]['NAME'] ?></td>
-                                            <td><?= $arResult['COMPANY'][$arResult['OBJECTS'][$object['UF_OBJECT']]['ORG']]["UF_NAME"] ?></td>
-                                            <td><?= $object['UF_PERCENT'] ?></td>
+                                            <th class="col-auto">#</th>
+                                            <th class="col-3">Объект</th>
+                                            <th class="col-auto">Организация</th>
+                                            <th class="col-3">Процент занимаемого объема/площади, %</th>
                                         </tr>
-                                    <? endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
+                                    </thead>
+
+                                    <tbody>
+                                        <?
+                                        foreach ($arRelated as $key => $object): ?>
+                                            <tr class="small">
+                                                <td><?= $object['ID'] ?></td>
+                                                <td>#<?= $object['UF_OBJECT'] ?> <?= $arResult['OBJECTS'][$object['UF_OBJECT']]['NAME'] ?></td>
+                                                <td><?= $arResult['COMPANY'][$arResult['OBJECTS'][$object['UF_OBJECT']]['ORG']]["UF_NAME"] ?></td>
+                                                <td><?= $object['UF_PERCENT'] ?></td>
+                                            </tr>
+                                        <? endforeach; ?>
+                                    </tbody>
+                                </table>
+                                 */ ?>
+                        <? } ?>
                     </div>
                 <? endif; ?>
 

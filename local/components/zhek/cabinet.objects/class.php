@@ -103,32 +103,40 @@ class CabinetObjects extends CBitrixComponent
 			];
 
 
-			$related = $this->arResult['RELATED'][$objectID];
-			if ($related && !$related['UF_MAIN']) {
+			$arRelated = $this->arResult['RELATED'][$objectID];
+			if ($arRelated/* && !$related['UF_MAIN']*/) {
 
-				$relateCounter = $this->arResult['COUNTERS'][$related['UF_COUNTER']];
 
-				$relatetypes = [];
-				foreach ($relateCounter['UF_TYPE'] as $value) {
-					$typeItem = $serviceList[$value];
-					$relatetypes[] = '<div class="d-flex"><img class="mb-1@" src="' . $typeItem['ICON'] . '" width="23" height="23" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'] . '</span></div>';
-				}
+				if (is_array($arRelated)) {
+					foreach ($arRelated as $key => $related) {
 
-				$counter = [
-					'ID' => $relateCounter['ID'],
-					'UF_NAME' => '<div class="d-flex align-items-center">' . $relateCounter['UF_NAME'] . '<a role="button" class="ps-1 text-danger"
+						// gg($related);
+						$relateCounter = $this->arResult['COUNTERS'][$related['UF_COUNTER']];
+						// gg($relateCounter);
+
+						$relatetypes = [];
+						foreach ($relateCounter['UF_TYPE'] as $value) {
+							$typeItem = $serviceList[$value];
+							$relatetypes[] = '<div class="d-flex"><img class="mb-1@" src="' . $typeItem['ICON'] . '" width="23" height="23" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'] . '</span></div>';
+						}
+
+						$counter = [
+							'ID' => $relateCounter['ID'],
+							'UF_NAME' => '<div class="d-flex align-items-center">' . $relateCounter['UF_NAME'] . '<a role="button" class="ps-1 text-danger"
 							data-bs-toggle="tooltip"
 							data-bs-title="Расчет потребления производится от процента занимаемой объема/площади - ' . $related['UF_PERCENT'] . '%">
 							<i class="bi bi-link-45deg fs-5"></i></a></div>',
-					'UF_NUMBER' =>  $relateCounter['UF_NUMBER'],
-					'UF_DATE' => $relateCounter['UF_DATE'],
-					'UF_CHECK' => $relateCounter['UF_CHECK'],
-					'SERVICE' => '<div class="row gy-1">' . implode('', $relatetypes) . '</div>',
-				];
+							'UF_NUMBER' =>  $relateCounter['UF_NUMBER'],
+							'UF_DATE' => $relateCounter['UF_DATE'],
+							'UF_CHECK' => $relateCounter['UF_CHECK'],
+							'SERVICE' => '<div class="row gy-1">' . implode('', $relatetypes) . '</div>',
+						];
 
-				$this->arResult['DETAIL']['ROWS'][$related['UF_COUNTER']] = [
-					'data' => $counter,
-				];
+						$this->arResult['DETAIL']['ROWS'][$related['UF_COUNTER']] = [
+							'data' => $counter,
+						];
+					}
+				}
 			}
 
 			foreach ($countersObject as $key => &$item) {

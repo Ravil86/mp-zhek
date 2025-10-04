@@ -128,6 +128,8 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 
 		if ($this->arResult['VARIABLES']) {
 
+			#DETAIL
+
 			$orgID = $this->arResult['VARIABLES']['DETAIL_ID'];
 			// $this->arResult['DETAIL']['ID'] = $orgID;
 			$this->arResult['DETAIL']['ORG'] =  $arItems[$orgID];
@@ -136,12 +138,15 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 			$arResult['DETAIL']['GRID'] = $this->arResult['DETAIL']['GRID'];
 
 			$this->arResult['RELATED'] = LKClass::getRelated();
+
+			$this->arResult['RELATED_COUNTER'] = LKClass::getRelated(1);
+			// gg($this->arResult['RELATED_COUNTER']);
 			$this->arResult['COUNTERS'] = LKClass::getCounters();
 			$this->arResult['OBJECTS'] = LKClass::getObjects();
 			$this->arResult['COMPANY'] = LKClass::getCompany();
 
+			// gg($arObjects);
 			$objectList = $arObjects[$orgID];
-			// dump($objectList);
 
 			$grid_options = new CGridOptions($this->arResult['DETAIL']['GRID']);
 			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
@@ -164,51 +169,57 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 
 			$snippet = new Bitrix\Main\Grid\Panel\Snippet();
 			$related = null;
+
+			// gg($objectList);
+
 			foreach ($objectList as $key => &$item) {
 
 				$objectID = $item['ID'];
-
 				$countersObject = LKClass::getCounters($objectID);
-
 				$data = [];
+				$arRelated = $this->arResult['RELATED'][$objectID];
 
-				$related = $this->arResult['RELATED'][$objectID];
-				if ($related && !$related['UF_MAIN']) {
+				if (is_array($arRelated) /*&& !$related['UF_MAIN']*/) {
 
-					$relateCounter = $this->arResult['COUNTERS'][$related['UF_COUNTER']];
+					foreach ($arRelated as $key => $related) {
 
-					$relatetypes = [];
-					foreach ($relateCounter['UF_TYPE'] as $value) {
-						$typeItem = $serviceList[$value];
-						$relatetypes[] = '<div class="d-flex align-items-center"><img class="mb-1@" src="' . $typeItem['ICON'] . '" width="20" height="20" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'] . '</span></div>';
-					}
+						// gg($related);
 
-					$counter = [
-						// 'ID' => $relateCounter['ID'],
-						'NAME' => '<div class="d-flex align-items-center">Связаннный ПУ <a role="button" class="ps-1 text-danger"
+						$relateCounter = $this->arResult['COUNTERS'][$related['UF_COUNTER']];
+
+						$relatetypes = [];
+						foreach ($relateCounter['UF_TYPE'] as $value) {
+							$typeItem = $serviceList[$value];
+							$relatetypes[] = '<div class="d-flex align-items-center"><img class="mb-1@" src="' . $typeItem['ICON'] . '" width="20" height="20" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'] . '</span></div>';
+						}
+
+						$counter = [
+							'ID' =>    $relateCounter['ID'] . '-' . $related['ID'],
+							'NAME' => '<div class="d-flex align-items-center">Связаннный ПУ <a role="button" class="ps-1 text-danger"
 							data-bs-toggle="tooltip"
 							data-bs-html="true"
 							data-bs-title="Процент занимаемого объема/площади - ' . $related['UF_PERCENT'] . '%">
 							<i class="bi bi-link-45deg fs-5"></i></a></div>',
-						'NUMBER' => $relateCounter['UF_NUMBER'] . ' / ' . $relateCounter['UF_NAME'],
-						//'NUMBER' => $relateCounter['UF_NUMBER'],
-						'DATE' => $relateCounter['UF_DATE'],
-						'CHECK' => $relateCounter['UF_CHECK'],
-						'TYPE' => '<div class="row gy-1">' . implode('', $relatetypes) . '</div>',
+							'NUMBER' => $relateCounter['UF_NUMBER'] . ' / ' . $relateCounter['UF_NAME'],
+							//'NUMBER' => $relateCounter['UF_NUMBER'],
+							'DATE' => $relateCounter['UF_DATE'],
+							'CHECK' => $relateCounter['UF_CHECK'],
+							'TYPE' => '<div class="row gy-1">' . implode('', $relatetypes) . '</div>',
 
-					];
+						];
 
-					$item['ROWS'][$related['UF_COUNTER']] = [
-						/*'custom' =>  '<div class="d-flex align-items-center"><div class="col-1"></div>
+						$item['ROWS'][$related['UF_COUNTER']] = [
+							/*'custom' =>  '<div class="d-flex align-items-center"><div class="col-1"></div>
 						<div class="col-auto">Связаннный ПУ</div>
 						<div class="col">#' . $relateCounter['ID'] . ' / ' . $counter['NUMBER'] . ' <small>' . $counter['NAME'] . '</small></div>
 						<div class="col-auto">' . $counter['TYPE'] . '</div>
 						<div class="col">' . $counter['DATE'] . ' / ' . $counter['CHECK'] . '</div>
 						<div class="col-1"></div>
 						</div>',*/
-						'data' => $counter,
-						'editable' => false
-					];
+							'data' => $counter,
+							'editable' => false
+						];
+					}
 				}
 
 				foreach ($countersObject as $key => $counter) {
@@ -326,6 +337,8 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 			}
 		} else {
 
+			#LIST
+
 			$result = \Bitrix\Main\UserGroupTable::getList(array(
 				'order' => array('USER.LAST_LOGIN' => 'DESC'),
 				'filter' => array(
@@ -414,43 +427,6 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 
 			// 	dump($arUser);
 			// }
-
-
-			/*
-			$useFilter = false;
-
-			if (isset($filterData["DATE_MODIFY_from"])) {
-				$userFilter["DATE_MODIFY_FROM"] = $filterData["DATE_MODIFY_from"];
-				$userFilter["DATE_MODIFY_TO"] = $filterData["DATE_MODIFY_to"];
-			}
-
-			if (isset($filterData["FIND"])) {
-				if (isset($filterData["NAME"]))
-					$userFilter["NAME"] = "%" . $filterData["NAME"] . "%";
-				else
-					$userFilter["NAME"] = "%" . $filterData["FIND"] . "%";
-			}
-			if (isset($filterData["DATE_CREATE_from"])) {
-				$userFilter[">=DATE_CREATE"] = $filterData["DATE_CREATE_from"];
-			}
-			if (isset($filterData["DATE_CREATE_to"])) {
-				$userFilter["<=DATE_CREATE"] = $filterData["DATE_CREATE_to"];
-			}
-			if (isset($filterData["COURSE"])) {
-				$userFilter["PROPERTY_COURSE"] = $filterData["COURSE"];
-			}
-			if (isset($filterData["COURSE"]))
-				$userFilter["PROPERTY_COURSE"] = $filterData["COURSE"];
-
-			if (isset($filterData["MO"]))
-				$userFilter["PROPERTY_MO"] = $filterData["MO"];
-
-			if (!$nav_params['nPageSize'])
-				$nav_params['nPageSize'] = 500;
-
-			if ($arSort['sort']['TIMESTAMP_X'])
-				$arSort['sort']['DATE_CREATE'] = $arSort['sort']['TIMESTAMP_X'];
-			*/
 
 			foreach ($itemsCompany as $key => &$item) {
 				$countObjects = 0;

@@ -54,7 +54,6 @@ if ($arResult['ACCESS']):
 
                     foreach ($object['LIST'] as $key => $item): ?>
                         <?
-                        //gg($item['MAIN_RELATED']);
 
                         $noteMeter = '';
                         $raznost = 0;
@@ -77,12 +76,12 @@ if ($arResult['ACCESS']):
                         if ($lastMeter)
                             $userSend = true;
 
+                        // gg($item['UF_MAIN']);
                         ?>
                         <div class="row card counter-item" id="counter<?= $item['ID'] ?>">
                             <div class="card-body ps-2 pe-1 py-0">
                                 <div class="row gx-2 align-items-stretch">
-                                    <div class="col-2<? //= !$arResult['SEND_ADMIN'] ? '3' : '2'
-                                                        ?> py-3 d-flex align-items-center">
+                                    <div class="col-<?= !$arResult['SEND_ADMIN'] ? '2' : '3' ?> py-3 d-flex align-items-center"><?= $arResult['ADMIN'] ? '<small>#' . $item['ID'] . '</small>&nbsp;' : ''; ?>
                                         <?= ($item['UF_NUMBER'] ? $item['UF_NUMBER'] . '&nbsp;-&nbsp;<i class="small">' . $item['UF_NAME'] . '</i>' : $item['UF_NAME']) ?>
                                         <? if ($item['MAIN_RELATED']): ?>
                                             <span role="button" class="ps-1 text-danger"
@@ -91,20 +90,20 @@ if ($arResult['ACCESS']):
                                                 <i class="bi bi-link-45deg fs-5"></i></span>
                                         <? endif; ?>
                                     </div>
-                                    <div class="col py-3 d-flex align-items-center justify-content-center"><?= $item['SERVICE'] ?></div>
-                                    <div class="col py-3 d-flex align-items-center justify-content-center current_use"><?= !$item['RELATED'] ? $prevMeterFormat : $item['PREV_METER'] ?></div>
-                                    <div class="col py-3 d-flex align-items-center justify-content-center"><?= !$item['RELATED'] ? $raznostFormat : $item['DIFF_METER'] ?></div>
+                                    <div class="col-1 py-3 d-flex align-items-center justify-content-center"><?= $item['SERVICE'] ?></div>
+                                    <div class="col py-3 d-flex align-items-center justify-content-center current_use"><?= !$item['RELATED'] ? $prevMeterFormat : ($item['PREV_METER'] ?: 0) ?></div>
+                                    <div class="col py-3 d-flex align-items-center justify-content-center"><?= !$item['RELATED'] ? $raznostFormat : ($item['DIFF_METER'] ?: 0) ?></div>
                                     <div class="col py-3 d-flex align-items-center justify-content-center">
-                                        <?= !$item['RELATED'] ? ($lastMeter ? $lastMeterFormat : $prevMeterFormat) : $item['LAST_METER'] ?></div>
+                                        <?= !$item['RELATED'] ? ($lastMeter ? $lastMeterFormat : $prevMeterFormat) : ($item['LAST_METER'] ?: 0) ?></div>
                                     <div class="col-12 col-lg-<?= !$arResult['SEND_ADMIN'] ? '4' : '5' ?> bg-info-subtle">
                                         <div class="d-flex align-items-center h-100 py-2!">
                                             <? if ($item['RELATED']): ?>
-                                                <div class="col-3 text-center"><? if ($item['RELATED']): ?><?= $item['UF_PERCENT'] ?>%<? endif; ?></div>
+                                                <div class="col-3 text-center"><?= $item['UF_PERCENT'] ?>%</div>
                                                 <div class="col-5 text-center">
                                                     <?= $item['METER'] ?>
                                                 </div>
                                                 <div class="col text-center">
-                                                    <span class="fw-bold"><?= $item['METER'] ?></span><small class="ps-1"><?= $item['UNIT'] ?></small>
+                                                    <span class="fw-bold"><?= $item['METER'] ?: 0 ?></span><small class="ps-1"><?= $item['UNIT'] ?></small>
                                                 </div>
                                             <? else: ?>
                                                 <? if (!$arResult['SEND_ADMIN']): ?>
@@ -157,13 +156,16 @@ if ($arResult['ACCESS']):
                         <div class="col-<?= !$arResult['SEND_ADMIN'] ? '6' : '5' ?> mx-auto text-center">
                             <div id="mess" class="message alert d-none" role="alert"></div>
                         </div>
-                        <div class="col-<?= !$arResult['SEND_ADMIN'] ? '4' : '5' ?> text-center bg-info-subtle rounded-bottom pb-2">
-                            <? if ($arResult['SEND_ADMIN']): ?>
-                                <button type="button" class="ui-btn ui-btn-lg ui-btn-primary-dark" onclick="sendData(<?= $object['ID'] ?>)" <? //= !$userSend && $arResult['MODERATOR'] ? 'disabled' : ''
-                                                                                                                                            ?>>корректировка показаниий</button>
-                            <? else: ?>
-                                <button type="button" class="ui-btn ui-btn-lg ui-btn-primary-dark" onclick="sendData(<?= $object['ID'] ?>)" <?= $userSend || !$arResult['SEND_FORM'] ? 'disabled' : '' ?>>Внести показания</button>
-                            <? endif ?>
+                        <div class="col-<?= !$arResult['SEND_ADMIN'] ? '4' : '5' ?> text-center bg-info-subtle rounded-bottom pb-2 d-flex justify-content-center">
+                            <div class="col-7">
+                                <? if ($arResult['SEND_ADMIN']): ?>
+                                    <button type="button" class="ui-btn ui-btn-lg ui-btn-primary-dark w-100" onclick="sendData(<?= $object['ID'] ?>)" <? //= !$userSend && $arResult['MODERATOR'] ? 'disabled' : ''
+                                                                                                                                                        ?>>корректировка показаниий</button>
+                                <? else: ?>
+                                    <button type="button" class="ui-btn ui-btn-lg ui-btn-primary-dark w-100" onclick="sendData(<?= $object['ID'] ?>)" <?= $userSend || !$arResult['SEND_FORM'] ? 'disabled' : '' ?>>Внести показания</button>
+                                <? endif ?>
+                            </div>
+                            <div class="col-1"></div>
                         </div>
                     </div>
                 </form>

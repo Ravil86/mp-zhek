@@ -781,7 +781,7 @@ class LKClass
         return $arUser;
     }
 
-    public static function getRelated($norma = false)
+    public static function getRelated($counter = false)
     {
 
         $classHL = \HLWrap::init(self::$_HL_Related);
@@ -820,7 +820,6 @@ class LKClass
                 $prevRelated = array_slice($arPrevRelated, 0, 1)[0]['METER'];  //$prevRelated['METER']
             }
 
-
             if ($lastRelated && $prevRelated) {
                 $fields['LAST_METER'] = $lastRelated;
                 $fields['PREV_METER'] = $prevRelated;
@@ -829,7 +828,10 @@ class LKClass
                 $fields['METER'] = round($diffRelated / 100 * $fields['UF_PERCENT'], 3);
             }
             // gg($fields);
-            $result[$fields['UF_OBJECT']] = $fields;
+            if ($counter)
+                $result[$fields['UF_COUNTER']][$fields['ID']] = $fields;
+            else
+                $result[$fields['UF_OBJECT']][$fields['UF_COUNTER']] = $fields;
         }
         // gg($result);
         return $result;

@@ -79,30 +79,35 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 		$selfMonth = date("m");
 		$prevMonth = date("m", strtotime('-1 month'));
 
-		$day = date("d");
-		$day = 25;
+		//Текущая дата
+		$curDay = date("d");
+		// $curDay = 25;
 
-		$dateStart = 25;
-		$dateEnd = date('t');
+		//Дата начала подачи
+		$dateStart = 3;
+		// $dateStart = 25;
 
-		// $dateStart = 1;
-		// $dateEnd = 5;
+		//Дата окончания подачи
+		// $dateEnd = date('t');	//конец месяца
+		$dateEnd = 8;
 
-		$editEnd = 5;
+		// Дата окончания редактирования модератором
+		// $editEnd = 5;
+		$editEnd = 10;
 
-		if ($dateStart <= $day && $day <= $dateEnd) {		//период подачи пользователем до конца месяца
+		if ($dateStart <= $curDay && $curDay <= $dateEnd) {		//период подачи пользователем до конца месяца
 			$this->arResult['SAVE_MONTH'] = $monthList[$selfMonth];
 			$arResult['DATE_USER'] = true;
-		} elseif ($day == 1) {								//период подачи пользователем 1 числа
+		} elseif ($curDay == 1) {								//период подачи пользователем 1 числа
 			$this->arResult['SAVE_MONTH'] = $monthList[$prevMonth];
 			$arResult['DATE_USER'] = true;
-		} elseif ($day > 1 && $day <= $editEnd) {
+		} elseif ($curDay > 1 && $curDay <= $editEnd) {
 			$this->arResult['SAVE_MONTH'] = $monthList[$prevMonth];
 			$arResult['DATE_ADMIN'] = true;
-		} elseif ($day > $editEnd && $day < $dateStart) {
+		} elseif ($curDay > $editEnd && $curDay < $dateStart) {
 			$this->arResult['SAVE_MONTH'] = $monthList[$selfMonth];
 		}
-
+		// gg($arResult);
 		$arResult['SAVE_MONTH'] = $this->arResult['SAVE_MONTH'];
 
 		// if ($dateStart <= $day && $day <= $dateEnd)
@@ -140,45 +145,11 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 			$this->arResult['DETAIL']['OBJECT'] = $arObjects[$objectID];
 
-			$related = $this->arResult['RELATED'][$objectID];
-			// gg($related);
-			if ($related) {
-
-				$relateCounter = $this->arResult['COUNTERS'][$related['UF_COUNTER']];
-
-				$relatetypes = [];
-				foreach ($relateCounter['UF_TYPE'] as $value) {
-					$typeItem = $serviceList[$value];
-					$unit = $typeItem['UNIT'];
-					$relatetypes[] = '<div class="d-flex"><img class="mb-1@" src="' . $typeItem['ICON'] . '" width="23" height="23" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '" data-bs-toggle="tooltip"
-							data-bs-title="' . $typeItem['NAME'] . '"/></div>';
-				}
-
-				$counter = $related;
-				// gg($relateCounter);
-
-				$counter['RELATED'] = true;
-				// $counter['ID'] = $relateCounter['ID'];
-				$counter['UF_NUMBER'] =  $relateCounter['UF_NUMBER'];
-				$counter['UF_NAME'] = '<div class="d-flex align-items-center">' . $relateCounter['UF_NAME'] . '<a role="button" class="ps-1 text-danger"
-							data-bs-toggle="tooltip"
-							data-bs-title="Расчет потребления производится от процента занимаемой объема/площади - ' . $related['UF_PERCENT'] . '%">
-							<i class="bi bi-link-45deg fs-5"></i></a></div>';
-				$counter['UF_DATE'] = $relateCounter['UF_DATE'];
-				$counter['UF_CHECK'] = $relateCounter['UF_CHECK'];
-				$counter['SERVICE'] = '<div class="row gy-1">' . implode('', $relatetypes) . '</div>';
-				$counter['UNIT'] = $unit;
-
-				if (!$related['UF_MAIN'])
-					$this->arResult['DETAIL']['LIST'][$related['UF_COUNTER']] = $counter;
-			}
-
 			$countersObject  = LKClass::getCounters($objectID);
 
-			if ($related['UF_MAIN'])
-				$countersObject[$related['UF_COUNTER']]['MAIN_RELATED'] = $counter;
-
 			foreach ($countersObject as $key => &$item) {
+
+				// gg($item);
 
 				if ($item['UF_ACTIVE'] !== null && !$item['UF_ACTIVE'])	//Отключаем неактивные
 					continue;
@@ -196,6 +167,52 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 				$this->arResult['DETAIL']['LIST'][$item['ID']] = $item;
 			}
 
+			// связанные счетчики
+
+			// if ($related['UF_MAIN'])
+			// 	$countersObject[$related['UF_COUNTER']]['MAIN_RELATED'] = $counter;
+
+
+			$arRelated = $this->arResult['RELATED'][$objectID];
+			// gg($related);
+			if (is_array($arRelated)) {
+
+				foreach ($arRelated as $key => $related) {
+
+					$relateCounter = $this->arResult['COUNTERS'][$related['UF_COUNTER']];
+
+					$relatetypes = [];
+					foreach ($relateCounter['UF_TYPE'] as $value) {
+						$typeItem = $serviceList[$value];
+						$unit = $typeItem['UNIT'];
+						$relatetypes[] = '<img class="me-1" src="' . $typeItem['ICON'] . '" width="23" height="23" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '" data-bs-toggle="tooltip"
+							data-bs-title="' . $typeItem['NAME'] . '"/>';
+					}
+
+					$counter = $related;
+					// gg($relateCounter);
+
+					$counter['RELATED'] = true;
+					// $counter['ID'] = $relateCounter['ID'];
+					$counter['UF_NUMBER'] =  $relateCounter['UF_NUMBER'];
+					$counter['UF_NAME'] = '<div class="d-flex align-items-center">' . $relateCounter['UF_NAME'] . '<a role="button" class="ps-1 text-danger"
+							data-bs-toggle="tooltip"
+							data-bs-title="Расчет потребления производится от процента занимаемой объема/площади - ' . $related['UF_PERCENT'] . '%">
+							<i class="bi bi-link-45deg fs-5"></i></a></div>';
+					$counter['UF_DATE'] = $relateCounter['UF_DATE'];
+					$counter['UF_CHECK'] = $relateCounter['UF_CHECK'];
+					$counter['SERVICE'] = '<div class="d-flex">' . implode('', $relatetypes) . '</div>';
+					$counter['UNIT'] = $unit;
+
+					if (!$related['UF_MAIN'])
+						$this->arResult['DETAIL']['LIST'][$related['UF_COUNTER']] = $counter;
+					else
+						$this->arResult['DETAIL']['LIST'][$related['UF_COUNTER']]['MAIN_RELATED'] = $counter;
+				}
+			}
+
+
+			// показания
 			$prevMeters = LKClass::meters($objectID);
 			$lastMeters = LKClass::meters($objectID, true);
 			// dump($lastMeters);
@@ -227,7 +244,10 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 			$this->arResult['DETAIL']['PREV_METERS'] = $arPrevMeters;
 			$this->arResult['DETAIL']['LAST_METERS'] = $arLastMeters;
 			$this->arResult['DETAIL']['NOTE_METERS'] = $noteMeter;
+
 			// end DETAIL
+			//
+
 		} else { //LIST
 
 			$prevMeters = [];
@@ -237,62 +257,6 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 				$objectID = $object['ID'];
 				$object['LIST']  = LKClass::getCounters($objectID);
-
-				$related = $this->arResult['RELATED'][$objectID];
-
-
-
-				if ($related/* && !$related['UF_MAIN']*/) {
-
-					// gg($related);
-
-					$relateCounter = $this->arResult['COUNTERS'][$related['UF_COUNTER']];
-
-					$relatetypes = [];
-					foreach ($relateCounter['UF_TYPE'] as $value) {
-						$typeItem = $serviceList[$value];
-						$unit = $typeItem['UNIT'];
-						$relatetypes[] = '<div class="d-flex"><img class="mb-1@" src="' . $typeItem['ICON'] . '" width="23" height="23" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'] . '</span></div>';
-					}
-
-					$counter = $related;
-
-					$counter['RELATED'] = true;
-					// $counter['ID'] = $relateCounter['ID'];
-					$counter['UF_NUMBER'] =  $relateCounter['UF_NUMBER'];
-					$counter['UF_NAME'] = '<div class="d-flex align-items-center">' . $relateCounter['UF_NAME'] . '<a role="button" class="ps-1 text-danger"
-							data-bs-toggle="tooltip"
-							data-bs-title="Расчет потребления производится от процента занимаемой объема/площади - ' . $related['UF_PERCENT'] . '%">
-							<i class="bi bi-link-45deg fs-5"></i></a></div>';
-					$counter['UF_DATE'] = $relateCounter['UF_DATE'];
-					$counter['UF_CHECK'] = $relateCounter['UF_CHECK'];
-					$counter['SERVICE'] = '<div class="row gy-1">' . implode('', $relatetypes) . '</div>';
-					$counter['UNIT'] = $unit;
-
-					// $counter = [
-					// 	'RELATED' => true,
-					// 	'ID' => $relateCounter['ID'],
-					// 	'UF_NAME' => '<div class="d-flex align-items-center">' . $relateCounter['UF_NAME'] . '<a role="button" class="ps-1 text-danger"
-					// 		data-bs-toggle="tooltip"
-					// 		data-bs-title="Расчет потребления производится от процента занимаемой объема/площади - ' . $related['UF_PERCENT'] . '%">
-					// 		<i class="bi bi-link-45deg fs-5"></i></a></div>',
-					// 	'UF_NUMBER' =>  $relateCounter['UF_NUMBER'],
-					// 	'UF_DATE' => $relateCounter['UF_DATE'],
-					// 	'UF_CHECK' => $relateCounter['UF_CHECK'],
-					// 	'SERVICE' => '<div class="row gy-1">' . implode('', $relatetypes) . '</div>',
-					// ];
-
-					if (!$related['UF_MAIN'])
-						$object['LIST'][0] = $counter;
-					// $object['RELATED'][] = $counter;
-				}
-
-
-				// gg($related);
-
-				if ($related['UF_MAIN'])
-					$object['LIST'][$related['UF_COUNTER']]['MAIN_RELATED'] = $counter;
-
 
 				foreach ($object['LIST'] as $key => &$item) {
 
@@ -306,11 +270,78 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 					foreach ($item['UF_TYPE'] as $value) {
 						$typeItem = $serviceList[$value];
 						$unit = $typeItem['UNIT'];
-						$types[] = '<img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/>';
+						$types[] = '<img class="me-1" src="' . $typeItem['ICON'] . '" width="23" height="23" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '" data-bs-toggle="tooltip"
+							data-bs-title="' . $typeItem['NAME'] . '"/>';
 					}
 					$item['UNIT'] = $unit;
-					$item['SERVICE'] = '<div>' . implode(' ', $types) . '</div>';
+					$item['SERVICE'] = '<div class="d-flex">' . implode(' ', $types) . '</div>';
 				}
+
+				$arRelated = $this->arResult['RELATED'][$objectID];
+
+				if ($arRelated/* && !$related['UF_MAIN']*/) {
+
+					if (is_array($arRelated)) {
+
+						foreach ($arRelated as $key => $related) {
+
+							$relateCounter = $this->arResult['COUNTERS'][$related['UF_COUNTER']];
+
+							$relatetypes = [];
+							// gg($serviceList);
+							// gg($relateCounter['UF_TYPE']);
+							foreach ($relateCounter['UF_TYPE'] as $value) {
+								$typeItem = $serviceList[$value];
+								$unit = $typeItem['UNIT'];
+								$relatetypes[] = '<img class="me-1" src="' . $typeItem['ICON'] . '" width="23" height="23" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"
+							data-bs-toggle="tooltip"
+							data-bs-title="' . $typeItem['NAME'] . '"
+							/>';
+							}
+							// gg($related);
+							$counter = $related;
+
+							// if($related['UF_MAIN'])
+
+							$counter['RELATED'] = true;
+							// $counter['ID'] = $relateCounter['ID'];
+							$counter['UF_NUMBER'] =  $relateCounter['UF_NUMBER'];
+							$counter['UF_NAME'] = '<div class="d-flex align-items-center">' . $relateCounter['UF_NAME'] . '<a role="button" class="ps-1 text-danger"
+							data-bs-toggle="tooltip"
+							data-bs-title="Расчет потребления производится от процента занимаемой объема/площади - ' . $related['UF_PERCENT'] . '%">
+							<i class="bi bi-link-45deg fs-5"></i></a></div>';
+							$counter['UF_DATE'] = $relateCounter['UF_DATE'];
+							$counter['UF_CHECK'] = $relateCounter['UF_CHECK'];
+							$counter['SERVICE'] = '<div class="d-flex">' . implode('', $relatetypes) . '</div>';
+							$counter['UNIT'] = $unit;
+
+							// $counter = [
+							// 	'RELATED' => true,
+							// 	'ID' => $relateCounter['ID'],
+							// 	'UF_NAME' => '<div class="d-flex align-items-center">' . $relateCounter['UF_NAME'] . '<a role="button" class="ps-1 text-danger"
+							// 		data-bs-toggle="tooltip"
+							// 		data-bs-title="Расчет потребления производится от процента занимаемой объема/площади - ' . $related['UF_PERCENT'] . '%">
+							// 		<i class="bi bi-link-45deg fs-5"></i></a></div>',
+							// 	'UF_NUMBER' =>  $relateCounter['UF_NUMBER'],
+							// 	'UF_DATE' => $relateCounter['UF_DATE'],
+							// 	'UF_CHECK' => $relateCounter['UF_CHECK'],
+							// 	'SERVICE' => '<div class="row gy-1">' . implode('', $relatetypes) . '</div>',
+							// ];
+							// gg($counter);
+
+							if (!$related['UF_MAIN'])
+								$object['LIST'][$related['ID']] = $counter;
+							else
+								$object['LIST'][$related['UF_COUNTER']]['MAIN_RELATED'] = $counter;
+							// $object['RELATED'][] = $counter;
+						}
+					}
+				}
+
+				// gg($related);
+
+				// if ($related['UF_MAIN'])
+				// 	$object['LIST'][$related['UF_COUNTER']]['MAIN_RELATED'] = $counter;
 
 
 				$prevMeters = LKClass::meters($objectID);

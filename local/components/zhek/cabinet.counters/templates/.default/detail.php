@@ -85,7 +85,7 @@ if ($arResult['ACCESS']):
                             <div class="row gx-2 align-items-stretch align-items-center!">
                                 <div class="col-3<? //= !$arResult['SEND_ADMIN'] ? '3' : '2';
                                                     ?> py-3 d-flex align-items-center">
-                                    <?= $arResult['SEND_ADMIN'] ? '# ' . ($item['RELATED'] ? $item['UF_COUNTER'] . '-' : '') . $item['ID'] : '' ?> <?= $item['UF_NUMBER']; ?>&nbsp;-&nbsp;<i class="small"><?= $item['UF_NAME'] ?></i>
+                                    <?= $arResult['SEND_ADMIN'] ? '#' . ($item['RELATED'] ? $item['UF_COUNTER'] . '-' : '') . $item['ID'] : '' ?> <?= $item['UF_NUMBER']; ?>&nbsp;-&nbsp;<i class="small"><?= $item['UF_NAME'] ?></i>
                                     <? if ($item['MAIN_RELATED']): ?>
                                         <span role="button" class="ps-1 text-danger"
                                             data-bs-toggle="tooltip"
@@ -93,13 +93,13 @@ if ($arResult['ACCESS']):
                                             <i class="bi bi-link-45deg fs-5"></i></span>
                                     <? endif; ?>
                                 </div>
-                                <div class="<?= !$arResult['SEND_ADMIN'] ? 'col' : 'col-auto'; ?> py-3 d-flex align-items-center justify-content-center"><?= $item['SERVICE'] ?></div>
+                                <div class="<?= !$arResult['SEND_ADMIN'] ? 'col' : 'col-1'; ?> py-3 d-flex align-items-center justify-content-center"><?= $item['SERVICE'] ?></div>
                                 <div class="col py-3 d-flex align-items-center justify-content-center current_use">
-                                    <?= !$item['RELATED'] ? $prevMeterFormat : $item['PREV_METER'] ?></div>
+                                    <?= !$item['RELATED'] ? $prevMeterFormat : ($item['PREV_METER'] ?: 0) ?></div>
                                 <div class="col py-3 d-flex align-items-center justify-content-center">
-                                    <?= !$item['RELATED'] ? $raznostFormat : $item['DIFF_METER'] ?></div>
+                                    <?= !$item['RELATED'] ? $raznostFormat : ($item['DIFF_METER'] ?: 0) ?></div>
                                 <div class="col py-3 d-flex align-items-center justify-content-center">
-                                    <?= !$item['RELATED'] ? ($lastMeter ? $lastMeterFormat : $prevMeterFormat) : $item['LAST_METER'] ?></div>
+                                    <?= !$item['RELATED'] ? ($lastMeter ? $lastMeterFormat : $prevMeterFormat) : ($item['LAST_METER'] ?: 0) ?></div>
                                 <div class="col-12 col-lg-<?= !$arResult['SEND_ADMIN'] ? '4' : '5' ?> bg-info-subtle">
                                     <div class="d-flex align-items-center h-100 py-2!">
                                         <? if (!$arResult['SEND_ADMIN']): ?>
@@ -132,7 +132,7 @@ if ($arResult['ACCESS']):
                                                 <?= $item['METER'] ?>
                                             </div>
                                             <div class="col text-center">
-                                                <span class="fw-bold"><?= $item['METER'] ?></span><small class="ps-1"><?= $item['UNIT'] ?></small>
+                                                <span class="fw-bold"><?= $item['METER'] ?: 0 ?></span><small class="ps-1"><?= $item['UNIT'] ?></small>
                                             </div>
                                         <? endif; ?>
                                         <? if ($arResult['SEND_ADMIN'] && !$item['RELATED']): ?>
@@ -144,7 +144,6 @@ if ($arResult['ACCESS']):
                                             <div class="col"></div>
                                         <? endif; ?>
                                     </div>
-
                                 </div>
                             </div>
 
@@ -163,17 +162,19 @@ if ($arResult['ACCESS']):
                     <div class="col-<?= !$arResult['SEND_ADMIN'] ? '6' : '5' ?> mx-auto text-center">
                         <div id="mess" class="alert d-none" role="alert"></div>
                     </div>
-                    <div class="col-<?= !$arResult['SEND_ADMIN'] ? '4' : '5' ?> text-center bg-info-subtle rounded-bottom pb-2">
-                        <? if ($arResult['SEND_ADMIN']): ?>
-                            <button type="button" class="ui-btn ui-btn-lg ui-btn-primary-dark" onclick="sendData()" <? //= !$userSend && $arResult['MODERATOR'] ? 'disabled' : ''
-                                                                                                                    ?>>корректировка показаниий</button>
-                        <? else: ?>
-                            <button type="button" class="ui-btn ui-btn-lg ui-btn-primary-dark" onclick="sendData()" <?= $userSend || !$arResult['SEND_FORM'] ? 'disabled' : '' ?>>Внести показания</button>
-                        <? endif ?>
+                    <div class="col-<?= !$arResult['SEND_ADMIN'] ? '4' : '5' ?> text-center bg-info-subtle rounded-bottom pb-2 d-flex justify-content-center">
+                        <div class="col-7">
+                            <? if ($arResult['SEND_ADMIN']): ?>
+                                <button type="button" class="ui-btn ui-btn-lg ui-btn-primary-dark w-100" onclick="sendData()" <? //= !$userSend && $arResult['MODERATOR'] ? 'disabled' : ''
+                                                                                                                                ?>>корректировка показаниий</button>
+                            <? else: ?>
+                                <button type="button" class="ui-btn ui-btn-lg ui-btn-primary-dark w-100" onclick="sendData()" <?= $userSend || !$arResult['SEND_FORM'] ? 'disabled' : '' ?>>Внести показания</button>
+                            <? endif ?>
+                        </div>
+                        <div class="col-1"></div>
                     </div>
                 </div>
             </form>
-
         </div>
 
         <script>
