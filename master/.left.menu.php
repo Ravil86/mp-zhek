@@ -8,6 +8,13 @@ $aMenuLinks = array(
 		'LKClass::isMaster()'
 	),
 	array(
+		"Показания",
+		"/master/counter/",
+		array(),
+		array(),
+		'LKClass::isMaster()'
+	),
+	array(
 		"Контракты",
 		"/master/contracts/",
 		array(),

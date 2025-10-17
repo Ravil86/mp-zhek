@@ -72,11 +72,15 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 		// $arItems = [];
 
 		$serviceList = LKClass::getService();
+
 		$myCompany = LKClass::myCompany();
+
+		$this->arResult['COMPANY'] = LKClass::getCompany();
 
 		$monthList = LKClass::getMonth();
 
-		$selfMonth = date("m");
+		$selfMonth = date("m", strtotime('-1 month'));
+		// $selfMonth = date("m");
 		$prevMonth = date("m", strtotime('-1 month'));
 
 		//Текущая дата
@@ -84,16 +88,16 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 		// $curDay = 25;
 
 		//Дата начала подачи
-		$dateStart = 3;
+		$dateStart = 8;
 		// $dateStart = 25;
 
 		//Дата окончания подачи
 		// $dateEnd = date('t');	//конец месяца
-		$dateEnd = 8;
+		$dateEnd = 24;
 
 		// Дата окончания редактирования модератором
 		// $editEnd = 5;
-		$editEnd = 10;
+		$editEnd = 30;
 
 		if ($dateStart <= $curDay && $curDay <= $dateEnd) {		//период подачи пользователем до конца месяца
 			$this->arResult['SAVE_MONTH'] = $monthList[$selfMonth];
@@ -398,7 +402,7 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 				// $item['COMPANY'] = $item['COMPANY']['NAME'];
 
-				$status = '<a class="ui-btn ui-btn-primary-dark" href="' . $item["ID"] . '/">Внести</a>';
+				$status = '<a class="ui-btn ui-btn-primary-dark" href="' . $item["ID"] . '/" target="_blank">Внести</a>';
 				$item["DETAIL"] = $status;
 
 				$this->arResult['GRID']['ROWS'][] = [

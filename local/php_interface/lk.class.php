@@ -333,8 +333,8 @@ class LKClass
     {
 
         // $curentUser = self::curentUserFields();
-
         $classHL = \HLWrap::init(self::$_HL_Objects);
+        $order = ['UF_ORG' => 'ASC'];
 
         $filter = [];
         if ($orgID)
@@ -343,7 +343,7 @@ class LKClass
         $rsHLoad = $classHL::getList([
             'select' => ['*'],
             'filter' => $filter,
-            'order' => []
+            'order' => $order
         ]);
 
         $result = [];

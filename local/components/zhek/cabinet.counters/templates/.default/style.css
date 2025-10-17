@@ -49,3 +49,7 @@ font-size: .75em;
 min-width: 100px;
 /* max-width: 150px; */
 }
+
+.related{
+	padding: .575rem .75rem;
+}

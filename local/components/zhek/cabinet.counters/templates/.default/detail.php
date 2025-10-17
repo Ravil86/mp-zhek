@@ -137,8 +137,8 @@ if ($arResult['ACCESS']):
                                         <? endif; ?>
                                         <? if ($arResult['SEND_ADMIN'] && !$item['RELATED']): ?>
                                             <div class="col-auto">
-                                                <div class="ui-ctl ui-ctl-textarea ui-ctl-md ui-ctl-resize-x">
-                                                    <textarea class="ui-ctl-element" name="NOTE[<?= $item['ID'] ?>]" <?= $noteMeter ? 'readonly' : '' ?>><?= $noteMeter ?></textarea>
+                                                <div class="ui-ctl! ui-ctl-textarea! ui-ctl-md ui-ctl-resize-y ui-ctl-resize-x!">
+                                                    <textarea class="ui-ctl-element w-100" name="NOTE[<?= $item['ID'] ?>]" <?= $noteMeter ? 'readonly' : '' ?>><?= $noteMeter ?></textarea>
                                                 </div>
                                             </div>
                                             <div class="col"></div>
