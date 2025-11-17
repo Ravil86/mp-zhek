@@ -781,6 +781,29 @@ class LKClass
         return $arUser;
     }
 
+    public static function addRelated($data)
+    {
+
+        $classHL = \HLWrap::init(self::$_HL_Related);
+        $classHL::add($data);
+    }
+
+    public static function updateRelated($relateID, $data)
+    {
+
+        $classHL = \HLWrap::init(self::$_HL_Related);
+
+        // $data['UF_DATE'] = new DateTime(date('d.m.Y'));
+
+        $result = $classHL::update($relateID, $data);
+
+        if (!$result->isSuccess()) {
+            $errorCollection = new ErrorCollection($result->getErrors());
+            return AjaxJson::createError($errorCollection);
+        }
+    }
+
+
     public static function getRelated($counter = false)
     {
 
