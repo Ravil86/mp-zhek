@@ -41,7 +41,7 @@ if ($arResult['ACCESS']): ?>
         <div class="col-auto">
             <div class="d-grid">
                 <!-- <a class="ui-btn ui-btn-no-caps ui-btn-sm" href="<?= $arResult['FOLDER'] ?>">вернуться назад</a> -->
-                <!-- <button class="ui-btn ui-btn-success mt-2 ms-0" data-bs-toggle="modal" data-bs-target="#addObject">добавить объект</button> -->
+                <button class="ui-btn ui-btn-success mt-2 ms-0" data-bs-toggle="modal" data-bs-target="#counterModal">Добавить главный ПУ</button>
             </div>
 
         </div>
@@ -71,12 +71,23 @@ if ($arResult['ACCESS']): ?>
     // ];
 
     foreach ($arResult['ITEMS'] as $key => $related): ?>
+        <? $typeItem = [];
+        $typeRelate = '';
+        ?>
+        <?
+        $counterItem = $arResult['COUNTERS'][$key];
+
+        foreach ($counterItem['UF_TYPE'] as $type) {
+            $typeItem[] = $arResult['SERVICES'][$type];
+        }
+        $typeRelate = implode('&nbsp;&nbsp;', $typeItem);
+        ?>
         <div class="card my-2">
             <div class="card-body">
                 <div class="row gx-1">
-                    <div class="col-lg object-name">
-                        <h5 class="card-title">#<?= $key; ?> / <?= $arResult['COUNTERS'][$key]['UF_NUMBER'] ?> <i class="small">(<?= $arResult['COUNTERS'][$key]['UF_NAME'] ?>)</i></h5>
-                        <div class="h6 card-subtitle mb-2 text-body-secondary"></div>
+                    <div class="col-lg object-name d-flex align-items-end">
+                        <h5 class="h5 card-title mb-0">#<?= $key; ?> / <?= $counterItem['UF_NUMBER'] ?> <i class="small">(<?= $counterItem['UF_NAME'] ?>)</i></h5>
+                        <div class="card-subtitle ms-3"><?= $typeRelate ?></div>
                     </div>
                     <div class="col-auto d-grid d-xl-flex">
                         <button class="ui-btn ui-btn-sm ui-btn-secondary" data-bs-toggle="modal" onclick="setObject(<?= $related['ID']; ?>)" data-bs-target="#counterModal">Добавить счётчик</button>
@@ -272,6 +283,7 @@ if ($arResult['ACCESS']): ?>
         ?>
         const parent = <?= $jsonOrg ?>;
         const child = <?= $jsonObjects ?>;
+        // console.log('child', child);
 
         listArray.forEach(element => {
             // console.log(element.id);
@@ -283,8 +295,7 @@ if ($arResult['ACCESS']): ?>
 
                     // const selected = parent[1]
                     var selected = child[0]
-
-                    console.log('selected', selected)
+                    // console.log('selected', selected)
 
                     $('#objectList')
                         .select2({
@@ -298,17 +309,16 @@ if ($arResult['ACCESS']): ?>
                         .select2({
                             data: parent,
                             dropdownParent: $("#counterModal"),
-                            minimumResultsForSearch: Infinity
+                            // minimumResultsForSearch: Infinity
                             // val: null
                         })
                         .val(null)
-                        // .val(selected)
                         .trigger("change")
                         .on("change", (e) => {
 
-                            // console.log('child', child[e.target.value])
-
+                            // console.log('selected', e.target.value)
                             selected = child[e.target.value]
+                            // console.log('child', selected)
 
                             if (selected.children && selected.children.length > 0) {
 

@@ -22,6 +22,13 @@ $aMenuLinks = array(
 		'LKClass::isMaster()'
 	),
 	array(
+		"Связанные ПУ",
+		"/master/related/",
+		array(),
+		array(),
+		'LKClass::isMaster()'
+	),
+	array(
 		"Сводный реестр",
 		"/master/reestr/",
 		array(),

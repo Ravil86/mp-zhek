@@ -75,8 +75,16 @@ class MasterRelated extends CBitrixComponent implements Controllerable
 		$this->arResult['GRID_ID'] = str_replace('.', '_', str_replace(':', '_', $this->GetName()));
 		$arResult['GRID_ID'] = $this->arResult['GRID_ID'];
 
-		// $serviceList = LKClass::getService();
-		// $this->arResult['SERVICE_LIST'] = $serviceList;
+		$serviceList = LKClass::getService();
+		$this->arResult['SERVICE_LIST'] = $serviceList;
+
+		foreach ($serviceList as $value) {
+			// gg($value);
+			$this->arResult['SERVICES'][$value['ID']] = '<img src="' . $value['ICON'] . '" width="23" height="23" alt="' . $value['NAME'] . '" title="' . $value['NAME'] . '" data-bs-toggle="tooltip"
+							data-bs-title="' . $value['NAME'] . '"/><span class="ps-1">' . $value['NAME'] . '</span>';
+		}
+
+		// $item['SERVICE'] = '<div>' . implode(' ', $types) . '</div>';
 
 		$getCompany = LKClass::getCompany();
 
@@ -104,10 +112,10 @@ class MasterRelated extends CBitrixComponent implements Controllerable
 		// 	'children' => $objects
 		// ];
 
-		// $this->arResult['COMPANY_JSON'][] = [
-		// 	'id' => '',
-		// 	'text' => 'выберите',
-		// ];
+		$this->arResult['COMPANY_JSON'][] = [
+			'id' => '',
+			'text' => 'выберите',
+		];
 
 		// $this->arResult['OBJECTS_JSON'][] = [
 		// 	'id' => '',
@@ -134,7 +142,7 @@ class MasterRelated extends CBitrixComponent implements Controllerable
 				// ];
 			}
 
-			$this->arResult['OBJECTS_JSON'][] = [
+			$this->arResult['OBJECTS_JSON'][$org['ID']] = [
 				// 'id' => $org['ID'],
 				'text' => $org['UF_NAME'],
 				'children' => $objects,
@@ -207,7 +215,7 @@ class MasterRelated extends CBitrixComponent implements Controllerable
 			['id' => 'UF_ORG', 'name' => 'Организация', 'sort' => '', 'default' => true],
 			['id' => 'UF_MAIN', 'name' => 'Главная организация', 'sort' => '', 'default' => true],
 
-			['id' => 'UF_PERCENT', 'name' => 'Процент занимаемого объема/площади, %', 'default' => true, 'editable' => true],
+			['id' => 'UF_PERCENT', 'name' => 'Процент занимаемого объема/площади, %', 'default' => true, 'editable' => ['TYPE' => 'NUMBER', 'min' => 1, 'max' => 100]],
 		];
 
 		// $this->arResult['GRID']["FILTER"] = [
@@ -257,8 +265,8 @@ class MasterRelated extends CBitrixComponent implements Controllerable
 				$data['ID'] = $value['ID'];
 
 				$data['UF_COUNTER'] = $getCounters[$value['UF_COUNTER']]['UF_NUMBER'];
-				$data['UF_OBJECT'] = $getObjects[$value['UF_OBJECT']]['NAME'];
-				$data['UF_ORG'] = $getCompany[$value['UF_ORG']]['UF_NAME'];
+				$data['UF_OBJECT'] = '<small>#' . $value['UF_OBJECT'] . '</small> ' . $getObjects[$value['UF_OBJECT']]['NAME'];
+				$data['UF_ORG'] = '<small>#' . $value['UF_ORG'] . '</small> ' . $getCompany[$value['UF_ORG']]['UF_NAME'];
 				$data['UF_MAIN'] = $value['UF_MAIN'] ? 'да' : '';
 				$data['UF_PERCENT'] = $value['UF_PERCENT'];
 
