@@ -79,8 +79,9 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 		$monthList = LKClass::getMonth();
 
-		$selfMonth = date("m", strtotime('-1 month'));
-		// $selfMonth = date("m");
+		$selfMonth = date("m");
+		// $selfMonth = date("m", strtotime('-1 month'));
+		// gg($selfMonth);
 		$prevMonth = date("m", strtotime('-1 month'));
 
 		//Текущая дата
@@ -88,16 +89,17 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 		// $curDay = 25;
 
 		//Дата начала подачи
-		$dateStart = 8;
 		// $dateStart = 25;
+		$dateStart = 5;
 
 		//Дата окончания подачи
+
 		// $dateEnd = date('t');	//конец месяца
-		$dateEnd = 24;
+		$dateEnd = 15;
 
 		// Дата окончания редактирования модератором
 		// $editEnd = 5;
-		$editEnd = 30;
+		$editEnd = 20;
 
 		if ($dateStart <= $curDay && $curDay <= $dateEnd) {		//период подачи пользователем до конца месяца
 			$this->arResult['SAVE_MONTH'] = $monthList[$selfMonth];
@@ -342,22 +344,26 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 					}
 				}
 
-				// gg($related);
-
 				// if ($related['UF_MAIN'])
 				// 	$object['LIST'][$related['UF_COUNTER']]['MAIN_RELATED'] = $counter;
-
 
 				$prevMeters = LKClass::meters($objectID);
 				$lastMeters = LKClass::meters($objectID, true);
 
-				foreach ($prevMeters as $value) {
-					$arPrevMeters[$value['COUNTER']][] = $value['METER'];
+				$arPrevMeters = [];
+				$arLastMeters = [];
+
+				if ($prevMeters) {
+					foreach ($prevMeters as $value) {
+						$arPrevMeters[$value['COUNTER']][] = $value['METER'];
+					}
 				}
-				// gg($lastMeters);
-				foreach ($lastMeters as $key => $value) {
-					$arLastMeters[$value['COUNTER']] = $value['METER'];
-					$noteMeter[$value['COUNTER']] = $value['NOTE'];
+
+				if ($lastMeters) {
+					foreach ($lastMeters as $key => $value) {
+						$arLastMeters[$value['COUNTER']] = $value['METER'];
+						$noteMeter[$value['COUNTER']] = $value['NOTE'];
+					}
 				}
 				$object['PREV_METERS'] = $arPrevMeters;
 				$object['LAST_METERS'] = $arLastMeters;

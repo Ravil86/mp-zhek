@@ -56,6 +56,7 @@ if ($arResult['ACCESS']):
 
                     $noteMeter = '';
                     $raznost = 0;
+                    $prevMeter = null;
 
                     if (is_array($arResult['DETAIL']['PREV_METERS'][$item['ID']]))
                         $prevMeter = array_shift($arResult['DETAIL']['PREV_METERS'][$item['ID']]);
@@ -64,7 +65,6 @@ if ($arResult['ACCESS']):
                     $lastMeter = $arResult['DETAIL']['LAST_METERS'][$item['ID']];
 
                     // gg($prevMeter);
-
 
                     if ($lastMeter && $prevMeter)
                         $raznost = $lastMeter - $prevMeter;
@@ -102,46 +102,48 @@ if ($arResult['ACCESS']):
                                     <?= !$item['RELATED'] ? ($lastMeter ? $lastMeterFormat : $prevMeterFormat) : ($item['LAST_METER'] ?: 0) ?></div>
                                 <div class="col-12 col-lg-<?= !$arResult['SEND_ADMIN'] ? '4' : '5' ?> bg-info-subtle">
                                     <div class="d-flex align-items-center h-100 py-2!">
-                                        <? if (!$arResult['SEND_ADMIN']): ?>
+                                        <? if (!$arResult['SEND_FORM'] && !$arResult['SEND_ADMIN']): ?>
+                                            Ввод показаний недоступен
+                                        <? else: ?>
+                                            <? if (!$arResult['SEND_ADMIN']): ?>
+                                                <? if (!$item['RELATED']): ?>
+                                                    <div class="col-3 d-flex justify-content-center">
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input null-meter" type="checkbox" role="button" data-switch-id="<?= $item['ID'] ?>"
+                                                                <?= $arResult['SEND_FORM'] && $userSend || !$arResult['SEND_FORM'] && !$arResult['SEND_ADMIN']  ? 'disabled' : '' ?>
+                                                                title="Оставить показания без изменений">
+                                                        </div>
+                                                    </div>
+                                                <? else: ?>
+                                                    <div class="col-3 text-center"><?= $item['UF_PERCENT'] ?>%</div>
+                                                <? endif; ?>
+                                            <? endif; ?>
+
                                             <? if (!$item['RELATED']): ?>
-                                                <div class="col-3 d-flex justify-content-center">
-                                                    <div class="form-check form-switch">
-                                                        <input class="form-check-input null-meter" type="checkbox" role="button" data-switch-id="<?= $item['ID'] ?>"
-                                                            <?= $arResult['SEND_FORM'] && $userSend || !$arResult['SEND_FORM'] && !$arResult['SEND_ADMIN']  ? 'disabled' : '' ?>
-                                                            title="Оставить показания без изменений">
+                                                <?
+                                                $disabled = $arResult['SEND_FORM'] && $userSend || !$arResult['SEND_FORM'] && !$arResult['SEND_ADMIN'] ? true : false;
+                                                ?>
+                                                <div class="col-auto!<?= !$arResult['SEND_ADMIN'] ? 'col-5' : 'col-4' ?>">
+                                                    <input id="inputMeter<?= $item['ID'] ?>" type="text" name="METER[<?= $item['ID'] ?>]" class="meter form-control" onkeyup="validate(this)" onclick="moveCaretToStart(this)"
+                                                        min="<?= !$arResult['SEND_ADMIN'] ? ($lastMeter ?:  $prevMeter) : '' ?>" <?= $disabled ? 'disabled' : '' ?> value="<?= $disabled ? ($item['MAIN_RELATED'] ? $item['MAIN_RELATED']['METER'] : $lastMeter) : '' /*$prevMeter*/ ?>" data-current="<?= $prevMeterFormat ?>">
+                                                </div>
+                                                <div class="col-<?= !$arResult['SEND_ADMIN'] ? '4' : '3' ?> d-flex justify-content-center align-items-end"><span class="fw-bold changeDiff"><?= $disabled ? ($item['MAIN_RELATED'] ? $item['MAIN_RELATED']['METER'] : $lastMeter) : 0 ?></span><small class="ps-1"><?= $item['UNIT'] ?></small></div>
+                                            <? else: ?>
+                                                <div class="col-5 text-center">
+                                                    <?= $item['METER'] ?>
+                                                </div>
+                                                <div class="col text-center">
+                                                    <span class="fw-bold"><?= $item['METER'] ?: 0 ?></span><small class="ps-1"><?= $item['UNIT'] ?></small>
+                                                </div>
+                                            <? endif; ?>
+                                            <? if ($arResult['SEND_ADMIN'] && !$item['RELATED']): ?>
+                                                <div class="col-auto">
+                                                    <div class="ui-ctl! ui-ctl-textarea! ui-ctl-md ui-ctl-resize-y ui-ctl-resize-x!">
+                                                        <textarea class="ui-ctl-element w-100" name="NOTE[<?= $item['ID'] ?>]" <?= $noteMeter ? 'readonly' : '' ?>><?= $noteMeter ?></textarea>
                                                     </div>
                                                 </div>
-                                            <? else: ?>
-                                                <div class="col-3 text-center"><?= $item['UF_PERCENT'] ?>%</div>
+                                                <div class="col"></div>
                                             <? endif; ?>
-                                        <? endif; ?>
-
-                                        <? if (!$item['RELATED']): ?>
-                                            <?
-                                            $disabled = $arResult['SEND_FORM'] && $userSend || !$arResult['SEND_FORM'] && !$arResult['SEND_ADMIN'] ? true : false;
-
-                                            // gg($item['MAIN_RELATED']['METER']);
-                                            ?>
-                                            <div class="col-auto">
-                                                <input id="inputMeter<?= $item['ID'] ?>" type="text" name="METER[<?= $item['ID'] ?>]" class="meter form-control" onkeyup="validate(this)" onclick="moveCaretToStart(this)"
-                                                    min="<?= $lastMeter ?:  $prevMeter ?>" <?= $disabled ? 'disabled' : '' ?> value="<?= $disabled ? ($item['MAIN_RELATED'] ? $item['MAIN_RELATED']['METER'] : $lastMeter) : '' /*$prevMeter*/ ?>" data-current="<?= $prevMeterFormat ?>">
-                                            </div>
-                                            <div class="col-<?= !$arResult['SEND_ADMIN'] ? '4' : '3' ?> d-flex justify-content-center align-items-end"><span class="fw-bold changeDiff"><?= $disabled ? ($item['MAIN_RELATED'] ? $item['MAIN_RELATED']['METER'] : $lastMeter) : 0 ?></span><small class="ps-1"><?= $item['UNIT'] ?></small></div>
-                                        <? else: ?>
-                                            <div class="col-5 text-center">
-                                                <?= $item['METER'] ?>
-                                            </div>
-                                            <div class="col text-center">
-                                                <span class="fw-bold"><?= $item['METER'] ?: 0 ?></span><small class="ps-1"><?= $item['UNIT'] ?></small>
-                                            </div>
-                                        <? endif; ?>
-                                        <? if ($arResult['SEND_ADMIN'] && !$item['RELATED']): ?>
-                                            <div class="col-auto">
-                                                <div class="ui-ctl! ui-ctl-textarea! ui-ctl-md ui-ctl-resize-y ui-ctl-resize-x!">
-                                                    <textarea class="ui-ctl-element w-100" name="NOTE[<?= $item['ID'] ?>]" <?= $noteMeter ? 'readonly' : '' ?>><?= $noteMeter ?></textarea>
-                                                </div>
-                                            </div>
-                                            <div class="col"></div>
                                         <? endif; ?>
                                     </div>
                                 </div>
@@ -237,50 +239,16 @@ if ($arResult['ACCESS']):
                 // set element value to new value
                 element.value = value;
 
-
-                // var dotted = value.indexOf('.');
-                // console.log('dotted', dotted)
-                // console.log('substring', value.substring(dotted, dotted + 1))
-
-                // console.log('substring 1', value.substring(dotted, value.lenght))
-
             }
 
             $('.meter').keypress(function(event) {
                 // console.log(event.which);
-
-
                 if (event.which == 46) {
 
                     var value = $(this).val()
-                    // console.log('this.val', value)
-
                     var dotted = value.indexOf('.');
-
-                    // console.log('value', value)
-                    // console.log('dotted', dotted)
-                    // console.log('substring', value.substring(dotted, dotted + 1))
-
-                    // var value = $(this).val()
-
-                    // console.log('replace', value.replace($(this).val().substring(dotted, dotted + 1), '_'))
-
-                    //value.slice(dotted, dotted + 1)
-
-
-
-                    // console.log('dote', value.indexOf('.'))
-
                 }
 
-                // console.log('which', event.which)
-
-                //  console.log('dote', $(this).val().indexOf('.'))
-
-                // if (((event.which != 46 || (event.which == 46 && $(this).val() == '')) ||
-                //         $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
-                //     event.preventDefault();
-                // }
             }).on('paste', function(event) {
                 event.preventDefault();
             });
@@ -303,13 +271,11 @@ if ($arResult['ACCESS']):
                     var diff_val = subtractFloats(last, current);
                     // console.log('diff_span', diff_val);
 
-                    // var diff_val = Math.round(+last - +current )
-                    // var diff_val = (+last - +current).toFixed(3)
-                    // var diff_val = clear(last - current)
-
                     if (diff_val < 0) {
 
-                        $this.val(min);
+                        if (min.length > 0)
+                            $this.val(min);
+
                         diff_val = subtractFloats(min, current);
                         diff_span.html(diff_val)
                     }

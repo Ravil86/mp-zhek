@@ -75,9 +75,12 @@ if ($arResult['ACCESS']):
                                                     $noteMeter = '';
                                                     $raznost = 0;
 
+                                                    $prevMeter = null;
+                                                    $lastMeter = null;
+
                                                     if (is_array($object['PREV_METERS'][$item['ID']]))
-                                                        $prevMeter = array_shift($object['PREV_METERS'][$item['ID']]);
-                                                    //$prevMeter = $arResult['DETAIL']['PREV_METERS'][$item['ID']];
+                                                        $prevMeter = reset($object['PREV_METERS'][$item['ID']]);
+                                                    // $prevMeter = array_shift($object['PREV_METERS'][$item['ID']]);
 
                                                     $lastMeter = $object['LAST_METERS'][$item['ID']];
 
@@ -93,7 +96,6 @@ if ($arResult['ACCESS']):
                                                     if ($lastMeter)
                                                         $userSend = true;
 
-                                                    // gg($item['UF_MAIN']);
                                                     ?>
                                                     <div class="row card border-end-0 rounded-0 rounded-start counter-item mb-1" id="counter<?= $item['ID'] ?>">
                                                         <div class="card-body ps-2 pe-1 py-0">
@@ -113,52 +115,6 @@ if ($arResult['ACCESS']):
                                                                 <div class="col py-3 d-flex align-items-center justify-content-center"><?= !$item['RELATED'] ? $raznostFormat : ($item['DIFF_METER'] ?: 0) ?></div>
                                                                 <div class="col py-3 d-flex align-items-center justify-content-center">
                                                                     <?= !$item['RELATED'] ? ($lastMeter ? $lastMeterFormat : $prevMeterFormat) : ($item['LAST_METER'] ?: 0) ?></div>
-                                                                <?/*
-                                        <div class="col-12 col-lg-5<? //= !$arResult['SEND_ADMIN'] ? '4' : '5'
-                                                                    ?> bg-info-subtle">
-                                            <div class="d-flex align-items-center h-100 py-2!">
-                                                <? if ($item['RELATED']): ?>
-                                                    <div class="col-3 text-center"><?= $item['UF_PERCENT'] ?>%</div>
-                                                    <div class="col-5 text-center">
-                                                        <?= $item['METER'] ?>
-                                                    </div>
-                                                    <div class="col text-center">
-                                                        <span class="fw-bold"><?= $item['METER'] ?: 0 ?></span><small class="ps-1"><?= $item['UNIT'] ?></small>
-                                                    </div>
-                                                <? else: ?>
-                                                    <? if (!$arResult['SEND_ADMIN']): ?>
-                                                        <div class="col-3 d-flex justify-content-center">
-                                                            <div class="form-check form-switch">
-                                                                <input class="form-check-input null-meter" type="checkbox" role="button" data-switch-id="<?= $item['ID'] ?>"
-                                                                    <?= $arResult['SEND_FORM'] && $userSend || !$arResult['SEND_FORM'] && !$arResult['SEND_ADMIN']  ? 'disabled' : '' ?>
-                                                                    title="Оставить показания без изменений">
-                                                            </div>
-                                                        </div>
-                                                    <? else: ?>
-                                                        <!-- <div class="col">&nbsp;</div> -->
-                                                    <? endif; ?>
-                                                    <div class="col-auto! col">
-                                                        <?
-                                                        $disable = $arResult['SEND_FORM'] && $userSend || !$arResult['SEND_FORM'] && !$arResult['SEND_ADMIN'] ? true : false;
-                                                        ?>
-                                                        <input id="inputMeter<?= $item['ID'] ?>" type="text" name="METER[<?= $item['ID'] ?>]" class="meter form-control w-100! ms-2" onkeyup="validate(this)" onclick="moveCaretToStart(this)"
-                                                            min="<?= $lastMeter ?:  $prevMeter ?>" <?= $disable ? 'disabled' : '' ?> value="<?= $disable ? ($item['MAIN_RELATED'] ? $item['MAIN_RELATED']['METER'] : $lastMeter) : '' ?>" data-current="<?= $prevMeterFormat ?>">
-                                                    </div>
-                                                    <div class="col-<?= !$arResult['SEND_ADMIN'] ? '4' : '3' ?> d-flex justify-content-center align-items-end">
-                                                        <span class="fw-bold changeDiff"><?= $disable ? ($item['MAIN_RELATED'] ? $item['MAIN_RELATED']['METER'] : $lastMeter) : 0 ?></span><small class="ps-1"><?= $item['UNIT'] ?></small>
-                                                    </div>
-                                                    <? if ($arResult['SEND_ADMIN']): ?>
-                                                        <div class="col-auto! col-4">
-                                                            <div class="ui-ctl ui-ctl-textarea ui-ctl-xs ui-ctl-resize-x">
-                                                                <textarea class="ui-ctl-element" name="NOTE[<?= $item['ID'] ?>]" <?= $noteMeter ? 'readonly' : '' ?>><?= $noteMeter ?></textarea>
-                                                            </div>
-                                                        </div>
-                                                        <!-- <div class="col"></div> -->
-                                                    <? endif; ?>
-
-                                                <? endif; ?>
-                                            </div>
-                                        </div>*/ ?>
                                                             </div>
 
                                                         </div>
@@ -187,20 +143,22 @@ if ($arResult['ACCESS']):
 
                                                 foreach ($object['LIST'] as $key => $item): ?>
                                                     <?
-
+                                                    // gg($object['PREV_METERS'][$item['ID']]);
+                                                    // gg($item);
                                                     $noteMeter = '';
-                                                    // $raznost = 0;
+
+                                                    $prevMeter = null;
+                                                    $lastMeter = null;
 
                                                     if (is_array($object['PREV_METERS'][$item['ID']]))
-                                                        $prevMeter = array_shift($object['PREV_METERS'][$item['ID']]);
+                                                        $prevMeter = reset($object['PREV_METERS'][$item['ID']]);
+                                                    // $prevMeter = array_shift($object['PREV_METERS'][$item['ID']]);
 
                                                     $lastMeter = $object['LAST_METERS'][$item['ID']];
 
-                                                    // if ($lastMeter && $prevMeter)
-                                                    //     $raznost = $lastMeter - $prevMeter;
-                                                    // $prevMeterFormat = number_format($prevMeter, 3, '.', '');
-                                                    // $lastMeterFormat = number_format($lastMeter, 3, '.', '');
-                                                    // $raznostFormat = number_format($raznost, 3, '.', '');
+                                                    $prevMeterFormat = number_format($prevMeter, 3, '.', '');
+
+                                                    // gg($prevMeterFormat);
 
                                                     $noteMeter = $object['NOTE_METERS'][$item['ID']];
 
@@ -253,7 +211,7 @@ if ($arResult['ACCESS']):
                                                                         $disable = $arResult['SEND_FORM'] && $userSend || !$arResult['SEND_FORM'] && !$arResult['SEND_ADMIN'] ? true : false;
                                                                         ?>
                                                                         <input id="inputMeter<?= $item['ID'] ?>" type="text" name="METER[<?= $item['ID'] ?>]" class="meter form-control w-100! ms-2" onkeyup="validate(this)" onclick="moveCaretToStart(this)"
-                                                                            min="<?= $lastMeter ?:  $prevMeter ?>" <?= $disable ? 'disabled' : '' ?> value="<?= $disable ? ($item['MAIN_RELATED'] ? $item['MAIN_RELATED']['METER'] : $lastMeter) : '' /*$prevMeter*/ ?>" data-current="<?= $prevMeterFormat ?>">
+                                                                            min="<?= !$arResult['SEND_ADMIN'] ? ($lastMeter ?:  $prevMeter) : '' ?>" <?= $disable ? 'disabled' : '' ?> value="<?= $disable ? ($item['MAIN_RELATED'] ? $item['MAIN_RELATED']['METER'] : $lastMeter) : '' /*$prevMeter*/ ?>" data-current="<?= $prevMeterFormat ?>">
                                                                     </div>
                                                                     <div class="col-<?= !$arResult['SEND_ADMIN'] ? '4' : '3' ?> d-flex justify-content-center align-items-end">
                                                                         <span class="fw-bold changeDiff"><?= $disable ? ($item['MAIN_RELATED'] ? $item['MAIN_RELATED']['METER'] : $lastMeter) : 0 ?></span><small class="ps-1"><?= $item['UNIT'] ?></small>
@@ -413,10 +371,7 @@ if ($arResult['ACCESS']):
             function sendData(id) {
 
                 const form = document.getElementById("objectMeter" + id);
-                // console.log('form', form);
                 let form_data = new FormData(form);
-                // console.log(form_data);
-
                 var message = $("#objectMeter" + id + ' .message');
 
                 // sendMeter
@@ -468,79 +423,42 @@ if ($arResult['ACCESS']):
                 // set element value to new value
                 element.value = value;
 
-
-                // var dotted = value.indexOf('.');
-                // console.log('dotted', dotted)
-                // console.log('substring', value.substring(dotted, dotted + 1))
-
-                // console.log('substring 1', value.substring(dotted, value.lenght))
-
             }
 
             $('.meter').keypress(function(event) {
-                // console.log(event.which);
-
 
                 if (event.which == 46) {
-
                     var value = $(this).val()
                     // console.log('this.val', value)
-
                     var dotted = value.indexOf('.');
-
-                    // console.log('value', value)
-                    // console.log('dotted', dotted)
-                    // console.log('substring', value.substring(dotted, dotted + 1))
-
-                    // var value = $(this).val()
-
-                    // console.log('replace', value.replace($(this).val().substring(dotted, dotted + 1), '_'))
-
-                    //value.slice(dotted, dotted + 1)
-
-
-
-                    // console.log('dote', value.indexOf('.'))
-
                 }
 
-                // console.log('which', event.which)
-
-                //  console.log('dote', $(this).val().indexOf('.'))
-
-                // if (((event.which != 46 || (event.which == 46 && $(this).val() == '')) ||
-                //         $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
-                //     event.preventDefault();
-                // }
             }).on('paste', function(event) {
                 event.preventDefault();
             });
 
             $('.meter').each(function() {
 
+                var current = null
+
                 $(this).keyup($.debounce(function() {
 
                     let $this = $(this);
-                    // console.log('$this', $(this));
 
                     let diff_span = $this.closest('.counter-item').find('.changeDiff')
-
                     var last = $this.val()
 
-                    let current = $this.data('current');
-
+                    current = $this.data('current');
                     var min = $this.attr('min');
 
                     var diff_val = subtractFloats(last, current);
                     // console.log('diff_span', diff_val);
 
-                    // var diff_val = Math.round(+last - +current )
-                    // var diff_val = (+last - +current).toFixed(3)
-                    // var diff_val = clear(last - current)
-
                     if (diff_val < 0) {
 
-                        $this.val(min);
+                        if (min.length > 0)
+                            $this.val(min);
+
                         diff_val = subtractFloats(min, current);
                         diff_span.html(diff_val)
                     }
@@ -614,95 +532,6 @@ if ($arResult['ACCESS']):
             // $(".meter").mask("9.9?99");
         </script>
     <? endif; ?>
-    <?
-
-    // $request = Application::getInstance()->getContext()->getRequest();
-    // $uriString = $request->getRequestUri();
-    // $uri = new Uri($uriString);
-    // $isArhive = $request->getQuery('arhive');
-    // $uri->addParams(array("arhive"=>"Y"));
-    // $arhiveUrl = $uri->getUri();
-
-    // dump($arResult['DETAIL']);
-    /*
-    ?>
-    <div id='moderation' class="content">
-        <div class="row align-items-center pb-3 mb-2">
-            <div class="col-5 mb-1 h4"><?= $arResult['DETAIL']['USERNAME'] ?>
-                <? //=TruncateText($arResult['DETAIL']['USERNAME'], 50)
-                ?>
-            </div>
-            <div class="col-7 mb-4! card d-flex! flex-row justify-content-between align-items-center px-3 py-2">
-                <div class="d-flex flex-column align-items-center">
-                    <div class="col-12 h6 my-0 text-uppercase text-blue"><?= TruncateText($arResult['DETAIL']['COURSE'], 28) ?></div>
-                    <div class="col-12 h6 my-0 text-secondary"><?= $arResult['DETAIL']['STREAM']['NAME'] . ' - ' . $arResult['DETAIL']['STREAM']['TEXT'] ?></div>
-                    <div class="col-12 small fst-italic text-muted">
-                        <small>Дата изменения: <?= $arResult['DETAIL']['DATE_UPDATE'] ?></small>
-
-                    </div>
-                </div>
-                <div class="text-end! text-center col-3! badge! small px-4 py-2 rounded-pill text-bg-light! text-bg-<?= $arResult['DETAIL']['STATUS']['VALUE'] ?> lh-sm">
-                    <i class="small"><?= $arResult['DETAIL']['STATUS']['TEXT'] ?></i>
-                </div>
-            </div>
-        </div>
-    </div>
-    */ ?>
 <? else: ?>
     <font class="errortext">Ошибка доступа</font>
 <? endif; ?>
-<?
-/*function templateItems($docVal, $useCheck, $admin = false){
-	$Format=ToLower(substr($docVal['FILE_NAME'], strrpos($docVal['FILE_NAME'], '.') + 1));
-	// dump($docVal[DESC]);
-	$result = '<div class="col-12 col-sm-6 col-md-4 col-lg mt-4 mt-md-0">
-		<div class="row"><div class="col doc_title small!">'.($docVal['DESC']?:TruncateText($docVal['NAME'], 28)).'</div></div>';
-		if(!$docVal['STATUS']){
-			$result .= '<div class="row">
-				<span class="col">не загружен</span>
-			</div>';
-		}
-		else{
-			$docStatus = $docVal['STATUS'];
-			$result .= '<div class="row g-2" >
-				<div class="col-auto">';
-					$result .= '<a class="mb-2 pt-2 btn btn-sm icon_file border-'.$docStatus['UF_CODE'].' text-'.$docStatus['UF_CODE'].'" data-fancybox '.($Format=='pdf'? 'data-type="iframe" data-options=\'{"iframe\" : {\"preload\" : true, \"css\" : {\"height\" : \"80%\"}}}\'':'').' data-src="'.$docVal['SRC'].'" href="javascript:;">
-							<i class="bi bi bi-file-earmark-'.$docStatus['UF_XML_ID'].' image text-'.$docStatus['UF_CODE'].'"></i><div class="small"><small><small>'.TruncateText($docStatus['UF_NAME'], 8).'</small></small></div>
-						</a>
-					</div>
-					<div class="col-8" id="'.$docVal['ID'].'">';
-
-							$result .= '<div class="mt-1 mb-2 text-muted">';
-							$result .= '<div class=""><span>'.TruncateText($docVal['FILE_NAME'], 35).'</span></div>';
-							//$result .= '<div class="text-'.$docStatus['UF_CODE'].'"><i class="bi bi-file-earmark-'.$docStatus['UF_XML_ID'].'" style="font-size: 1.3rem;"></i><span>'.$docStatus['UF_NAME'].'</span></div>';
-							$result .= '<div class="info_status_inner info_item_date mt-1 pl-0"><span class="">'.$docVal['DATE'].'</span></div>';
-										if($docStatus['ID']==3 && $docVal['INFO']):
-											$result .= '<div class="mt-1 ms-1 info_status_note"><div class="ps-3">'.$docVal['INFO'].'</div></div>';
-										endif;
-									$result .= '</div>
-
-					</div>
-			</div>';
-				if($admin && $docVal['ID'] || $useCheck && $docStatus['ID']==1):?>
-    <?
-					$textCheck = !$admin?'Одобрить':'load';
-					$textRefuse = !$admin?'Отказать':'deny';
-					$result .= '<div class="btn_status">
-								<a class="btn_yes btn button-outline mb-1'.($admin?' w-auto':'').'" data-id="'.$docVal['ID'].'">
-								<i class="bi bi-check2'.(!$admin?' fs-6':'').'"></i>
-									'.$textCheck.'</a>
-								<a class="btn_no open_popup btn button-outline mb-1'.($admin?' w-auto':'').'" data-id="'.$docVal['ID'].'">
-									<i class="bi bi-x'.(!$admin?' fs-6':'').'"></i>
-									'.$textRefuse.'</a>';
-						if($admin){
-							$result .= '<a class="btn_load btn button-outline ms-1 mb-1'.($admin?' w-auto':'').'" data-id="'.$docVal['ID'].'">
-							<i class="bi bi-arrow-down"></i></a>';
-						}
-								//<!--button class="btn_no open_popup" data-id="'.$docVal['VALUE'].'">Отказать</!--button-->
-						$result .= '</div><!--btn-status-->';
-				endif;
-		}
-	$result .= '</div>';
-	return $result;
-}*/
-?>
