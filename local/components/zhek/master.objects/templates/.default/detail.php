@@ -208,6 +208,7 @@ if ($arResult['ACCESS']): ?>
                         ],
                     ],*/
                         ];
+                        // gg($gridParams);
                         ?>
                     </div>
                     <div>

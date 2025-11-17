@@ -181,6 +181,10 @@ require($_SERVER['DOCUMENT_ROOT'] . '/includes/modal_feedback.php');
 
 	const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
 	const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+	$(document).ready(function() {
+		$(".select2").select2();
+	});
 </script>
 </body>
 

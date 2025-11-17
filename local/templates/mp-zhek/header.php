@@ -50,6 +50,8 @@ $arSite = $rsSites->Fetch();
 
     <!--link rel="shortcut icon" href="<? //=SITE_TEMPLATE_PATH
                                         ?>/images/favicon.ico"-->
+    <? CJSCore::Init(array("jquery3"));
+    ?>
     <?
     $arCss = array(
         //cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css',
@@ -85,8 +87,8 @@ $arSite = $rsSites->Fetch();
         SITE_TEMPLATE_PATH . '/css/cabinet.css',
 
         //select2
-        // '//cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css',
-        // '//cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css'
+        '//cdn.jsdelivr.net/npm/select2/dist/css/select2.min.css',
+        '//cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css'
     );
 
     foreach ($arCss as $key => $css) {
@@ -94,8 +96,7 @@ $arSite = $rsSites->Fetch();
     }
 
     $arJs = array(
-        SITE_TEMPLATE_PATH . '/js/jquery-3.7.1.min.js',
-        // SITE_TEMPLATE_PATH . '/js/jquery-1.12.4.min.js',
+        // SITE_TEMPLATE_PATH . '/js/jquery-3.7.1.min.js',
 
         SITE_TEMPLATE_PATH . '/js/jquery-migrate-3.5.2.min.js',
         // SITE_TEMPLATE_PATH . '/js/jquery-migrate-1.4.1.min.js',
@@ -140,7 +141,12 @@ $arSite = $rsSites->Fetch();
         // '//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/2.0.0-beta1/js/bootstrap-select.min.js',
         // '//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/2.0.0-beta1/js/i18n/defaults-ru_RU.min.js'
         SITE_TEMPLATE_PATH . '/lib/bootstrap-select/js/bootstrap-select.min.js',
-        SITE_TEMPLATE_PATH . '/lib/bootstrap-select/js/i18n/defaults-ru_RU.min.js'
+        SITE_TEMPLATE_PATH . '/lib/bootstrap-select/js/i18n/defaults-ru_RU.min.js',
+
+        //select2
+        // '//cdn.jsdelivr.net/npm/select2/dist/js/select2.full.min.js',
+        '//cdn.jsdelivr.net/npm/select2/dist/js/select2.min.js',
+
     );
 
     foreach ($arJs as $key => $js) {

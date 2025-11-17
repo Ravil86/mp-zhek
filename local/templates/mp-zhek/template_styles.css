@@ -2071,3 +2071,18 @@ background-color: transparent!important;
 .link-underline{
     text-decoration: underline;
 }
+
+/* select2 */
+
+.select2-container--default .select2-selection--single{
+	border-color: rgb(var(--ui-field-color-border-default));
+}
+
+.select2-container .select2-selection--single,
+.select2-container--default .select2-selection--single .select2-selection__arrow{
+height: 39px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered{
+line-height: 39px;
+}
