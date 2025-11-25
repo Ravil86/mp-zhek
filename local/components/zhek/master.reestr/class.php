@@ -75,11 +75,19 @@ class MasterReestr extends CBitrixComponent
 
 		foreach ($contracts as $contr) {
 
+			$types = [];
+			foreach ($contr['UF_SERVICE'] as $value) {
+
+				$typeItem = $serviceList[$value];
+				$types[] = '<div class="d-flex align-items-center"><img class="mb-1@" src="' . $typeItem['ICON'] . '" width="20" height="20" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'] . '</span></div>';
+			}
+
 			$orgContracts[$contr['COMPANY']][] = [
 				'ID' => $contr['ID'],
 				'NUMBER' => $contr['FULL_NUMBER'],
 				'STATUS' => $contr['STATUS'],
 				'ACTIVE' => $contr['UF_STATUS'] == 14 ?: false,
+				'SERVICE' => $types,
 				// 'DATE' => $contr['DATE'],
 			];
 		}

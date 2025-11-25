@@ -214,8 +214,8 @@ class MasterRelated extends CBitrixComponent implements Controllerable
 			['id' => 'UF_OBJECT', 'name' => 'Объект', 'sort' => '', 'default' => true],
 			['id' => 'UF_ORG', 'name' => 'Организация', 'sort' => '', 'default' => true],
 			['id' => 'UF_MAIN', 'name' => 'Главная организация', 'sort' => '', 'default' => true],
-
 			['id' => 'UF_PERCENT', 'name' => 'Процент занимаемого объема/площади, %', 'default' => true, 'editable' => ['TYPE' => 'NUMBER', 'min' => 0.1, 'max' => 100]],
+			['id' => 'COUNTER', 'name' => '', 'default' => true, 'editable' => false],
 		];
 
 		// $this->arResult['GRID']["FILTER"] = [
@@ -231,7 +231,6 @@ class MasterRelated extends CBitrixComponent implements Controllerable
 		// natsort($itemsRelated);
 
 		// $this->arResult['ITEMS'] = $itemsRelated;
-
 		foreach ($itemsRelated as $key => &$item) {
 
 			// dump($item);
@@ -261,16 +260,23 @@ class MasterRelated extends CBitrixComponent implements Controllerable
 
 			foreach ($item as $pid => $value) {
 
-				// gg($value);
-				// gg($getCounters[$value['UF_OBJECT']]);
-
 				$data['ID'] = $value['ID'];
 
 				$data['UF_COUNTER'] = $getCounters[$value['UF_COUNTER']]['UF_NUMBER'];
-				$data['UF_OBJECT'] = '<small>#' . $value['UF_OBJECT'] . '</small> ' . $getObjects[$value['UF_OBJECT']]['NAME'];
+				$data['UF_OBJECT'] = '<small>#' . $value['UF_OBJECT'] . '</small> ' . $getObjects[$value['UF_OBJECT']]['NAME'] . '
+											<a title="перейти в обьекты" href="/master/objects/' . $value['UF_ORG'] . '/#item-' . $value['UF_OBJECT'] . '"
+											target="_blank">
+											<i class="bi bi-buildings"></i>
+											</a>';
+
 				$data['UF_ORG'] = '<small>#' . $value['UF_ORG'] . '</small> ' . $getCompany[$value['UF_ORG']]['UF_NAME'];
 				$data['UF_MAIN'] = $value['UF_MAIN'] ? 'да' : '';
 				$data['UF_PERCENT'] = $value['UF_PERCENT'];
+
+				$data['COUNTER'] = '<a title="показания" href="/master/counter/' . $value['UF_OBJECT'] . '"
+											target="_blank">
+											<img src="' . SITE_TEMPLATE_PATH . '/images/counter_small.png" width="25">
+											</a>';
 
 				$row['ROWS'][$pid] = [
 					'data' => $data,			//для редактирования

@@ -89,17 +89,17 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 		// $curDay = 25;
 
 		//Дата начала подачи
-		// $dateStart = 25;
-		$dateStart = 5;
+		$dateStart = 25;
+		// $dateStart = 5;
 
 		//Дата окончания подачи
 
-		// $dateEnd = date('t');	//конец месяца
-		$dateEnd = 15;
+		$dateEnd = date('t');	//конец месяца
+		// $dateEnd = 15;
 
 		// Дата окончания редактирования модератором
 		// $editEnd = 5;
-		$editEnd = 20;
+		$editEnd = 10;
 
 		if ($dateStart <= $curDay && $curDay <= $dateEnd) {		//период подачи пользователем до конца месяца
 			$this->arResult['SAVE_MONTH'] = $monthList[$selfMonth];
@@ -250,6 +250,33 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 			$this->arResult['DETAIL']['PREV_METERS'] = $arPrevMeters;
 			$this->arResult['DETAIL']['LAST_METERS'] = $arLastMeters;
 			$this->arResult['DETAIL']['NOTE_METERS'] = $noteMeter;
+
+
+			$contracts = LKClass::getContracts();
+
+			foreach ($contracts as $contr) {
+
+				$types = [];
+				foreach ($contr['UF_SERVICE'] as $value) {
+
+					$typeItem = $serviceList[$value];
+					$types[] = '<div class="d-flex align-items-center"><img class="mb-1@" src="' . $typeItem['ICON'] . '" width="20" height="20" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'] . '</span></div>';
+				}
+
+				$orgContracts[$contr['COMPANY']][] = [
+					'ID' => $contr['ID'],
+					'NUMBER' => $contr['FULL_NUMBER'],
+					'STATUS' => $contr['STATUS'],
+					'ACTIVE' => $contr['UF_STATUS'] == 14 ?: false,
+					'SERVICE' => $types,
+					// 'DATE' => $contr['DATE'],
+				];
+			}
+			$this->arResult['CONTRACTS'] = $orgContracts;
+
+
+
+
 
 			// end DETAIL
 			//

@@ -13,11 +13,37 @@ if ($arResult['ACCESS']):
             <h3 class="h4"><?= ($arResult['SEND_ADMIN'] ? '#' . $arResult['DETAIL']['OBJECT']['ID'] . ' ' : '') ?><?= $arResult['DETAIL']['OBJECT']['NAME'] ?></h3>
             <?= $arResult['DETAIL']['OBJECT']['ADDRESS']; ?>
         </div>
-        <div class="col-auto">
+        <div class="col-auto d-grid">
+
             <a class="ui-btn ui-btn-sm ui-btn-no-caps" href="<?= $arResult['FOLDER'] ?>">вернуться назад</a>
+            <button class="ui-btn ui-btn-sm ui-btn-primary mt-2 ms-0" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseContracts" aria-expanded="false" aria-controls="collapseContracts">контракты
+            </button>
         </div>
     </div>
-    <? // dump($arResult['DETAIL'])
+    <div class="d-flex justify-content-center">
+        <div class="collapse" id="collapseContracts">
+            <div class="mt-2">
+                <div class="card card-body px-0 py-1">
+                    <div class="list-group list-group-flush">
+                        <?
+                        foreach ($arResult['CONTRACTS'][$arResult['DETAIL']['OBJECT']['ORG']] as $key => $contract): ?>
+                            <? // gg($contract);
+                            ?>
+                            <a class="d-flex row! align-items-center list-group-item list-group-item-action" href="/master/contracts/<?= $contract['ID'] ?>/"
+                                target="_blank">
+                                <div class="col d-flex"><?= $contract['NUMBER'] ?><div class="ps-2"><?= implode('/', $contract['SERVICE'])
+                                                                                                    ?></div>
+                                </div>
+                                <div class="col-auto ps-3"><?= $contract['STATUS']['VALUE'] ?></div>
+                            </a>
+                        <? endforeach ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <? // dump($arResult['DETAIL']['OBJECT']);
     if ($arResult['WRONG']): ?>
         <div class="alert alert-danger mt-2 d-inline" role="alert">
             Ошибка доступа ввода показаний приборов учёта
