@@ -215,7 +215,7 @@ class MasterRelated extends CBitrixComponent implements Controllerable
 			['id' => 'UF_ORG', 'name' => 'Организация', 'sort' => '', 'default' => true],
 			['id' => 'UF_MAIN', 'name' => 'Главная организация', 'sort' => '', 'default' => true],
 
-			['id' => 'UF_PERCENT', 'name' => 'Процент занимаемого объема/площади, %', 'default' => true, 'editable' => ['TYPE' => 'NUMBER', 'min' => 1, 'max' => 100]],
+			['id' => 'UF_PERCENT', 'name' => 'Процент занимаемого объема/площади, %', 'default' => true, 'editable' => ['TYPE' => 'NUMBER', 'min' => 0.1, 'max' => 100]],
 		];
 
 		// $this->arResult['GRID']["FILTER"] = [
@@ -227,6 +227,8 @@ class MasterRelated extends CBitrixComponent implements Controllerable
 
 
 		$itemsRelated = LKClass::getRelated(1);
+		// asort($itemsRelated);
+		// natsort($itemsRelated);
 
 		// $this->arResult['ITEMS'] = $itemsRelated;
 

@@ -41,7 +41,7 @@ if ($arResult['ACCESS']): ?>
         <div class="col-auto">
             <div class="d-grid">
                 <!-- <a class="ui-btn ui-btn-no-caps ui-btn-sm" href="<?= $arResult['FOLDER'] ?>">вернуться назад</a> -->
-                <button class="ui-btn ui-btn-success mt-2 ms-0" data-bs-toggle="modal" data-bs-target="#counterModal">Добавить главный ПУ</button>
+                <button class="ui-btn ui-btn-success mt-2 ms-0" data-bs-toggle="modal" data-bs-target="#counterModal" onclick="setMain()">Добавить главный ПУ</button>
             </div>
 
         </div>
@@ -85,9 +85,10 @@ if ($arResult['ACCESS']): ?>
         <div class="card my-2">
             <div class="card-body">
                 <div class="row gx-1">
-                    <div class="col-lg object-name d-flex align-items-end">
-                        <h5 class="h5 card-title mb-0">#<?= $key; ?> / <?= $counterItem['UF_NUMBER'] ?> <i class="small">(<?= $counterItem['UF_NAME'] ?>)</i></h5>
-                        <div class="card-subtitle ms-3"><?= $typeRelate ?></div>
+                    <div class="col-lg object-name d-flex align-items-center">
+                        <h5 class="h5 card-title mb-0">#<?= $key; ?> / <?= $counterItem['UF_NUMBER'] ?></h5>
+                        <i class="small ms-2"><?= $counterItem['UF_NAME'] ?></i>
+                        <div class="card-subtitle ms-3 pt-1"><?= $typeRelate ?></div>
                     </div>
                     <div class="col-auto d-grid d-xl-flex">
                         <button class="ui-btn ui-btn-sm ui-btn-secondary" data-bs-toggle="modal" onclick="setObject(<?= $related['ID']; ?>)" data-bs-target="#counterModal">Добавить счётчик</button>
@@ -164,7 +165,7 @@ if ($arResult['ACCESS']): ?>
                                     <!-- <div class="ui-ctl-after ui-ctl-icon-angle"></div> -->
                                     <? // gg($arResult['COUNTERS']);
                                     ?>
-                                    <select id="counter" class="select2 selectpicker!" data-width="100%" data-style="ui-btn ui-btn-no-caps ui-btn-dropdown ui-btn-light-border" name="FIELDS[UF_COUNTER]" required>
+                                    <select id="counter" class="select2! selectpicker!" data-width="100%" data-style="ui-btn ui-btn-no-caps ui-btn-dropdown ui-btn-light-border" name="FIELDS[UF_COUNTER]" required>
                                         <? foreach ($arResult['COUNTERS'] as $key => $counter): ?>
                                             <option value="<?= $key ?>" <?= $key == $related['ID'] ? 'selected' : '' ?>>#<?= $counter['ID'] ?> / <?= $counter['UF_NUMBER'] ?> - <?= $counter['UF_NAME'] ?></option>
                                         <? endforeach ?>
@@ -188,13 +189,13 @@ if ($arResult['ACCESS']): ?>
                                 <label>Процент занимаемого объема/площади, %</label>
                                 <div class="ui-ctl ui-ctl-after-icon ui-ctl-date! ui-ctl-w100">
                                     <!-- <div class="ui-ctl-after ui-ctl-icon-calendar"></div> -->
-                                    <input type="number" class="ui-ctl-element form-control" name="FIELDS[UF_PERCENT]" value="" min="1" max="100" step="0.01" required>
+                                    <input type="number" class="ui-ctl-element form-control" name="FIELDS[UF_PERCENT]" value="" min="0.1" max="100" step="0.01" required>
                                     <div class="invalid-feedback">укажите значение</div>
                                 </div>
                             </div>
                             <div class="col-12 col-md col-md-2! d-flex">
                                 <label class="ui-ctl ui-ctl-checkbox">
-                                    <input type="checkbox" class="ui-ctl-element" name="FIELDS[UF_MAIN]" value="Y">
+                                    <input id="objectMain" type="checkbox" class="ui-ctl-element" name="FIELDS[UF_MAIN]" value="Y">
                                     <div class="ui-ctl-label-text">Главный объект</div>
                                 </label>
                             </div>
@@ -292,6 +293,11 @@ if ($arResult['ACCESS']): ?>
             if (objectsModal) {
 
                 objectsModal.addEventListener('show.bs.modal', event => {
+
+                     $('#counter')
+                        .select2({
+                            dropdownParent: $("#counterModal"),
+                        })
 
                     // const selected = parent[1]
                     var selected = child[0]
@@ -427,17 +433,17 @@ if ($arResult['ACCESS']): ?>
     })()
 
     function setObject(id) {
-        // console.log('id', id);
-
         const Modal = $('#counterModal');
-
-        // console.log(Modal.find('#counter').val(id));
         Modal.find('#counter').val(id).trigger('change')
-
+        Modal.find('#objectMain').prop("checked",false);
         // $('.selectpicker').selectpicker('refresh')
-
     }
 
+     function setMain() {
+        const Modal = $('#counterModal');
+        Modal.find('#counter').val(null).trigger("change")
+        Modal.find('#objectMain').prop("checked","checked");
+    }
 
     function saveLosses(id) {
 
