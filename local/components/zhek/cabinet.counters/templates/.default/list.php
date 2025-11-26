@@ -440,9 +440,24 @@ if ($arResult['ACCESS']):
             $('.meter').each(function() {
 
                 var current = null
-
+                
+                // выводим разницу с предыдущими
                 $(this).keyup($.debounce(function() {
 
+                    let $this = $(this);
+                    let diff_span = $this.closest('.counter-item').find('.changeDiff')
+                    var last = $this.val()
+
+                    current = $this.data('current');
+                    var min = $this.attr('min');
+
+                    var diff_val = subtractFloats(last, current);
+                    // console.log('diff_span', diff_val);
+                    diff_span.html(diff_val)
+                }, 1000));
+
+                // при отрицательной разнице очищаем введенные показатели
+                 $(this).keyup($.debounce(function() {
                     let $this = $(this);
 
                     let diff_span = $this.closest('.counter-item').find('.changeDiff')
@@ -452,19 +467,17 @@ if ($arResult['ACCESS']):
                     var min = $this.attr('min');
 
                     var diff_val = subtractFloats(last, current);
-                    // console.log('diff_span', diff_val);
 
                     if (diff_val < 0) {
 
                         if (min.length > 0)
-                            $this.val(min);
+                            $this.val('');
+                            // $this.val(min);
 
                         diff_val = subtractFloats(min, current);
                         diff_span.html(diff_val)
                     }
-                    diff_span.html(diff_val)
-
-                }, 1000));
+                }, 7000));
             })
 
             /*$(".meter").focusout(function(e) {

@@ -100,13 +100,17 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 		// Дата окончания редактирования модератором
 		// $editEnd = 5;
 		$editEnd = 10;
+		
+		$arResult['DATE_ADMIN'] = false;
 
 		if ($dateStart <= $curDay && $curDay <= $dateEnd) {		//период подачи пользователем до конца месяца
 			$this->arResult['SAVE_MONTH'] = $monthList[$selfMonth];
 			$arResult['DATE_USER'] = true;
+			$arResult['DATE_ADMIN'] = true;//включена модерация во время ввода пользователями
 		} elseif ($curDay == 1) {								//период подачи пользователем 1 числа
 			$this->arResult['SAVE_MONTH'] = $monthList[$prevMonth];
 			$arResult['DATE_USER'] = true;
+			$arResult['DATE_ADMIN'] = true;//включена модерация во время ввода пользователями
 		} elseif ($curDay > 1 && $curDay <= $editEnd) {
 			$this->arResult['SAVE_MONTH'] = $monthList[$prevMonth];
 			$arResult['DATE_ADMIN'] = true;

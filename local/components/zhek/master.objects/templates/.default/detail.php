@@ -68,8 +68,7 @@ if ($arResult['ACCESS']): ?>
                 <div class="d-flex align-items-center">
                     <button class="ui-btn ui-btn-success mt-2 ms-0" data-bs-toggle="modal" data-bs-target="#addObject">добавить объект</button>
                     <button class="ui-btn ui-btn-sm ui-btn-primary mt-2" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#collapseContracts" aria-expanded="false" aria-controls="collapseContracts">контракты
-                    </button>
+                        data-bs-target="#collapseContracts" aria-expanded="false" aria-controls="collapseContracts">контракт</button>
                 </div>
             </div>
             <? // gg($arResult['DETAIL']['ORG']['ID']);
@@ -86,7 +85,7 @@ if ($arResult['ACCESS']): ?>
                         foreach ($arResult['CONTRACTS'][$arResult['DETAIL']['ORG']['ID']] as $key => $contract): ?>
                             <a class="d-flex row! align-items-center list-group-item list-group-item-action" href="/master/contracts/<?= $contract['ID'] ?>/"
                                 target="_blank">
-                                <div class="col d-flex"><?= $contract['NUMBER'] ?><div class="ps-2"><?= implode('/', $contract['SERVICE']) ?></div>
+                                <div class="col d-flex align-items-center"><?= $contract['NUMBER'] ?><div class="ps-2"><?= implode('', $contract['SERVICE']) ?></div>
                                 </div>
                                 <div class="col-auto ps-3"><?= $contract['STATUS']['VALUE'] ?></div>
                             </a>
