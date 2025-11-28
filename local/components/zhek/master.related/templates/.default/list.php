@@ -97,14 +97,13 @@ if ($arResult['ACCESS']): ?>
                 <div class="grid_form">
                     <?
                     $grid_options = new CGridOptions($arResult["GRID_DETAIL"]);
-
                     $gridParams = [
                         'GRID_ID' => $arResult['GRID_ID'] . '_' . $key,
                         'COLUMNS' => $arResult['COLUMNS'],
                         'ROWS' => $related['ROWS'],
                         'NAV_OBJECT' => $nav,
                         'AJAX_MODE' => 'N',     //не обновляет
-                        'AJAX_ID' => 'AJAX_' . $arResult['GRID_ID'],
+                        'AJAX_ID' => 'AJAX_' . $arResult['GRID_ID'] . '_' . $key,
                         //'AJAX_ID' => \CAjax::getComponentID('bitrix:main.ui.grid', '.default', ''),
                         'PAGE_SIZES' => [
                             ['NAME' => "5", 'VALUE' => '5'],
@@ -132,7 +131,7 @@ if ($arResult['ACCESS']): ?>
                         'AJAX_OPTION_HISTORY'       => 'N',
                         'SHOW_GROUP_EDIT_BUTTON'    => true,    //Разрешает вывод стандартной кнопки "Редактировать" в панель групповых действий
                         'ALLOW_INLINE_EDIT'         => true,    //Разрешает инлайн-редактирование строк
-                        'ALLOW_CONTEXT_MENU'        => true,    //Разрешает вывод контекстного меню по клику правой кнопкой на строку
+                        'ALLOW_CONTEXT_MENU'        => false,    //Разрешает вывод контекстного меню по клику правой кнопкой на строку
                         'ACTION_PANEL'              => $controlPanel,
                     ];
                     // gg($gridParams);
@@ -294,7 +293,7 @@ if ($arResult['ACCESS']): ?>
 
                 objectsModal.addEventListener('show.bs.modal', event => {
 
-                     $('#counter')
+                    $('#counter')
                         .select2({
                             dropdownParent: $("#counterModal"),
                         })
@@ -435,14 +434,14 @@ if ($arResult['ACCESS']): ?>
     function setObject(id) {
         const Modal = $('#counterModal');
         Modal.find('#counter').val(id).trigger('change')
-        Modal.find('#objectMain').prop("checked",false);
+        Modal.find('#objectMain').prop("checked", false);
         // $('.selectpicker').selectpicker('refresh')
     }
 
-     function setMain() {
+    function setMain() {
         const Modal = $('#counterModal');
         Modal.find('#counter').val(null).trigger("change")
-        Modal.find('#objectMain').prop("checked","checked");
+        Modal.find('#objectMain').prop("checked", "checked");
     }
 
     function saveLosses(id) {

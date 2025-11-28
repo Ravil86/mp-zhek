@@ -88,39 +88,29 @@ class MasterRelated extends CBitrixComponent implements Controllerable
 
 		$getCompany = LKClass::getCompany();
 
-		$getObjects = LKClass::getObjects();
+		$getObjects = LKClass::getObjects(null, 'ID');
 		$this->arResult['OBJECTS'] = $getObjects;
 
 		$getCounters = LKClass::getCounters();
 		$this->arResult['COUNTERS'] = $getCounters;
 
-		foreach ($getObjects as $value) {
+		foreach ($getObjects as $object) {
 
-			$arObjects[$value['ORG']][] = $value;		// по ключу организации
-			$orgObjectsIDs[$value['ORG']][$value['ID']] = $value['ID']; // по ключу организации и id объекта
+			$arObjects[$object['ORG']][] = $object;		// по ключу организации
+			$orgObjectsIDs[$object['ORG']][$object['ID']] = $object['ID']; // по ключу организации и id объекта
 
-			$getCompany[$value['ORG']]['OBJECTS'][$value['ID']] = $value;
+			$arCompany[$object['ORG']]['OBJECTS'][$object['ID']] = $object;
+
+			$valCompany = $getCompany[$object['ORG']];
+
+			$this->arResult['OBJECTS_ITEMS'][$object['ID']] = '#' . $object['ID'] . ' ' . TruncateText($object['NAME'], 50) . ' / #' . $object['ORG'] . ' - ' . ($valCompany['UF_SHORT_NAME'] ?: TruncateText($valCompany['UF_NAME'], 50));
 		}
-		$this->arResult['COMPANY'] = $getCompany;
-
-		// $objects[] = [
-		// 	'id' => 0,
-		// 	'text' => 'выберите',
-		// ];
-		// $this->arResult['OBJECTS_JSON'][] = [
-		// 	'text' => 'выберите',
-		// 	'children' => $objects
-		// ];
+		$this->arResult['COMPANY'] = $arCompany;
 
 		$this->arResult['COMPANY_JSON'][] = [
 			'id' => '',
 			'text' => 'выберите',
 		];
-
-		// $this->arResult['OBJECTS_JSON'][] = [
-		// 	'id' => '',
-		// 	'text' => 'выберите',
-		// ];
 
 		foreach ($getCompany as $key => $org) {
 
@@ -152,8 +142,12 @@ class MasterRelated extends CBitrixComponent implements Controllerable
 				'id' => $org['ID'],
 				'text' => $org['UF_NAME']
 			];
-		}
 
+			$this->arResult['COMPANY_ITEMS'][$org['ID']] = '#' . $org['ID'] . ' ' . TruncateText($org['UF_NAME'], 50);
+
+
+			//$this->arResult['OBJECTS_ITEMS'][$org['ID']]['ITEMS'][$object['ID']] = '#' . $object['ID'] . ' ' . $object['NAME'];
+		}
 
 		// gg($getCompany);
 		// gg($this->arResult['OBJECTS_JSON']);
@@ -209,12 +203,12 @@ class MasterRelated extends CBitrixComponent implements Controllerable
 		];
 
 		$this->arResult['COLUMNS'] = [
-			['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
-			['id' => 'UF_COUNTER', 'name' => 'Прибор учёта', 'sort' => '', 'default' => true],
-			['id' => 'UF_OBJECT', 'name' => 'Объект', 'sort' => '', 'default' => true],
-			['id' => 'UF_ORG', 'name' => 'Организация', 'sort' => '', 'default' => true],
-			['id' => 'UF_MAIN', 'name' => 'Главная организация', 'sort' => '', 'default' => true],
-			['id' => 'UF_PERCENT', 'name' => 'Процент занимаемого объема/площади, %', 'default' => true, 'editable' => ['TYPE' => 'NUMBER', 'min' => 0.1, 'max' => 100]],
+			['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 50],
+			['id' => 'UF_COUNTER', 'name' => 'Прибор учёта', 'sort' => '', 'default' => true, 'width' => 150],
+			['id' => 'UF_OBJECT', 'name' => 'Объект', 'sort' => '', 'default' => true, 'editable' => ['TYPE' => 'DROPDOWN', 'items' => $this->arResult['OBJECTS_ITEMS']]],
+			['id' => 'UF_ORG', 'name' => 'Организация', 'sort' => '', 'default' => true, 'editable' => ['TYPE' => 'DROPDOWN', 'items' => $this->arResult['COMPANY_ITEMS']]],
+			['id' => 'UF_MAIN', 'name' => 'Главная организация', 'sort' => '', 'default' => true, 'width' => 100],
+			['id' => 'UF_PERCENT', 'name' => 'Процент занимаемого объема/площади, %', 'default' => true, 'width' => 150, 'editable' => ['TYPE' => 'NUMBER', 'min' => 0.1, 'max' => 100]],
 			['id' => 'COUNTER', 'name' => '', 'default' => true, 'editable' => false],
 		];
 
@@ -233,70 +227,43 @@ class MasterRelated extends CBitrixComponent implements Controllerable
 		// $this->arResult['ITEMS'] = $itemsRelated;
 		foreach ($itemsRelated as $key => &$item) {
 
-			// dump($item);
-			// gg($key);
-
-			// $column = $item;
-
-			// if ($item['UF_NAME'])
-			// 	$column['UF_NAME'] = '<a class="ui-link fs-6' . (!$item['UF_ACTIVE'] ? ' ui-link-secondary opacity-75' : '') . '" href="' . $item["ID"] . '/">' . $item['UF_NAME'] . '</a>';
-
-			// $column['UF_ACTIVE'] = $item['UF_ACTIVE'] ? 'да' : 'нет';
-			// $item['UF_ACTIVE'] = $item['UF_ACTIVE'] ? 'Y' : 'N';
-			// // $item['UF_ACTIVE'] = $item['UF_ACTIVE'] == 'Y' ?: false;
-
-			// if ($item['UF_USER_ID']) {
-			// 	$orgUser = $userList[$item['UF_USER_ID']];
-			// 	$item['UF_USER'] = '[' . $orgUser['ID'] . '] ' . $orgUser['SHORT_NAME'];
-			// }
-
-			// if ($objectItems = $arObjects[$item['ID']])
-			// 	$countObjects = count($objectItems);
-
-			// $item['COMPANY'] = $item['COMPANY']['NAME'];
-
 			$row = [];
-			$row['ID'] = $key;
 
 			foreach ($item as $pid => $value) {
 
-				$data['ID'] = $value['ID'];
+				$column['ID'] = $value['ID'];
 
-				$data['UF_COUNTER'] = $getCounters[$value['UF_COUNTER']]['UF_NUMBER'];
-				$data['UF_OBJECT'] = '<small>#' . $value['UF_OBJECT'] . '</small> ' . $getObjects[$value['UF_OBJECT']]['NAME'] . '
+				$column['UF_COUNTER'] = $getCounters[$value['UF_COUNTER']]['UF_NUMBER'];
+				$column['UF_OBJECT'] = '<small>#' . $value['UF_OBJECT'] . '</small> ' . $getObjects[$value['UF_OBJECT']]['NAME'] . '
 											<a title="перейти в обьекты" href="/master/objects/' . $value['UF_ORG'] . '/#item-' . $value['UF_OBJECT'] . '"
 											target="_blank">
 											<i class="bi bi-buildings"></i>
 											</a>';
 
-				$data['UF_ORG'] = '<small>#' . $value['UF_ORG'] . '</small> ' . $getCompany[$value['UF_ORG']]['UF_NAME'];
-				$data['UF_MAIN'] = $value['UF_MAIN'] ? 'да' : '';
-				$data['UF_PERCENT'] = $value['UF_PERCENT'];
+				$column['UF_ORG'] = '<small>#' . $value['UF_ORG'] . '</small> ' . $getCompany[$value['UF_ORG']]['UF_NAME'];
+				$column['UF_MAIN'] = $value['UF_MAIN'] ? 'да' : '';
+				$column['UF_PERCENT'] = $value['UF_PERCENT'];
 
-				$data['COUNTER'] = '<a title="показания" href="/master/counter/' . $value['UF_OBJECT'] . '"
+				$column['COUNTER'] = '<a title="показания" href="/master/counter/' . $value['UF_OBJECT'] . '"
 											target="_blank">
 											<img src="' . SITE_TEMPLATE_PATH . '/images/counter_small.png" width="25">
 											</a>';
 
-				$row['ROWS'][$pid] = [
+				$data['ID'] = $value['ID'];		//Обязательно
+				$data['UF_OBJECT'] = $value['UF_OBJECT'];
+				$data['UF_PERCENT'] = $value['UF_PERCENT'];
+				$data['UF_ORG'] = $value['UF_ORG'];
+
+				$row[$value['ID']] = [
 					'data' => $data,			//для редактирования
-					// 'columns'	=> $column		//отображение
+					'columns'	=> $column		//отображение
 				];
 			}
 
-			// $row['ROWS'][] = [
-			// 	'data' => $item,			//для редактирования
-			// 	'columns'	=> $column		//отображение
-			// ];
-
-			// $this->arResult['GRID']['ROWS'][] = [
-			// 	'data' => $item,			//для редактирования
-			// 	'columns'	=> $column		//отображение
-			// ];
-
-			$this->arResult['ITEMS'][$key] = $row;
+			// $this->arResult['ITEMS'][$key]['ROWS']['id'] = $key;
+			$this->arResult['ITEMS'][$key]['ROWS'] = $row;
 		}
-
+		// gg($this->arResult['ITEMS']);
 		//return $componentPage;
 		return $this->arResult;
 	}
@@ -401,7 +368,7 @@ class MasterRelated extends CBitrixComponent implements Controllerable
 		if ($this->isPost() && check_bitrix_sessid()) {
 
 			// dump($arRequest);
-			// Bitrix\Main\Diag\Debug::dumpToFile(var_export($arRequest, 1), '$arRequest', 'test.log');
+			Bitrix\Main\Diag\Debug::dumpToFile(var_export($arRequest, 1), '$arRequest', 'test.log');
 
 			if ($arRequest["ADD_RELATED"] == 'Y') {
 

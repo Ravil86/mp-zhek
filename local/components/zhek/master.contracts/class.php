@@ -136,8 +136,9 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 			];
 		}
 
-		// $this->getIblockId = $this->getIblockId();
-
+		#
+		# DETAIL
+		#
 		if ($this->arResult['VARIABLES']) {
 
 			$CONTRACT_ID = $this->arResult['VARIABLES']['DETAIL_ID'];
@@ -174,7 +175,7 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 			if (!$this->arResult['VARIABLES']['MONTH'])
 				LocalRedirect($this->arResult['FOLDER'] . $template);
 
-			$this->arResult['DETAIL'] = $this->getDocs()[$CONTRACT_ID];
+			$this->arResult['DETAIL'] = $this->getResult()[$CONTRACT_ID];
 
 			global $USER;
 			// Проверяем Контракт принадлежит тому ли пользователю
@@ -199,6 +200,7 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 			}
 
 			$arObjects = LKClass::getObjects($this->arResult['COMPANY']['ID']);
+			$this->arResult['OBJECTS'] = $arObjects;
 
 			$lossesList = LKClass::getLosses();
 			// $lossObjects = [];
@@ -257,7 +259,6 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 					// $this->arResult['METERS'][$object['ID']] = $object;
 					// $this->arResult['METERS'][$object['ID']]['COUNTER'] = [];
 
-
 					//$this->arResult['METERS'][$object['ID']]['COUNTERS'][$counter['ID']][] = $meter;
 
 					foreach ($counter['UF_TYPE'] as $type) {
@@ -265,17 +266,46 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 						$this->arResult['SERVICE'][$type]['OBJECTS'][$object['ID']]['INFO'] = $object;
 						$this->arResult['SERVICE'][$type]['OBJECTS'][$object['ID']]['COUNTER'] = $counter;
 
-
 						// $this->arResult['SERVICE'][$type]['OBJECTS'][$object['ID']]['METERS'] = $metersObject[$counter['ID']];
 						// $this->arResult['SERVICE'][$type]['OBJECTS'][$object['ID']]['LAST_METERS'] = $metersLastObject[$counter['ID']];
 					}
 				}
 			}
-			// $this->arResult['DETAIL'] = $this->getAllDocs($arVariables['DETAIL_ID']);
-			// $this->arResult['DOCSLIST'] = $this->getAllDocs($this->arResult['DETAIL']['ID'], ['DATE_CREATE'	=> 'DESC'], [], false, $this->arResult['DETAIL']['USER_ID'])['ITEMS'];
+
+			//Услуги по контракту
+			// $serviceContract =  $this->arResult['DETAIL']['UF_SERVICE'];
+
+			$relateFilter = ['UF_ORG' => $this->arResult['COMPANY']['ID']];
+
+			//отфильтрованные по ИД организации связанные ПУ
+			$arRelatedCounter = LKClass::getRelated(false, $relateFilter);
+
+			$arCounters = LKClass::getCounters();
+
+			$this->arResult['RELATED'] = [];
+			foreach ($arRelatedCounter as $key => &$item) {
+
+				$counterID = $item['UF_COUNTER'];
+
+				//инфа по ПУ
+				$relateCounterInfo = $arCounters[$counterID];
+				$item['COUNTER'] = $relateCounterInfo;
+
+				if (is_array($relateCounterInfo['UF_TYPE']))
+					foreach ($relateCounterInfo['UF_TYPE'] as $relateType) {
+
+						$this->arResult['RELATED'][$relateType][$item['UF_OBJECT']] = $item;
+						// if (in_array($relateType, $this->arResult['SERVICE'])) {
+						// 	$this->arResult['SERVICE'][$relateType]['RELATE'][$item['UF_OBJECT']][] = $item;
+						// }
+					}
+			}
+			// $this->arResult['RELATED_COUNTER'] = LKClass::getRelated(1);
 
 		} else {
-
+			#
+			# LIST
+			#
 			// $this->arResult['GRID_ID'] = 'grid_meter';
 
 			// $arResult['GRID_ID'] = $this->arResult['GRID_ID'];
@@ -359,12 +389,12 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 				$userFilter["<=UF_DATE"] = $filterData["DATE_CREATE_to"];
 			}
 
-			$arAllItems = $this->getDocs(false, [], [], $userFilter);
+			$arAllItems = $this->getResult(false, [], [], $userFilter);
 			if (is_array($arAllItems))
 				$this->arResult['GRID']['COUNT'] = count($arAllItems);
 			// $this->arResult['GRID']["COUNT"] = $arItems['COUNT'];
 
-			$arItems = $this->getDocs(false, $arSort['sort'], $navParams, $userFilter);
+			$arItems = $this->getResult(false, $arSort['sort'], $navParams, $userFilter);
 
 			foreach ($arItems as $key => $item) {
 
@@ -521,7 +551,7 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 	 *
 	 * @param string $group - группа модератора для которой находить участников
 	 */
-	private function getDocs($detailID = null, $arSort = [], $arNav = [], $userFilter = [], $userDetail = null)
+	private function getResult($detailID = null, $arSort = [], $arNav = [], $userFilter = [], $userDetail = null)
 	{
 		global $USER;
 		$arParams = $this->arParams;
@@ -598,69 +628,11 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 				}
 			}
 
-
 			// dump($value['PROVIDER']);
 		}
 		return $itemList;
-
-		// $filter['IBLOCK_ID'] = $this->getIblockId;
-
-		// foreach ($getUsersDocs as $key => $value) {
-		// 	$result['ITEMS'][$arData['ID']] = $arData;
-		// }
-
-
-
-		// foreach ($result['ITEMS'] as $k => &$item) {
-
-		// 	$userID = $item['USER_ID'];
-		// 	$userDocStat = $getDocsStatus[$userID];
-
-		// 	$item['USER'] = $arUserFields[$userID];
-		// 	$item['USERNAME'] = $arUserFields[$userID]['LAST_NAME'].' '.$arUserFields[$userID]['NAME'].' '.$arUserFields[$userID]['SECOND_NAME'];
-		// 	$item['SNILS'] = $arUserFields[$userID]['UF_SNILS'];
-		// 	$item['FOTO'] = CFile::GetPath($arUserFields[$userID]['PERSONAL_PHOTO']);
-		// }
-
-		// if($detailID && !$userDetail)
-		// 	return array_shift($result['ITEMS']);
-		// else
-		// 	return $result;
-
-		//return $this->arResult['ITEMS'];
 	}
 
-
-	/* Получаем ID инфоблока по коду
-	*
-	* @return int
-	*/
-	// private function getIblockIdByCode(string $code)
-	// {
-	// 	if (\CModule::IncludeModule("iblock")) {
-
-	// 		$iblock = \Bitrix\Iblock\IblockTable::getList(array(
-	// 			'order' => array('SORT' => 'asc'),
-	// 			'select' => array('*'),
-	// 			'filter' => array('ACTIVE' => 'Y', 'CODE' => $code),
-	// 			"cache" => ["ttl" => 3600]
-	// 		))->fetch();
-
-	// 		return $iblock['ID'];
-	// 	} else {
-	// 		return false;
-	// 	}
-	// }
-
-
-	// private function getIblockId()
-	// {
-	// 	$arParams = $this->arParams;
-
-	// 	$this->arResult['ID_DOCUMENTS'] = self::getIblockIdByCode($arParams['IBLOCK_CODES']['REQUEST']);
-
-	// 	return $this->arResult['ID_DOCUMENTS'];
-	// }
 
 	/**
 	 * Проверка доступа

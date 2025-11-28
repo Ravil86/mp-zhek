@@ -15,7 +15,7 @@ if ($arResult['ACCESS']): ?>
     $uri->addParams(array("arhive" => "Y"));
     $arhiveUrl = $uri->getUri();
     ?>
-    <div id='contracts' class="content">
+    <div id='contracts' class="content" data-org="<?= $arResult['COMPANY']['ID'] ?>">
         <?/*<div class="py-3">
             ID: <?= $arResult['DETAIL']['ID'] ?>
         </div>
@@ -86,7 +86,7 @@ if ($arResult['ACCESS']): ?>
             // $monthYear = FormatDate("F Y", MakeTimeStamp('01.' . $arResult['MONTH'] . '.' . $arResult['YEAR']));
         }
 
-        function render($arResult, $month, $number, $monthYear, $response = false)
+        function render($arResult, $month, $number, $monthYear, $response = false, $useDate = false)
         {
             $count = $arResult['DETAIL']['PROVIDER'] ? count($arResult['DETAIL']['PROVIDER']) : 0;
 
@@ -113,6 +113,7 @@ if ($arResult['ACCESS']): ?>
                         <div class="card! mt-4 mb-1">
                             <div class="card-body!">
                                 <div class="h5 text-center">СПРАВКА №' . /*$provider["LITERA"] . '-' . $arResult["DETAIL"]["ID"] . '/' .*/ $number . ' ' . ToLower($monthYear) . 'г </div>';
+
                 if ($arResult["SERVICE"][$provider["ID"]]["OBJECTS"]) {
                     echo '<div class="' . ($response ? 'table-responsive' : '') . '">
                                         <table class="table table-sm! mb-1">
@@ -129,16 +130,21 @@ if ($arResult['ACCESS']): ?>
                                                     <th>Ед. изм.</th>
                                                     <th>Предыдущие показания ПУ</th>
                                                     <th>Текущие показания ПУ</th>
-                                                    <th>Потребленный объем (разница)</th>
-                                                    <? if ($provider["ID"] == 2): ?>
-                                                        <th>Потери</th>
-                                                    <? endif; ?>
-                                                </tr>
+                                                    <th>Потребленный объем (разница)</th>';
+                    if ($provider["ID"] == 2) {
+                        echo '<th>Потери</th>';
+                    }
+                    echo '</tr>
                                             </thead>
                                             <tbody> ';
                     $i = 1;
-                    foreach ($arResult["SERVICE"][$provider["ID"]]["OBJECTS"] as $key => $value): ?>
-        <?
+
+                    foreach ($arResult["SERVICE"][$provider["ID"]]["OBJECTS"] as $key => $value) {
+
+                        //Не выводим отключенные ПУ
+                        if ($value["COUNTER"]['UF_ACTIVE'] == 0)
+                            continue;
+
                         $prevMeters = null;
                         $lastMeters = null;
                         $potreb = null;
@@ -148,7 +154,7 @@ if ($arResult['ACCESS']): ?>
                         $normativ =  $arResult["NORMATIV"][$key][$arResult["MONTH_CODE"][$month]] ?: null;
 
                         if (is_array($arResult["PREV_METERS"][$key][$value["COUNTER"]["ID"]])) {
-                            // dump($arResult["PREV_METERS"][$key]);
+
                             $prevMeters = $arResult["PREV_METERS"][$key][$value["COUNTER"]["ID"]][0]["METER"];
                         }
 
@@ -158,14 +164,13 @@ if ($arResult['ACCESS']): ?>
                             // $lastMeters = array_shift($arResult["LAST_METERS"][$key][$value["COUNTER"]["ID"]])["METER"];
                         }
 
-
                         if ($prevMeters && $lastMeters)
                             $potreb =  round($lastMeters - $prevMeters, 3);
 
                         $losses = $arResult["LOSSES"][$key][$arResult["MONTH_CODE"][$month]];
 
                         echo '
-                            <tr class="text-center">
+                            <tr class="text-center" data-counter="' . $value["COUNTER"]['ID'] . '" data-object="' . $key . '">
                                 <td>' . $i . '</td>
                                 <td class="text-start">' . $value["INFO"]["NAME"] . '</td>
                                 <td class="text-start">' . $value["INFO"]["ADDRESS"] . '</td>
@@ -183,10 +188,40 @@ if ($arResult['ACCESS']): ?>
                             echo $potreb ?? " - ";
                         }
                         echo '</td>';
-                        echo '<td>' . ($provider["ID"] == 2 ? $losses : '') . '</td>';
+                        if ($provider["ID"] == 2) {
+                            echo '<td class="potery">' . $losses  . '</td>';
+                        }
                         echo '</tr>';
                         $i++;
-                    endforeach;
+                    }
+
+                    foreach ($arResult["RELATED"][$provider["ID"]] as $relate) {
+                        $counterInfo = $relate['COUNTER'];
+                        $objectInfo = $arResult['OBJECTS'][$relate['UF_OBJECT']];
+
+                        $relateLosses = $arResult["LOSSES"][$relate['UF_OBJECT']][$arResult["MONTH_CODE"][$month]];
+
+                        echo '<tr class="text-center" data-object="' . $relate['UF_OBJECT'] . '" data-counter="' . $relate['UF_COUNTER'] . '">
+                        <td>' . $i . '</td>
+                        <td class="text-start">' . $objectInfo['NAME'] . '</td>
+                        <td class="text-start">' . $objectInfo['ADDRESS'] . '</td>
+                        <td>' . $provider["NAME"] . '</td>
+                        <td>' . $counterInfo['UF_CHECK']->toString() . '</td>
+                        <td><div class="d-flex align-items-center">' . $counterInfo['UF_NUMBER'] . '
+                        <a role="button" class="ps-1 text-danger"
+                            data-bs-toggle="tooltip" data-bs-title="Расчет потребления производится от процента занимаемой объема/площади - ' . $relate['UF_PERCENT'] . '%">
+							<i class="bi bi-link-45deg fs-5"></i></a></div></td>
+                        <td>' . $provider['UNIT'] . '</td>
+                        <td>' . ($useDate ? $relate['PREV_METER'] : '') . '</td>
+                        <td>' . ($useDate ? $relate['LAST_METER'] : '') . '</td>
+                        <td>' . ($useDate ? $relate['METER'] : '') /*. ' (' . $relate['UF_PERCENT']  . '%)'*/ . '</td>';
+                        if ($provider["ID"] == 2) {
+                            echo '<td>' . $relateLosses . '</td>';
+                        }
+                        '</tr>';
+                        $i++;
+                    }
+
                     echo '</tbody>
                     </table>
                 </div>';
@@ -273,7 +308,7 @@ if ($arResult['ACCESS']): ?>
                                 </div>
                                 <div class="modal-body">
                                     <div id="reestr">
-                                        <?= render($arResult, $month, $number, $monthYear); ?>
+                                        <?= render($arResult, $month, $number, $monthYear, false, $useDate); ?>
                                     </div>
                                 </div>
                             </div>
@@ -282,7 +317,7 @@ if ($arResult['ACCESS']): ?>
                 <? endif; ?>
             </div>
         </div>
-        <?= render($arResult, $month, $number, $monthYear, true); ?>
+        <?= render($arResult, $month, $number, $monthYear, true, $useDate); ?>
     </div>
 <? else: ?>
     <font class="errortext">нет доступа</font>

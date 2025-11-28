@@ -72,3 +72,7 @@ line-height: 1.5;
 .main-ui-pagination-arrows a {
 	color: #2067b0;
 }
+
+tr[data-color="disable"] .main-grid-cell-left .main-grid-cell-content{
+color: #cfcfcf;
+}

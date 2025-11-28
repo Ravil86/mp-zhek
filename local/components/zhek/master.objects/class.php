@@ -126,9 +126,10 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 			$normObjects[$val['OBJECT']] += 1;
 		}
 
+		#
+		# DETAIL
+		#
 		if ($this->arResult['VARIABLES']) {
-
-			#DETAIL
 
 			$orgID = $this->arResult['VARIABLES']['DETAIL_ID'];
 			// $this->arResult['DETAIL']['ID'] = $orgID;
@@ -159,6 +160,7 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 			$this->arResult['DETAIL']['COLUMNS'] = [
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
 				['id' => 'NAME', 'name' => 'Наименование ПУ', 'default' => true, 'width' => 230, 'editable' => true, /*'align' => 'right'*/],
+				['id' => 'ACTIVE', 'name' => 'Активность', 'default' => false, 'width' => 100, "editable" => ['TYPE' => 'CHECKBOX']],
 				['id' => 'NUMBER', 'name' => 'Номер ПУ', 'default' => true, 'width' => 210, 'editable' => true],
 				['id' => 'DATE', 'name' => 'Дата установки ПУ', 'default' => true, 'width' => 180, "editable" => ['TYPE' => 'CUSTOM']],
 				['id' => 'TYPE', 'name' => 'Тип ПУ', 'default' => true, 'width' => 200, "editable" => ['TYPE' => 'MULTISELECT', 'items' => $serviceItems]],
@@ -227,10 +229,12 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 					$types = [];
 					$column = $counter;
 
-					if ($counter['UF_ACTIVE'] !== null && !$counter['UF_ACTIVE'])
-						continue;
+					// убираем неактивные объекты
+					// if ($counter['UF_ACTIVE'] !== null && !$counter['UF_ACTIVE'])
+					// 	continue;
 
-					$column['ID'] =  $column['UF_ACTIVE'] == null || $column['UF_ACTIVE'] ? $counter['ID'] : '';
+					$column['ID'] =  $counter['ID'];
+					// $column['ID'] =  $column['UF_ACTIVE'] == null || $column['UF_ACTIVE'] ? $counter['ID'] : '';
 
 					$column['NAME'] = $counter['UF_NAME'];
 					$column['NUMBER'] = $counter['UF_NUMBER'];
@@ -253,6 +257,13 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 					//}
 					$column['DATE'] = $counter['UF_DATE'] ?: '';
 					$column['CHECK'] = $counter['UF_CHECK'] ?: '';
+
+					$column['ACTIVE'] = $counter['UF_ACTIVE'] == null || $counter['UF_ACTIVE']  ? 'да' : 'нет';	//Активность
+
+					$data['ACTIVE'] = $counter['UF_ACTIVE'] || $counter['UF_ACTIVE'] == null ? 'Y' : 'N';
+
+					gg($counter['UF_ACTIVE']);
+					// $data['ACTIVE'] = $counter['UF_ACTIVE'];
 
 					$data['DATE'] = '<div class="ui-ctl ui-ctl-after-icon ui-ctl-date">
 									<a class="ui-ctl-after ui-ctl-icon-calendar"></a>
@@ -315,21 +326,15 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 											BX.Event.bind(button, "click", () => getPicker().show());
 										})();
 									</script>';
-
 					$item['ROWS'][$key] = [
+						'id' => $key,
 						'columns' => $column,
 						'data' => $data,		//Данные для инлайн-редактирования
-						'editable' => $column['UF_ACTIVE'] == null || $column['UF_ACTIVE']  ? true : false
-						//'actions' => [ //Действия над ними
-						// [
-						// 	'text'    => 'Редактировать',
-						// 	'onclick' => 'document.location.href="/accountant/reports/1/edit/"'
-						// ],
-						// 	[
-						// 		'text'    => 'Удалить',
-						// 		'onclick' => 'document.location.href="/accountant/reports/1/delete/"'
-						// 	]
-						// ],
+						'editable' => $column['UF_ACTIVE'] == null || $column['UF_ACTIVE']  ? true : false,
+						'attrs' => array(
+							'data-color' => $column['UF_ACTIVE'] == null || $column['UF_ACTIVE']  ? '' : 'disable',
+						),
+						// 'depth' => 'color-danger',
 					];
 				}
 
@@ -418,6 +423,7 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
 				['id' => 'UF_NAME', 'name' => 'Наименование организации', 'sort' => 'UF_NAME', 'default' => true, 'width' => 300,  'editable' => true],
 				['id' => 'UF_ACTIVE', 'name' => 'Активность', 'sort' => 'UF_ACTIVE', 'default' => true, 'width' => 105,  'editable' => ['TYPE' => 'CHECKBOX']],
+				['id' => 'UF_SHORT_NAME', 'name' => 'Краткое наименование', 'default' => false, 'editable' => true],
 				['id' => 'UF_ADDRESS', 'name' => 'Адрес организации', 'width' => 300, 'default' => true, 'editable' => ['TYPE' => 'TEXTAREA']],
 				['id' => 'UF_INN', 'name' => 'ИНН', 'sort' => 'UF_INN', 'default' => true, 'editable' => true],
 				// ['id' => 'DOGOVOR', 'name' => 'Текущий договор', 'default' => false],
@@ -430,12 +436,12 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 
 			$this->arResult['GRID']["FILTER"] = [
 				['id' => 'UF_ACTIVE', 'name' => 'Активность', 'type' => 'list', 'items' => [1 => 'да', 0 => 'нет'], 'default' => true],
+				['id' => 'id', 'name' => 'ID', 'default' => true],
 				//['id' => 'NAME', 'name' => 'ФИО', 'type' => 'text', 'default' => true],
 			];
 
 			$filterOption = new Bitrix\Main\UI\Filter\Options("filter_" . $this->arResult["GRID_ID"]);
 			$filter = $filterOption->GetFilter();
-
 
 			$itemsCompany = LKClass::getCompany(null, $filter, $navParams, $order['sort']);
 

@@ -226,6 +226,7 @@ class LKClass
 
         $classHL = \HLWrap::init(self::$_HL_Counters);
 
+        $data['UF_ACTIVE'] = $data['UF_ACTIVE'] != 'N' ? 1 : 0;
         // $data['UF_DATE'] = new DateTime(date('d.m.Y'));
 
         $result = $classHL::update($counterID, $data);
@@ -286,21 +287,26 @@ class LKClass
         $classCompany = \HLWrap::init(self::$_HL_Company);
 
         if ($userID) {
-            $arFilter = ['UF_USER_ID' => $userID];
+            $filter = ['UF_USER_ID' => $userID];
         } elseif (!empty($filter)) {
-            if ($filter["FIND"])
-                $arFilter['UF_NAME'] = '%' . $filter['FIND'] . '%';
-            else
-                $arFilter['UF_ACTIVE'] = $filter['UF_ACTIVE'];
+            unset($filter['PRESET_ID']);
+            unset($filter['FILTER_ID']);
+            unset($filter['FILTER_APPLIED']);
+            if ($filter["FIND"]) {
+                $filter['UF_NAME'] = '%' . $filter['FIND'] . '%';
+            }
+            unset($filter['FIND']);
+            // $arFilter = $filter;
+            // else
+            // $arFilter['UF_ACTIVE'] = $filter['UF_ACTIVE'];
         } else
-            $arFilter = [];
+            $filter = [];
 
-        // gg($arFilter);
         if (!$order)
             $order = ['UF_ACTIVE' => 'desc', 'ID' => 'asc'];
 
         $params =  [
-            'filter' => $arFilter,
+            'filter' => $filter,
             'select' => array('*'),
             'order' => $order
         ];
@@ -329,12 +335,12 @@ class LKClass
         return $result;
     }
 
-    public static function getObjects($orgID = null)
+    public static function getObjects($orgID = null, $sort = 'UF_ORG')
     {
 
         // $curentUser = self::curentUserFields();
         $classHL = \HLWrap::init(self::$_HL_Objects);
-        $order = ['UF_ORG' => 'ASC'];
+        $order = [$sort => 'ASC'];
 
         $filter = [];
         if ($orgID)
@@ -804,13 +810,12 @@ class LKClass
     }
 
 
-    public static function getRelated($counter = false)
+    public static function getRelated($counter = false, $filter = [])
     {
 
         $classHL = \HLWrap::init(self::$_HL_Related);
 
-        $filter = [];
-
+        // $filter = [];
         // if ($norma)
         //     $filter['UF_NORM'] = true;
         // else
@@ -832,14 +837,11 @@ class LKClass
             $arLastRelated = self::meters(false, 1, '', '', $fields['UF_COUNTER']);
             $arPrevRelated = self::meters(false, 0, '', '', $fields['UF_COUNTER']);
 
-            // gg($prevRelated);
-
             if ($arLastRelated)
                 $lastRelated = array_slice($arLastRelated, 0, 1)[0]['METER'];    //  $lastRelated['METER']
 
-
             if ($arPrevRelated) {
-                // gg($prevRelated);
+
                 $prevRelated = array_slice($arPrevRelated, 0, 1)[0]['METER'];  //$prevRelated['METER']
             }
 
@@ -850,11 +852,15 @@ class LKClass
                 $fields['DIFF_METER'] = $diffRelated;
                 $fields['METER'] = round($diffRelated / 100 * $fields['UF_PERCENT'], 3);
             }
-            // gg($fields);
-            if ($counter)
-                $result[$fields['UF_COUNTER']][$fields['ID']] = $fields;
-            else
-                $result[$fields['UF_OBJECT']][$fields['UF_COUNTER']] = $fields;
+
+            if ($filter) {
+                $result[$fields['ID']] = $fields;
+            } else {
+                if ($counter)
+                    $result[$fields['UF_COUNTER']][$fields['ID']] = $fields;
+                else
+                    $result[$fields['UF_OBJECT']][$fields['UF_COUNTER']] = $fields;
+            }
         }
         // gg($result);
         return $result;

@@ -162,7 +162,7 @@ if ($arResult['ACCESS']): ?>
                         <div class="grid_form">
                             <?
                             $grid_options = new CGridOptions($arResult["GRID_DETAIL"]);
-
+                            // gg($object['ROWS']);
                             // dump($controlPanel);
                             //$controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getForAllCheckbox();
 

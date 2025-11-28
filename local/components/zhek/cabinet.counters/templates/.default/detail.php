@@ -76,7 +76,7 @@ if ($arResult['ACCESS']):
 
                 // $related = $this->arResult['RELATED'][$objectID];
                 // $prevRelated = LKClass::meters(false, 0, '', '', 47);
-                // gg($prevRelated);
+
                 foreach ($arResult['DETAIL']['LIST'] as $key => $item): ?>
                     <?
 
@@ -90,8 +90,6 @@ if ($arResult['ACCESS']):
                     //$prevMeter = $arResult['DETAIL']['PREV_METERS'][$item['ID']];
                     $lastMeter = $arResult['DETAIL']['LAST_METERS'][$item['ID']];
 
-                    // gg($prevMeter);
-
                     if ($lastMeter && $prevMeter)
                         $raznost = $lastMeter - $prevMeter;
 
@@ -104,7 +102,6 @@ if ($arResult['ACCESS']):
                     if ($lastMeter)
                         $userSend = true;
 
-                    // gg($item['MAIN_RELATED']);
                     ?>
                     <div class="row card counter-item" id="counter<?= $item['ID'] ?>">
                         <div class="card-body ps-2 pe-1 py-0">
@@ -151,15 +148,25 @@ if ($arResult['ACCESS']):
                                                 ?>
                                                 <div class="col-auto!<?= !$arResult['SEND_ADMIN'] ? 'col-5' : 'col-4' ?>">
                                                     <input id="inputMeter<?= $item['ID'] ?>" type="text" name="METER[<?= $item['ID'] ?>]" class="meter form-control" onkeyup="validate(this)" onclick="moveCaretToStart(this)"
-                                                        min="<?= !$arResult['SEND_ADMIN'] ? ($lastMeter ?:  $prevMeter) : '' ?>" <?= $disabled ? 'disabled' : '' ?> value="<?= $disabled ? ($item['MAIN_RELATED'] ? $item['MAIN_RELATED']['METER'] : $lastMeter) : '' /*$prevMeter*/ ?>" data-current="<?= $prevMeterFormat ?>">
+                                                        min="<?= !$arResult['SEND_ADMIN'] ? ($lastMeter ?:  $prevMeter) : '' ?>" <?= $disabled ? 'disabled' : '' ?> value="<?= $disabled ? $lastMeter/*($item['MAIN_RELATED'] ? $item['MAIN_RELATED']['METER'] : $lastMeter)*/ : '' /*$prevMeter*/ ?>" data-current="<?= $prevMeterFormat ?>">
                                                 </div>
-                                                <div class="col-<?= !$arResult['SEND_ADMIN'] ? '4' : '3' ?> d-flex justify-content-center align-items-end"><span class="fw-bold changeDiff"><?= $disabled ? ($item['MAIN_RELATED'] ? $item['MAIN_RELATED']['METER'] : $lastMeter) : 0 ?></span><small class="ps-1"><?= $item['UNIT'] ?></small></div>
+                                                <div class="col-<?= !$arResult['SEND_ADMIN'] ? '4' : '3' ?> d-flex justify-content-center <?= $item['MAIN_RELATED'] ? ' flex-column align-items-center' : 'align-items-end' ?>">
+                                                    <div>
+                                                        <span class="fw-bold changeDiff"><?= $disabled ? ($item['MAIN_RELATED'] ? $item['MAIN_RELATED']['METER'] : $lastMeter) : 0 ?></span>
+                                                        <small class="ps-1"><?= $item['UNIT'] ?></small>
+                                                    </div>
+                                                    <?= $item['MAIN_RELATED'] ? '<small class="text-danger">' . $item['MAIN_RELATED']['UF_PERCENT'] . '%</small>' : '' ?>
+                                                </div>
                                             <? else: ?>
-                                                <div class="col-5 text-center">
-                                                    <?= $item['METER'] ?>
+
+                                                <div class="col-4 text-center">
+                                                    <?= $item['LAST_METER'] ?>
                                                 </div>
                                                 <div class="col text-center">
                                                     <span class="fw-bold"><?= $item['METER'] ?: 0 ?></span><small class="ps-1"><?= $item['UNIT'] ?></small>
+                                                </div>
+                                                <div class="col-4 text-danger">
+                                                    <?= $item['UF_PERCENT'] ?>%
                                                 </div>
                                             <? endif; ?>
                                             <? if ($arResult['SEND_ADMIN'] && !$item['RELATED']): ?>

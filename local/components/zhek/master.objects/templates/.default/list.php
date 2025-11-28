@@ -27,7 +27,6 @@ use Bitrix\Highloadblock as HL;
                             'UF_ACTIVE' => 1
                         ]
                     ]
-
                 ]
             ]);
             ?>
