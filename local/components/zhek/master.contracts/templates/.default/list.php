@@ -30,7 +30,7 @@ $lastYear = date('Y', strtotime('-1 year'));
                 'GRID_ID' => $arResult['GRID_ID'],
                 // 'FILTER' => [],
                 'FILTER' => $arResult['GRID']['FILTER'],
-                'ENABLE_LIVE_SEARCH' => true,
+                'ENABLE_LIVE_SEARCH' => false,
                 'ENABLE_LABEL' => true,
                 // "FILTER_PRESETS" => [
                 //     "CURRENT_YEAR" => [
@@ -131,42 +131,12 @@ $lastYear = date('Y', strtotime('-1 year'));
             'ALLOW_COLUMNS_RESIZE' => true,
             'ALLOW_HORIZONTAL_SCROLL' => true,
             'ALLOW_SORT' => true,
-            'ALLOW_PIN_HEADER' => true,
+            'ALLOW_PIN_HEADER' => true, //Разрешает закрепление шапки грида к верху окна браузера при прокрутке.
             'AJAX_OPTION_HISTORY' => 'N',
             'ACTION_PANEL' => $controlPanel,
             'SHOW_GROUP_EDIT_BUTTON' => false, //Разрешает вывод стандартной кнопки "Редактировать" в панель групповых действий.
             'ALLOW_CONTEXT_MENU' => false,    //Разрешает вывод контекстного меню по клику правой кнопкой на строку.
-            /*'ACTION_PANEL'              => [
-        'GROUPS' => [
-            'TYPE' => [
-                'ITEMS' => [
-                    [
-                        'ID'    => 'set-type',
-                        'TYPE'  => 'DROPDOWN',
-                        'ITEMS' => [
-                            ['VALUE' => '', 'NAME' => '- Выбрать -'],
-                            ['VALUE' => 'plus', 'NAME' => 'Поступление'],
-                            ['VALUE' => 'minus', 'NAME' => 'Списание']
-                        ]
-                    ],
-                    [
-                        'ID'       => 'edit',
-                        'TYPE'     => 'BUTTON',
-                        'TEXT'        => 'Редактировать',
-                        'CLASS'        => 'icon edit',
-                       // 'ONCHANGE' => $onchange->toArray()
-                    ],
-                    [
-                        'ID'       => 'delete',
-                        'TYPE'     => 'BUTTON',
-                        'TEXT'     => 'Удалить',
-                        'CLASS'    => 'icon remove',
-                        //'ONCHANGE' => $onchange->toArray()
-                    ],
-                ],
-            ]
-        ],
-    ],*/
+            'ALLOW_ROWS_SORT_IN_EDIT_MODE' => true //Разрешает сортировку строк перетаскиванием в режиме инлайн-редактирования.
         ];
         $APPLICATION->IncludeComponent('bitrix:main.ui.grid', '', $gridParams);
         ?>

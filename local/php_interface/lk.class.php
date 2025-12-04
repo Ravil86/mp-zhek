@@ -31,6 +31,8 @@ class LKClass
     protected static $MASTER = "MASTER"; // код группы Мастер участка
     protected static $ORG = "ORG"; // код группы Организации
 
+    protected static $_HL_EventLog = "RelatedCounters"; // HL месяцы
+
     protected ErrorCollection $errorCollection;
 
     public function getErrors(): array
@@ -225,6 +227,8 @@ class LKClass
     {
 
         $classHL = \HLWrap::init(self::$_HL_Counters);
+
+        $data['UF_TIMESTAMP'] = new DateTime(date('d.m.Y H:i:s'));
 
         $data['UF_ACTIVE'] = $data['UF_ACTIVE'] != 'N' ? 1 : 0;
         // $data['UF_DATE'] = new DateTime(date('d.m.Y'));

@@ -139,60 +139,72 @@ if ($arResult['ACCESS']): ?>
                                             <tbody> ';
                     $i = 1;
 
-                    foreach ($arResult["SERVICE"][$provider["ID"]]["OBJECTS"] as $key => $value) {
+                    foreach ($arResult["SERVICE"][$provider["ID"]]["OBJECTS"] as $key => $object) {
 
-                        //Не выводим отключенные ПУ
-                        if ($value["COUNTER"]['UF_ACTIVE'] == 0)
-                            continue;
+                        $objID = $object['INFO'] ? $object['INFO']['ID'] : $key;
 
-                        $prevMeters = null;
-                        $lastMeters = null;
-                        $potreb = null;
+                        if ($object["COUNTER"] && is_array($object["COUNTER"])) {
 
-                        $potery = $arResult["LOSSES"][$key][$arResult["MONTH_CODE"][$month]] ?: null;
+                            foreach ($object["COUNTER"] as $counter) {
 
-                        $normativ =  $arResult["NORMATIV"][$key][$arResult["MONTH_CODE"][$month]] ?: null;
+                                $counterID = $counter["ID"];
 
-                        if (is_array($arResult["PREV_METERS"][$key][$value["COUNTER"]["ID"]])) {
+                                //Не выводим отключенные ПУ
+                                // gg($counter['UF_ACTIVE']);
 
-                            $prevMeters = $arResult["PREV_METERS"][$key][$value["COUNTER"]["ID"]][0]["METER"];
+                                if ($counter['UF_ACTIVE'] == 0 && $counter['UF_ACTIVE'] != null)
+                                    continue;
+
+                                $prevMeters = null;
+                                $lastMeters = null;
+                                $potreb = null;
+
+                                $potery = $arResult["LOSSES"][$objID][$arResult["MONTH_CODE"][$month]] ?: null;
+
+                                $normativ =  $arResult["NORMATIV"][$objID][$arResult["MONTH_CODE"][$month]] ?: null;
+
+                                if (is_array($arResult["PREV_METERS"][$objID][$counterID])) {
+
+                                    $prevMeters = $arResult["PREV_METERS"][$objID][$counterID][0]["METER"];
+                                }
+
+                                if (is_array($arResult["LAST_METERS"][$objID][$counterID])) {
+
+                                    $lastMeters = $arResult["LAST_METERS"][$objID][$counterID][0]["METER"];
+                                    // $lastMeters = array_shift($arResult["LAST_METERS"][$key][$value["COUNTER"]["ID"]])["METER"];
+                                }
+
+                                if ($prevMeters && $lastMeters)
+                                    $potreb =  round($lastMeters - $prevMeters, 3);
+
+                                $losses = $arResult["LOSSES"][$objID][$arResult["MONTH_CODE"][$month]];
+
+                                echo '
+                                <tr class="text-center" data-counter="' . $counterID . '" data-object="' . $objID . '">
+                                    <td>' . $i . '</td>
+                                    <td class="text-start">' . $object["INFO"]["NAME"] . '</td>
+                                    <td class="text-start">' . $object["INFO"]["ADDRESS"] . '</td>
+                                    <td>' . $provider["NAME"] . '</td>
+
+                                    <td>' . ($counter["UF_NUMBER"] && $counter["UF_NUMBER"] != '-' ? $counter["UF_CHECK"] : '') . '</td>
+                                    <td>' . $counter["UF_NUMBER"] . '</td>
+                                    <td>' . $provider["UNIT"] . '</td>
+                                    <td>' . ($prevMeters ?? ' - ') . '</td>
+                                    <td>' . ($lastMeters ?? ' - ') . '</td>
+                                    <td> ';
+                                if ($provider["ID"] == 2) {
+                                    echo $potreb ?? ($normativ ? '<i class="small">норма</i> ' . $normativ : '-');
+                                } else {
+                                    echo $potreb ?? " - ";
+                                }
+                                echo '</td>';
+                                if ($provider["ID"] == 2) {
+                                    echo '<td class="potery">' . $losses  . '</td>';
+                                }
+                                echo '</tr>';
+                                $i++;
+                            }
                         }
-
-                        if (is_array($arResult["LAST_METERS"][$key][$value["COUNTER"]["ID"]])) {
-
-                            $lastMeters = $arResult["LAST_METERS"][$key][$value["COUNTER"]["ID"]][0]["METER"];
-                            // $lastMeters = array_shift($arResult["LAST_METERS"][$key][$value["COUNTER"]["ID"]])["METER"];
-                        }
-
-                        if ($prevMeters && $lastMeters)
-                            $potreb =  round($lastMeters - $prevMeters, 3);
-
-                        $losses = $arResult["LOSSES"][$key][$arResult["MONTH_CODE"][$month]];
-
-                        echo '
-                            <tr class="text-center" data-counter="' . $value["COUNTER"]['ID'] . '" data-object="' . $key . '">
-                                <td>' . $i . '</td>
-                                <td class="text-start">' . $value["INFO"]["NAME"] . '</td>
-                                <td class="text-start">' . $value["INFO"]["ADDRESS"] . '</td>
-                                <td>' . $provider["NAME"] . '</td>
-
-                                <td>' . ($value["COUNTER"]["UF_NUMBER"] && $value["COUNTER"]["UF_NUMBER"] != '-' ? $value["COUNTER"]["UF_CHECK"] : '') . '</td>
-                                <td>' . $value["COUNTER"]["UF_NUMBER"] . '</td>
-                                <td>' . $provider["UNIT"] . '</td>
-                                <td>' . ($prevMeters ?? ' - ') . '</td>
-                                <td>' . ($lastMeters ?? ' - ') . '</td>
-                                <td> ';
-                        if ($provider["ID"] == 2) {
-                            echo $potreb ?? ($normativ ? '<i class="small">норма</i> ' . $normativ : '-');
-                        } else {
-                            echo $potreb ?? " - ";
-                        }
-                        echo '</td>';
-                        if ($provider["ID"] == 2) {
-                            echo '<td class="potery">' . $losses  . '</td>';
-                        }
-                        echo '</tr>';
-                        $i++;
                     }
 
                     foreach ($arResult["RELATED"][$provider["ID"]] as $relate) {

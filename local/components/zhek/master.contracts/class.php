@@ -254,7 +254,12 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 
 				$counterObjects = LKClass::getCounters($object['ID']);
 
+				// gg($object['ID']);
+				// gg($counterObjects);
+
 				foreach ($counterObjects as $counter) {
+
+					// gg($counter);
 
 					// $this->arResult['METERS'][$object['ID']] = $object;
 					// $this->arResult['METERS'][$object['ID']]['COUNTER'] = [];
@@ -263,12 +268,18 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 
 					foreach ($counter['UF_TYPE'] as $type) {
 
+
 						$this->arResult['SERVICE'][$type]['OBJECTS'][$object['ID']]['INFO'] = $object;
-						$this->arResult['SERVICE'][$type]['OBJECTS'][$object['ID']]['COUNTER'] = $counter;
+						$this->arResult['SERVICE'][$type]['OBJECTS'][$object['ID']]['COUNTER'][$counter['ID']] = $counter;
+
+						// $typeCounter[$type][$counter['ID']] = $counter;
+						// $this->arResult['SERVICE'][$type]['OBJECTS'][$object['ID']]['COUNTER'][$counter['ID']] = $typeCounter[$type];
 
 						// $this->arResult['SERVICE'][$type]['OBJECTS'][$object['ID']]['METERS'] = $metersObject[$counter['ID']];
 						// $this->arResult['SERVICE'][$type]['OBJECTS'][$object['ID']]['LAST_METERS'] = $metersLastObject[$counter['ID']];
 					}
+					// gg($typeCounter);
+					// $this->arResult['SERVICE'][$type]['OBJECTS'][$object['ID']]['COUNTER'][$counter['ID']] = $counter;
 				}
 			}
 
@@ -364,7 +375,7 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 			$filterData = $filterOption->GetFilter();
 
 			$userFilter = [];
-
+			// gg($filterData);
 			global $USER;
 			if ($this->arResult['OPERATOR']) {
 				$userFilter['USER_ID'] = $USER->GetID();
@@ -382,6 +393,20 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 			// 		$userFilter["NAME"] = "%" . $filterData["FIND"] . "%";
 			// }
 
+			$arGetCompany = $this->getResult(false, [], []);
+			if (is_array($arGetCompany)) {
+				foreach ($arGetCompany as $key => $value) {
+					$filterOrgList[$value['COMPANY']['ID']] = '#' . $value['COMPANY']['ID'] . ' ' . ($value['COMPANY']['SHORT_NAME'] ?: $value['COMPANY']['NAME']);
+				}
+			}
+			asort($filterOrgList);
+
+			if (isset($filterData["CONTRACT_ID"]))
+				$userFilter["ID"] = $filterData["CONTRACT_ID"];
+
+			if (isset($filterData["COMPANY"]))
+				$userFilter["UF_COMPANY"] = $filterData["COMPANY"];
+
 			if (isset($filterData["DATE_CREATE_from"])) {
 				$userFilter[">=UF_DATE"] = $filterData["DATE_CREATE_from"];
 			}
@@ -390,9 +415,10 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 			}
 
 			$arAllItems = $this->getResult(false, [], [], $userFilter);
-			if (is_array($arAllItems))
+			if (is_array($arAllItems)) {
 				$this->arResult['GRID']['COUNT'] = count($arAllItems);
-			// $this->arResult['GRID']["COUNT"] = $arItems['COUNT'];
+				// $this->arResult['GRID']["COUNT"] = $arItems['COUNT'];
+			}
 
 			$arItems = $this->getResult(false, $arSort['sort'], $navParams, $userFilter);
 
@@ -420,7 +446,7 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 				// $number = '№ ' . $item['NUMBER'] . '-' . $item['YEAR'] . ' от ' . $item['DATE'];
 				// $item["FULL_NUMBER"] = $number;
 				$data['COMPANY'] = $item['COMPANY']['ID'];
-				$column['COMPANY'] = $item['COMPANY']['NAME'];
+				$column['COMPANY'] = '#' . $item['COMPANY']['ID'] . ' ' . $item['COMPANY']['NAME'];
 
 				$status = '<a class="d-flex!" href="' . $item["ID"] . '/">';
 				$status .= '<div class="btn btn-' . $item['STATUS']['CODE'] . ' px-3 py-1 text-center opacity-75 text-nowrap"><small>' . $item['STATUS']['VALUE'] . '</small></div>';
@@ -472,10 +498,11 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 			// 	$arCity[$city['ID']] = $city['NAME'];
 			// }
 
+			//Фильтрация в списке
 			$this->arResult['GRID']["FILTER"] = [
+				['id' => 'COMPANY', 'name' => 'Организация', 'type' => 'list', 'items' => $filterOrgList, 'params' => ['multiple' => 'N'], 'default' => true],
 				['id' => 'DATE_CREATE', 'name' => 'Дата контракта', 'type' => 'date', 'default' => true],
-				// ['id' => 'NAME', 'name' => 'ФИО', 'type' => 'text', 'default' => true],
-				// ['id' => 'MO', 'name' => 'Муниципалитет', 'type' => 'list', 'items' => $arCity, 'params' => ['multiple' => 'N'], 'default' => true],
+				['id' => 'CONTRACT_ID', 'name' => 'ИД контракта', 'type' => 'text', 'default' => true],
 				// ['id' => 'COURSE', 'name' => 'Курс', 'type' => 'list', 'items' => $this->courses, 'params' => ['multiple' => 'Y'], 'default' => true],
 			];
 

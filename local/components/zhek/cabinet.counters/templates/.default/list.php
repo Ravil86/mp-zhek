@@ -96,6 +96,7 @@ if ($arResult['ACCESS']):
                                                     if ($lastMeter)
                                                         $userSend = true;
 
+                                                    // gg($item);
                                                     ?>
                                                     <div class="row card border-end-0 rounded-0 rounded-start counter-item mb-1" id="counter<?= $item['ID'] ?>">
                                                         <div class="card-body ps-2 pe-1 py-0">
@@ -440,7 +441,7 @@ if ($arResult['ACCESS']):
             $('.meter').each(function() {
 
                 var current = null
-                
+
                 // выводим разницу с предыдущими
                 $(this).keyup($.debounce(function() {
 
@@ -457,7 +458,7 @@ if ($arResult['ACCESS']):
                 }, 1000));
 
                 // при отрицательной разнице очищаем введенные показатели
-                 $(this).keyup($.debounce(function() {
+                $(this).keyup($.debounce(function() {
                     let $this = $(this);
 
                     let diff_span = $this.closest('.counter-item').find('.changeDiff')
@@ -472,7 +473,7 @@ if ($arResult['ACCESS']):
 
                         if (min.length > 0)
                             $this.val('');
-                            // $this.val(min);
+                        // $this.val(min);
 
                         diff_val = subtractFloats(min, current);
                         diff_span.html(diff_val)

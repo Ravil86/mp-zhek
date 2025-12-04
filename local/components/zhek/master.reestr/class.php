@@ -119,17 +119,17 @@ class MasterReestr extends CBitrixComponent
 		//какую сортировку сохранил пользователь (передаем то, что по умолчанию)
 		$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
 		$this->arResult['GRID']['COLUMNS'] = [
-			// ['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 50, 'resizeable' => false, 'rowspan' => true],
+			// ['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 50, 'resizeable' => false, 'rowspan' => true],	//off
 			['id' => 'UF_NAME', 'name' => 'Организация', 'width' => 380, /*'sort' => 'NAME', */ 'default' => true, 'rowspan' => true /*'sticked' => true, 'resizeable' => true*/],
-			// ['id' => 'UF_ADDRESS', 'name' => 'Адрес организации', /*'sort' => 'ADDRESS', */ 'default' => false],
-			// ['id' => 'UF_INN', 'name' => 'ИНН',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => false, 'rowspan' => true],
-			['id' => 'DOGOVOR', 'name' => 'Текущий контракт', 'default' => true, 'rowspan' => true],
+			// ['id' => 'DOGOVOR', 'name' => 'Текущий контракт', 'default' => true, 'rowspan' => true],
 			['id' => 'OBJECT', 'name' => 'Объект', 'default' => true, 'width' => 330],
 			['id' => 'COUNTER', 'name' => 'ПУ', 'default' => true],
 			['id' => 'METER_LAST', 'name' => 'Текущие', 'default' => true, 'colspan' => 4, 'text' => 'Показания', 'color' => '#ddd'],
 			['id' => 'METER_ALL', 'name' => 'Предыдущие', 'default' => true, 'colspan' => 0, 'color' => '#ddd'],
 			['id' => 'METER_RAZNOST', 'name' => 'Разность', 'default' => true, 'colspan' => 0],
 			['id' => 'EDIT', 'name' => 'кор.', 'default' => true, 'colspan' => 0, 'center' => true],
+			// ['id' => 'UF_ADDRESS', 'name' => 'Адрес организации', /*'sort' => 'ADDRESS', */ 'default' => false],
+			// ['id' => 'UF_INN', 'name' => 'ИНН',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => false, 'rowspan' => true],
 			// ['id' => 'UF_TYPE', 'name' => 'Тип организации', 'default' => false, 'rowspan' => true /*"editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]*/],
 		];
 
@@ -170,6 +170,15 @@ class MasterReestr extends CBitrixComponent
 			}
 		}
 
+		$this->arResult['OBJECTS_COMPANY'] = $itemsCompany;
+		if (!function_exists('sortOrgName')) {
+			function sortOrgName($a, $b)
+			{
+				return ($a['UF_NAME'] > $b['UF_NAME']) ? 1 : -1;
+			}
+		}
+		// uasort($this->arResult['OBJECTS_COMPANY'], "sortOrgName");
+		// gg($this->arResult['OBJECTS_COMPANY']);
 
 		if (!function_exists('sortObjects')) {
 			function sortObjects($a, $b)
@@ -219,7 +228,7 @@ class MasterReestr extends CBitrixComponent
 
 		$counterObjects = LKClass::getCounters($arrObjects);
 
-		// dump($counterObjects);
+		// gg($counterObjects);
 
 		// foreach ($orgContracts as $orgID => &$item) {	// записи по контрактам
 		foreach ($itemsCompany as $keyCompany => &$item) {		// записи по всем организации
@@ -227,8 +236,8 @@ class MasterReestr extends CBitrixComponent
 
 			$column = $item;
 
+			// $column['UF_NAME'] = '#' . $column['ID'] . ' ' . $column['UF_NAME'];	//old
 
-			$column['UF_NAME'] = '#' . $column['ID'] . ' ' . $column['UF_NAME'];
 			// if ($itemsCompany[$orgID])
 			// 	$column['UF_NAME'] = $itemsCompany[$orgID]['UF_NAME'];
 
@@ -237,6 +246,8 @@ class MasterReestr extends CBitrixComponent
 				$dogovor = '<a class="text-' . $item['CONTRACT']['STATUS']['CODE'] . ' text-center link-underline-primary link-underline link-underline-opacity-75 link-offset-1" href="/master/contracts/' . $item['CONTRACT']['ID'] . '" target="_blank"><small>' . $item['CONTRACT']['NUMBER'] . '</small></a>';
 				$column["DOGOVOR"] = $dogovor;
 			}
+
+			$column['UF_NAME'] = '#' . $column['ID'] . ' ' . $column['UF_NAME'] . '<br><div class="mt-2">' . $dogovor . '</div>';
 
 			if ($item['OBJECTS']) {
 
@@ -283,14 +294,24 @@ class MasterReestr extends CBitrixComponent
 					}
 					$column['COUNTER'] = $countersObject;
 
+					$this->arResult['OBJECTS_COMPANY'][$object['ORG']]['OBJECTS'][$object['ID']]['COUNTER'] = $countersObject;	//добавляем ПУ к обьектам орг-ий
+
+
+					// gg($object);
+
 					//последние показания
 					$metersLast = LKClass::meters($object['ID'], 1);
 					if ($metersLast) {
 						foreach ($metersLast as $key => $meter) {
 							// gg($meter);
 							$lastObjMeters[$meter['OBJECT']][$meter['COUNTER']] = $meter['METER'];
+
+							//показания по каждому объекту
+							$this->arResult['OBJECTS_COMPANY'][$object['ORG']]['METERS'][$meter['OBJECT']][$meter['COUNTER']] = $meter['METER'];
 						}
 					}
+
+					// $this->arResult['LAST_METER'] = $lastObjMeters;
 
 					//все показания
 					$metersAll = LKClass::meters($object['ID']);

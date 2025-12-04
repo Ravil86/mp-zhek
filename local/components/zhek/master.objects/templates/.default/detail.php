@@ -341,7 +341,9 @@ if ($arResult['ACCESS']): ?>
                                         <div class="col">
                                             <div class="row gx-5">
                                                 <? foreach ($arRelated as $key => $object) { ?>
-                                                    <div class="col">
+                                                    <? // gg($object['UF_MAIN']);
+                                                    ?>
+                                                    <div class="col<?= $object['UF_MAIN'] ? ' text-success' : '' ?>">
                                                         <div class="row gx-0 !align-items-center">
                                                             <div class="col">#<?= $object['UF_OBJECT'] ?> <?= $arResult['OBJECTS'][$object['UF_OBJECT']]['NAME'] ?><br>
                                                                 <small><?= $arResult['COMPANY'][$arResult['OBJECTS'][$object['UF_OBJECT']]['ORG']]["UF_NAME"] ?></small>

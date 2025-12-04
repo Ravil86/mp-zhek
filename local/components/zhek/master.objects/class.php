@@ -141,12 +141,11 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 			$this->arResult['RELATED'] = LKClass::getRelated();
 
 			$this->arResult['RELATED_COUNTER'] = LKClass::getRelated(1);
-			// gg($this->arResult['RELATED_COUNTER']);
+
 			$this->arResult['COUNTERS'] = LKClass::getCounters();
 			$this->arResult['OBJECTS'] = LKClass::getObjects();
 			$this->arResult['COMPANY'] = LKClass::getCompany();
 
-			// gg($arObjects);
 			$objectList = $arObjects[$orgID];
 
 			$grid_options = new CGridOptions($this->arResult['DETAIL']['GRID']);
@@ -160,7 +159,7 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 			$this->arResult['DETAIL']['COLUMNS'] = [
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
 				['id' => 'NAME', 'name' => 'Наименование ПУ', 'default' => true, 'width' => 230, 'editable' => true, /*'align' => 'right'*/],
-				['id' => 'ACTIVE', 'name' => 'Активность', 'default' => false, 'width' => 100, "editable" => ['TYPE' => 'CHECKBOX']],
+				['id' => 'ACTIVE', 'name' => 'Активность', 'default' => true, 'width' => 100, "editable" => ['TYPE' => 'CHECKBOX']],
 				['id' => 'NUMBER', 'name' => 'Номер ПУ', 'default' => true, 'width' => 210, 'editable' => true],
 				['id' => 'DATE', 'name' => 'Дата установки ПУ', 'default' => true, 'width' => 180, "editable" => ['TYPE' => 'CUSTOM']],
 				['id' => 'TYPE', 'name' => 'Тип ПУ', 'default' => true, 'width' => 200, "editable" => ['TYPE' => 'MULTISELECT', 'items' => $serviceItems]],
@@ -172,7 +171,6 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 			$snippet = new Bitrix\Main\Grid\Panel\Snippet();
 			$related = null;
 
-			// gg($objectList);
 
 			foreach ($objectList as $key => &$item) {
 
@@ -181,11 +179,15 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 				$data = [];
 				$arRelated = $this->arResult['RELATED'][$objectID];
 
+				$mainRelated = [];
 				if (is_array($arRelated) /*&& !$related['UF_MAIN']*/) {
 
 					foreach ($arRelated as $key => $related) {
 
-						// gg($related);
+						//Если счётчик Главный, то формируем массив чтоб потом заблокировать деактивацию
+						if ($related['UF_MAIN'])
+							$mainRelated[] = $related['UF_COUNTER'];
+
 
 						$relateCounter = $this->arResult['COUNTERS'][$related['UF_COUNTER']];
 
@@ -262,7 +264,6 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 
 					$data['ACTIVE'] = $counter['UF_ACTIVE'] || $counter['UF_ACTIVE'] == null ? 'Y' : 'N';
 
-					gg($counter['UF_ACTIVE']);
 					// $data['ACTIVE'] = $counter['UF_ACTIVE'];
 
 					$data['DATE'] = '<div class="ui-ctl ui-ctl-after-icon ui-ctl-date">
@@ -326,18 +327,27 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 											BX.Event.bind(button, "click", () => getPicker().show());
 										})();
 									</script>';
+
+					// gg('objectID_' . $objectID);
+					// gg('counterID_' . $counter['ID']);
+
+					// gg(in_array($counter['ID'], $mainRelated));
+					// !in_array($counter['ID'], $mainRelated)
+
 					$item['ROWS'][$key] = [
 						'id' => $key,
 						'columns' => $column,
 						'data' => $data,		//Данные для инлайн-редактирования
-						'editable' => $column['UF_ACTIVE'] == null || $column['UF_ACTIVE']  ? true : false,
+						'editable' => $column['UF_ACTIVE'] == null || $column['UF_ACTIVE'] ? true : false,
+						'editableColumns' => ['ACTIVE' => !in_array($counter['ID'], $mainRelated) ? true : false],
+						// 'editable' => ($column['UF_ACTIVE'] == null || $column['UF_ACTIVE']) && !in_array($counter['ID'], $mainRelated) ? true : false,
 						'attrs' => array(
 							'data-color' => $column['UF_ACTIVE'] == null || $column['UF_ACTIVE']  ? '' : 'disable',
 						),
 						// 'depth' => 'color-danger',
 					];
 				}
-
+				// gg($item['ROWS']);
 				$this->arResult['ITEMS'][] = $item;
 			}
 
@@ -696,7 +706,7 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 
 			// if (!isset($arRequest["AJAX_CALL"])) {
 			// 	self::run();
-			LocalRedirect(Context::getCurrent()->getRequest()->getRequestUri());
+			// LocalRedirect(Context::getCurrent()->getRequest()->getRequestUri());
 			// }
 
 		}
