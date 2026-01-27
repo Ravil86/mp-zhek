@@ -127,7 +127,11 @@ class LKClass
 
         $filter = [];
 
-        // gg($month);
+        // gg($year);
+
+        $codeMonth = null;
+
+        // gg($last);
 
         if ($objectID)
             $filter['UF_OBJECT'] = $objectID;
@@ -135,40 +139,47 @@ class LKClass
         if ($counter)
             $filter['UF_COUNTER'] = $counter;
 
+        //выборка по месяцу
         if ($month) {       //c фильтром по кокретному месяцу
-            $filterYear = $year ?: 'Y';
+
+            $codeMonth = self::getMonth($month);
+            // gg($codeMonth);
+
+            // $filterYear = $year ?: 'Y';
             if ($last) {      //только выбранный
-                //$filter[">=" . "UF_DATE"] = new DateTime(date('01.01.' . $filterYear) . " 00:00:00");
-                $filter["UF_MONTH"] = self::getMonth($month);
-                // $filter[">=" . "UF_DATE"] = new DateTime(date('01.' . $month . '.' . $filterYear) . " 00:00:00");
-                // $filter["<=" . "UF_DATE"] = new DateTime(date('29.' . $month . '.' . $filterYear) . " 00:00:00");        // для февраля чтоб не захватить март
+                $filter['=' . 'UF_MONTH'] = $codeMonth;
             } else {
-     
-                if(self::getMonth($month) == 1){
-                    $filter['<=' . "UF_MONTH"] = 12;
+
+                if ($codeMonth == 1) {
+                    $filter['<=' . 'UF_MONTH'] = 12;
+                } else {
+                    $filter['<' . 'UF_MONTH'] = $codeMonth;
+                    // $filter["<=" . "UF_DATE"] = new DateTime(date('01.' . $month . '.' . $filterYear) . " 00:00:00");
                 }
-                else{
-                    $filter['<' . "UF_MONTH"] = self::getMonth($month);
-                // $filter["<=" . "UF_DATE"] = new DateTime(date('01.' . $month . '.' . $filterYear) . " 00:00:00");
-                }
+
+                // для января 2026 берем только 2025, в остальных случаях выводим только текущего года
+                if ($codeMonth == 1 && $year == date('Y'))
+                    $filter['=' . 'UF_YEAR'] = date('Y', strtotime("-1 year"));
+                else
+                    $filter['=' . 'UF_YEAR'] = $year;
             }
+
+            // var_export($filter);
         } else {
 
             $currentDay = date('j');
             // $currentDay = 25; //тест
 
             if ($last) {
-                if ($currentDay >= self::$date_start){
+                if ($currentDay >= self::$date_start) {
                     // if ($currentDay >= 25)
-                    if(date('n') == 1){
-                        $filter["=" . "UF_MONTH"] = date('n');
+                    if (date('n') == 1) {
+                        $filter['=' . 'UF_MONTH'] = date('n');
+                    } else {
+                        $filter['>' . 'UF_MONTH'] = date('n', strtotime("-1 month"));
                     }
-                    else{
-                        $filter[">" . "UF_MONTH"] = date('n', strtotime("-1 month"));
-                    }
-                }
-                else{
-                    $filter[">=" . "UF_MONTH"] = date('n', strtotime("-1 month"));
+                } else {
+                    $filter['>=' . 'UF_MONTH'] = date('n', strtotime("-1 month"));
                 }
             } else {
                 if ($currentDay >= self::$date_start)
@@ -176,7 +187,15 @@ class LKClass
                     $filter['<=' . 'UF_MONTH'] = date('n', strtotime("-1 month"));
                 else
                     $filter['<' . 'UF_MONTH'] = date('n', strtotime("-1 month"));
+
+                // для января 2026 берем только 2025, в остальных случаях выводим только текущего года
+                if (date('n') == 1)
+                    $filter['=' . 'UF_YEAR'] = date('Y', strtotime("-1 year"));
+                else
+                    $filter['=' . 'UF_YEAR'] = date('Y');
             }
+
+            // var_export($filter);
 
             /*if ($last)
                 $filter[">=" . "UF_DATE"] = new DateTime(date('01.m.Y') . " 00:00:00");
@@ -187,8 +206,8 @@ class LKClass
         $rsHLoad = $classHL::getList([
             'select' => ['*'],
             'filter' => $filter,
-            'order' => ['UF_MONTH' => 'DESC']
-            // 'order' => ['UF_DATE' => 'DESC']
+            'order' => ['UF_DATE' => 'DESC', 'UF_MONTH' => 'DESC',]
+            // 'order' => ['UF_MONTH' => 'DESC',]
         ]);
 
         $result = [];
@@ -201,6 +220,7 @@ class LKClass
                 'COUNTER' => $value['UF_COUNTER'],
                 'OBJECT' => $value['UF_OBJECT'],
                 'MONTH' => $value['UF_MONTH'],
+                'YEAR' => $value['UF_YEAR'],
                 'NOTE' => $value['UF_NOTE'],
                 // 'SERVICE' => $value['UF_SERVICE'],
             ];
@@ -231,6 +251,7 @@ class LKClass
             'UF_OBJECT' => $objectID,
             'UF_COUNTER' => $counter,
             'UF_NOTE' => $note,
+            'UF_YEAR' => date('Y'),   //Год для января, предыдущие январь встают на первое место
         ];
 
         $filter = [
@@ -800,7 +821,7 @@ class LKClass
             ];
         }
         if ($code)
-            return $result[$code]['ID'];
+            return (int)$result[$code]['ID'];
         else
             return $result;
     }
@@ -968,14 +989,12 @@ class LKClass
     }
 
 
-    public static function getRelated($counter = false, $filter = [])
+    public static function getRelated($counter = false, $filter = [], $month = '', $year = '')
     {
-
+        // gg($month);
         $classHL = \HLWrap::init(self::$_HL_Related);
 
         $getCounters = self::getCounters();
-
-        // gg($getCounters);
 
         // $filter = [];
         // if ($norma)
@@ -999,15 +1018,23 @@ class LKClass
             $fields['LAST_METER'] = '';
             $fields['METER'] = '';
 
-            $arLastRelated = self::meters(false, 1, '', '', $fields['UF_COUNTER']);
-            $arPrevRelated = self::meters(false, 0, '', '', $fields['UF_COUNTER']);
+            // gg('last ' . $fields['UF_COUNTER']);
+
+            // ПОследние
+            $arLastRelated = self::meters(false, 1, $month, $year,  $fields['UF_COUNTER']);
+            // gg($arLastRelated);
 
             if ($arLastRelated)
                 $lastRelated = array_slice($arLastRelated, 0, 1)[0]['METER'];    //  $lastRelated['METER']
 
+            //предыдущие
+            $arPrevRelated = self::meters(false, 0, $month, $year, $fields['UF_COUNTER']);
+            // gg($arPrevRelated);
+
             if ($arPrevRelated)
                 $prevRelated = array_slice($arPrevRelated, 0, 1)[0]['METER'];  //$prevRelated['METER']
 
+            // gg($prevRelated);
             $fields['COUNTER'] = $getCounters[$fields['UF_COUNTER']];
 
             if ($lastRelated && $prevRelated) {

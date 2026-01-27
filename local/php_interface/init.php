@@ -9,19 +9,9 @@ include_once 'lk.class.php';
 
 function dump($var, $type = 0)
 {
-	global $USER;
-	if ($USER->IsAdmin()) {
-		if ($type == 0) {
-			echo "<pre>";
-			print_r($var);
-			echo "</pre>";
-		} else //if ($type == 1)
-		{
-			echo "<pre>";
-			var_dump($var);
-			echo "</pre>";
-		}
-	}
+	echo "<pre>";
+	var_dump($var);
+	echo "</pre>";
 }
 
 function gg($var)

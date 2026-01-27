@@ -51,10 +51,14 @@ use Bitrix\Highloadblock as HL;
                     <div class="row w-100 ms-2 gx-0">
                         <div class="col-3 py-2">
                             <div class="row gx-2">
-                                <div class="col-auto"><? //= $i .'.'
-                                                        ?></div>
+                                <div class="col-auto"></div>
                                 <div class="col ms-2! me-auto">
                                     <div class="fw-bold!">#<?= $row['ID']; ?> <?= $row['UF_NAME']; ?></div>
+                                    <div class="mt-2">
+                                        <a class="text-primary text-center small"
+                                            href="/master/contracts/<?= $row["CONTRACT"]["ID"] ?>/" target="_blank">
+                                            <i class="revicon-doc"></i><span><?= $row["CONTRACT"]["NUMBER"] ?></span></a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -68,22 +72,12 @@ use Bitrix\Highloadblock as HL;
                                     if (!$object['COUNTER'])    //если нет ПУ
                                         continue;
 
-                                    //gg($row['METERS'][$object['ID']]);
-
-                                    //// gg(array_diff_key($row['METERS'][$object['ID']], $object['COUNTER']));
-
                                     // if ($row['METERS'][$object['ID']] && !array_diff_key($object['COUNTER'], $row['METERS'][$object['ID']]))
                                     //     continue;
-
-                                    // gg($row['METERS'][$object['ID']] && array_diff_key($object['COUNTER'], $row['METERS'][$object['ID']]));
                                     ?>
 
                                     <? if ($object['ACTIVE']): ?>
                                         <?
-                                        // echo 'counter';
-                                        // gg(array_keys($object['COUNTER']));
-                                        // echo 'meters';
-                                        // gg($row['METERS'][$object['ID']]);
                                         $setHide = false;
                                         if ($row['METERS'][$object['ID']]) {
 

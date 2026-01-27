@@ -72,7 +72,7 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 		if ($this->arParams["SEF_MODE"] != "Y") {
 			$componentPage = $this->noSefMode();
 		}
-		// gg($componentPage);
+
 		if ($componentPage == 'month')
 			$componentPage = 'detail';
 
@@ -114,8 +114,6 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 		$this->arResult['COMPANY_LIST'] = $this->companyList;
 		$this->arResult['YEAR_LIST'] = $this->yearList;
 		$this->arResult['USER_INFO'] = $this->userInfo;
-
-		// gg($this->arResult['YEAR_LIST']);
 
 		foreach ($this->companyList as $key => $value) {
 			$this->arResult['COMPANY_JSON'][] = [
@@ -172,8 +170,6 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 					$this->arResult['MONTH'] = date('m', strtotime('-1 month')); //в январе показываем декабрь предыдущего года
 			}
 			// $this->arResult['MONTH'] = date('m');
-
-			// gg($this->arResult['MONTH']);
 
 			$template = preg_replace('(#DETAIL_ID#)', $CONTRACT_ID, $template);
 			$template = preg_replace('(#YEAR#)', $this->arResult['YEAR'], $template);
@@ -233,8 +229,8 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 				$prevMetersObject = [];
 				$lastMetersObject = [];
 
+				// ТЕСТ off
 				$arPrevMeters = LKClass::meters($object['ID'], false, $this->arResult['MONTH'], $this->arResult['YEAR']);
-				//$arPrevMeters = LKClass::meters($object['ID']);
 
 				foreach ($arPrevMeters as $key => $meter) {
 					$prevMetersObject[$meter['COUNTER']][] = $meter;
@@ -249,7 +245,9 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 
 				$this->arResult['PREV_METERS'][$object['ID']] = $prevMetersObject;
 
+				// ТЕСТ off
 				$arLastMeters = LKClass::meters($object['ID'], true, $this->arResult['MONTH'], $this->arResult['YEAR']);
+
 				// $arLastMeters = LKClass::meters($object['ID'], true);
 
 				foreach ($arLastMeters as $key => $lastMeter) {
@@ -296,7 +294,7 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 			$relateFilter = ['UF_ORG' => $this->arResult['COMPANY']['ID']];
 
 			//отфильтрованные по ИД организации связанные ПУ
-			$arRelatedCounter = LKClass::getRelated(false, $relateFilter);
+			$arRelatedCounter = LKClass::getRelated(false, $relateFilter, $this->arResult['MONTH'], $this->arResult['YEAR']);
 
 			$arCounters = LKClass::getCounters();
 
@@ -382,7 +380,7 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 			$filterData = $filterOption->GetFilter();
 
 			$userFilter = [];
-			// gg($filterData);
+
 			global $USER;
 			if ($this->arResult['OPERATOR']) {
 				$userFilter['USER_ID'] = $USER->GetID();
@@ -491,13 +489,13 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 											BX.Event.bind(button, "click", () => getPicker().show());
 										})();
 									</script>';
-				// gg($data);
+
 				$this->arResult['GRID']['ROWS'][] = [
 					'columns' => $column,
 					'data' => $data			//Данные для инлайн-редактирования
 				];
 			}
-			// gg($arItems['ITEMS']);
+
 			// $this->arResult['LIST'] = $arItems['ITEMS'];
 
 			// $this->arResult['AREA'] = $this->getArea($arParams['IBLOCK_CODES']['CITY']);
@@ -596,7 +594,7 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 		// $getContracts = LKClass::getContracts($arCompany['ID']);
 
 		// $filter = [];
-		// gg($userFilter);
+
 		if (isset($userFilter['USER_ID'])) {
 			$arCompany = LKClass::getCompany($userFilter['USER_ID']);
 			if ($arCompany && isset($arCompany['ID']))
@@ -623,8 +621,6 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 			unset($value['COMPANY']);
 			// $value['COMPANY']['ID'] = $value['COMPANY'];
 			$value['COMPANY']['ID'] = $companyID;
-
-			// gg($value);
 
 			if ($getCompany)
 				$arCompany = $getCompany[$companyID];
@@ -681,7 +677,6 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 			$rsGroups = \CUser::GetUserGroupEx($USER->GetID());
 			while ($arGroup = $rsGroups->GetNext()) {
 
-				// gg(LKClass::isOperator());
 				if ($arGroup['GROUP_ID'] == 1) {
 					$this->arResult['ADMIN'] = true;
 					return true;

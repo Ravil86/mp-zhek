@@ -52,28 +52,28 @@ if ($arResult['ACCESS']): ?>
         //     $dateStr = date('Y-' . '11' . '-d', strtotime('-1 year'));  //Ноябрь прошлого года если сейчас январь месяц
         // $dateStr = date('Y-m-d', strtotime('-3 months'));    //нельзя
 
-        if(date("n") == 1)
-            $dateEnd = date("Y-m-d", strtotime('+1 month'));  //текущий месяц 25 число
+        if (date("n") == 1)
+            $dateEnd = date("Y-m-d", strtotime('+1 month'));  //если январь
         else
             $dateEnd = date('Y-m-' . $LKClass->getDataStart());  //текущий месяц 25 число
 
         // $dateEnd = date('Y-m-d', strtotime('last day of last month'));  //последний день прошлого месяца
         // $dateEnd = date("Y-m-d", strtotime('-1 month')); //текущий день прошлого месяца
 
-        // gg($dateStr);
-        // gg($dateEnd);
-
         $begin = new DateTime($dateStr);
         $end = new DateTime($dateEnd);
 
         $selectMonth = trim($arResult['MONTH'] . '-' . $arResult['YEAR']);
 
-        $useDate = false;
+        //TODO
+        // $useDate = false;
+        $useDate = true;
+
         //$number = FormatDate("m", MakeTimeStamp('01.' . $arResult['MONTH'] . '.' . $arResult['YEAR']));
         $number = FormatDate("n", MakeTimeStamp('01.' . $arResult['MONTH'] . '.' . $arResult['YEAR']));
 
         if (
-            ($arResult['MONTH'] == date("m") && date("d") >= 25 && $arResult['YEAR'] == date('Y')) ||
+            ($arResult['MONTH'] == date("m") && date("d") >= $LKClass->getDataStart() && $arResult['YEAR'] == date('Y')) ||
             ($arResult['MONTH'] == date("m", strtotime("-1 month")) && $arResult['YEAR'] == date('Y'))
         ) {
             // if ($arResult['MONTH'] == date("m", strtotime("-1 month")) && $arResult['YEAR'] == date('Y')) {
@@ -188,6 +188,7 @@ if ($arResult['ACCESS']): ?>
 
                                 $losses = $arResult["LOSSES"][$objID][$arResult["MONTH_CODE"][$month]];
 
+                                //обычные ПУ счетчики
                                 echo '
                                 <tr class="text-center" data-counter="' . $counterID . '" data-object="' . $objID . '">
                                     <td>' . $i . '</td>
@@ -217,11 +218,13 @@ if ($arResult['ACCESS']): ?>
                     }
 
                     foreach ($arResult["RELATED"][$provider["ID"]] as $relate) {
+
                         $counterInfo = $relate['COUNTER'];
                         $objectInfo = $arResult['OBJECTS'][$relate['UF_OBJECT']];
 
                         $relateLosses = $arResult["LOSSES"][$relate['UF_OBJECT']][$arResult["MONTH_CODE"][$month]];
 
+                        // СВЯЗАННЫЕ ПУ счетчики
                         echo '<tr class="text-center" data-object="' . $relate['UF_OBJECT'] . '" data-counter="' . $relate['UF_COUNTER'] . '">
                         <td>' . $i . '</td>
                         <td class="text-start">' . $objectInfo['NAME'] . '</td>
