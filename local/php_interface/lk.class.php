@@ -35,6 +35,17 @@ class LKClass
 
     protected ErrorCollection $errorCollection;
 
+    private static $date_start = '25';
+    private static $date_end;
+    private static $edit_end = '15';
+
+    // protected $date_start;
+
+    public function __construct()
+    {
+        $this->OptionList();
+    }
+
     public function getErrors(): array
     {
         return $this->errorCollection->toArray();
@@ -43,6 +54,42 @@ class LKClass
     {
         return $this->errorCollection->getErrorByCode($code);
     }
+
+    public static function getOption()
+    {
+        return self::OptionList();
+    }
+
+    public function getDataStart()
+    {
+        return self::$date_start;
+    }
+
+    public function getDataEnd()
+    {
+        return self::$date_end;
+    }
+    public function getEditEnd()
+    {
+        return self::$edit_end;
+    }
+
+    private static function OptionList()
+    {
+        $optionList = CUserOptions::GetOption(
+            "cabinet",
+            'send',
+            false
+        );
+        // gg($optionList);
+        self::$date_start = $optionList['date_start'] ?? self::$date_start;
+        self::$date_end = $optionList['date_end'] ?? date('t');
+        // self::$date_end = $optionList['date_end'] ?? self::$date_end;
+
+
+        return $optionList;
+    }
+
 
     public static function isMaster()
     {
@@ -80,6 +127,8 @@ class LKClass
 
         $filter = [];
 
+        // gg($month);
+
         if ($objectID)
             $filter['UF_OBJECT'] = $objectID;
 
@@ -94,8 +143,14 @@ class LKClass
                 // $filter[">=" . "UF_DATE"] = new DateTime(date('01.' . $month . '.' . $filterYear) . " 00:00:00");
                 // $filter["<=" . "UF_DATE"] = new DateTime(date('29.' . $month . '.' . $filterYear) . " 00:00:00");        // для февраля чтоб не захватить март
             } else {
-                $filter['<' . "UF_MONTH"] = self::getMonth($month);
+     
+                if(self::getMonth($month) == 1){
+                    $filter['<=' . "UF_MONTH"] = 12;
+                }
+                else{
+                    $filter['<' . "UF_MONTH"] = self::getMonth($month);
                 // $filter["<=" . "UF_DATE"] = new DateTime(date('01.' . $month . '.' . $filterYear) . " 00:00:00");
+                }
             }
         } else {
 
@@ -103,12 +158,21 @@ class LKClass
             // $currentDay = 25; //тест
 
             if ($last) {
-                if ($currentDay >= 25)
-                    $filter[">" . "UF_MONTH"] = date('n', strtotime("-1 month"));
-                else
+                if ($currentDay >= self::$date_start){
+                    // if ($currentDay >= 25)
+                    if(date('n') == 1){
+                        $filter["=" . "UF_MONTH"] = date('n');
+                    }
+                    else{
+                        $filter[">" . "UF_MONTH"] = date('n', strtotime("-1 month"));
+                    }
+                }
+                else{
                     $filter[">=" . "UF_MONTH"] = date('n', strtotime("-1 month"));
+                }
             } else {
-                if ($currentDay >= 25)
+                if ($currentDay >= self::$date_start)
+                    // if ($currentDay >= 25)
                     $filter['<=' . 'UF_MONTH'] = date('n', strtotime("-1 month"));
                 else
                     $filter['<' . 'UF_MONTH'] = date('n', strtotime("-1 month"));
@@ -120,9 +184,6 @@ class LKClass
                 $filter['<=' . 'UF_DATE'] = new DateTime(date('01.m.Y') . " 00:00:00");*/
         }
 
-        // dump($filter);
-
-
         $rsHLoad = $classHL::getList([
             'select' => ['*'],
             'filter' => $filter,
@@ -132,6 +193,7 @@ class LKClass
 
         $result = [];
         while ($value = $rsHLoad->fetch()) {
+            // gg($value);
             $meter = [
                 'ID' => $value['ID'],
                 'DATE' => $value['UF_DATE'],
@@ -374,13 +436,18 @@ class LKClass
     }
 
 
-    public static function getCounters($objectID = null)
+    public static function getCounters($objectID = null, $active = false)
     {
 
         $classHL = \HLWrap::init(self::$_HL_Counters);
 
+        $arIcons = self::getIconCounters();
+
         // $filter = [];
         $filter['!UF_OBJECT'] = null;
+
+        if ($active)
+            $filter['UF_ACTIVE'] = true;
 
         if ($objectID)
             $filter['UF_OBJECT'] = $objectID;
@@ -393,13 +460,55 @@ class LKClass
 
         $result = [];
         while ($counter = $rsHLoad->fetch()) {
+            $counerIcon = [];
+            foreach ($counter["UF_TYPE"] as $type) {
+
+                // $counerIcon[$type] =  $arIcons[$type];
+                foreach ($arIcons[$type] as $size => $icon) {
+                    $counerIcon[$size][$type] = $icon;
+                }
+                /*foreach ($arIcons[$type] as $key => $icon) {
+                    $counter['TYPE'][$key][$type] =  $icon;
+                    $counerIcon[$key][$type] =  $icon;
+                    // $counter['TYPE'][$key][$type] =  $icon;
+                }*/
+            }
+            foreach ($counerIcon as $size => $value) {
+                $counter['TYPE'][$size] =  implode('', $value);
+            }
+
             if (is_array($objectID))
                 $result[$counter['UF_OBJECT']][$counter['ID']] = $counter;
             else
                 $result[$counter['ID']] = $counter;
         }
-
+        // gg($counter);
         return $result;
+    }
+
+    /* иконки счетчиков */
+    public static function getIconCounters()
+    {
+
+        $arService = self::getService();
+        foreach ($arService as $type) {
+
+            // <img class="me-1" src="' . $typeItem['ICON'] . '" width="23" height="23" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '" data-bs-toggle="tooltip"
+            // 							data-bs-title="' . $typeItem['NAME'] . '"/>
+            $servicesImage[$type['ID']] = [
+                'SM' => '<img class="me-1" src="' . $type['ICON'] . '" width="13" alt="' . $type['NAME'] . '" title="' . $type['NAME'] . '" data-bs-toggle="tooltip"
+							data-bs-title="' . $type['NAME'] . '"/>',
+                'MD' => '<img class="me-1" src="' . $type['ICON'] . '" width="18" alt="' . $type['NAME'] . '" title="' . $type['NAME'] . '" data-bs-toggle="tooltip"
+							data-bs-title="' . $type['NAME'] . '"/>',
+                'LG' => '<img class="me-1" src="' . $type['ICON'] . '" width="20" alt="' . $type['NAME'] . '" title="' . $type['NAME'] . '" data-bs-toggle="tooltip"
+							data-bs-title="' . $type['NAME'] . '"/>',
+                'XL' => '<img class="me-1" src="' . $type['ICON'] . '" width="23" alt="' . $type['NAME'] . '" title="' . $type['NAME'] . '" data-bs-toggle="tooltip"
+							data-bs-title="' . $type['NAME'] . '"/>'
+            ];
+        }
+        // $iconType = implode('', $servicesImage);
+        return $servicesImage;
+        // gg($servicesImage);
     }
 
     public static function getService()
@@ -697,6 +806,51 @@ class LKClass
     }
 
     /* месяц по году */
+    /*public static function setMonth($setDate = '', $begin, $end)
+    {
+        // $month = date("m", strtotime("+1 month"));
+        $month = date("m");
+
+        $year = date("Y");
+
+        $allYears = true;
+
+        $count = 6; //кол-во месяцев в списке
+        $coll = 12;
+
+        if ($allYears) {
+            $year--;
+            $coll = 4;
+            // $coll = 24;
+        }
+
+        $result = '<optgroup label="' . $year . '">';
+        $c = 1;
+        for ($i = 0; $i <= $coll; $i++) {
+            if (!$allYears && $c > $count) {
+                break;
+            }
+            if ($month > 11) {
+                $month = 1;
+                $year++;
+                $result .= '</optgroup><optgroup label="' . $year . '">';
+            }
+            $value = date('Y-m', strtotime($year . "-" . $month . "-01"));
+            //$select = ((date('Y-m', strtotime($year."-".$month."-01"))==$_REQUEST['PROPERTY']['DATA'])?'selected="selected"':'');
+            $select = ((date('Y-m', strtotime($year . "-" . $month . "-01")) == $setDate) ? 'selected="selected"' : '');
+
+            $mounth = FormatDate("f", strtotime($year . "-" . $month . "-01"));
+
+            $result .= '<option value="' . $value . '" ' . $select . '>' . $mounth . '</option>';
+            $month++;
+            $c++;
+        }
+        $result .= '</optgroup>';
+
+        return $result;
+
+    }*/
+
     public static function setMonth($setDate = '', $begin, $end)
     {
         // $year = date("Y");
@@ -728,41 +882,41 @@ class LKClass
             $result .= "<option value='{$num}-{$year}' {$select}>{$monthText} {$year}</option>";
         }
 
-        /*$month = date("m", strtotime("+1 month"));
-        // $month = date("m");
+        // $month = date("m", strtotime("+1 month"));
+        // // $month = date("m");
 
-        $count = 6; //кол-во месяцев в списке
-        $coll = 12;
+        // $count = 6; //кол-во месяцев в списке
+        // $coll = 12;
 
-        if ($allYears) {
-            $year--;
-            $coll = 24;
-        }
+        // if ($allYears) {
+        //     $year--;
+        //     $coll = 24;
+        // }
 
-        $result = '<optgroup label="' . $year . '">';
-        $c = 1;
-        for ($coll; $i = 0; $i++) {
-            //for ($i = 0; $i <= $coll; $i++) {
-            if (!$allYears && $c > $count) {
-                break;
-            }
-            if ($month > 11) {
-                $month = 1;
-                $year--;
-                // $year++;
-                $result .= '</optgroup><optgroup label="' . $year . '">';
-            }
-            $value = date('Y-m', strtotime($year . "-" . $month . "-01"));
-            //$select = ((date('Y-m', strtotime($year."-".$month."-01"))==$_REQUEST['PROPERTY']['DATA'])?'selected="selected"':'');
-            $select = ((date('Y-m', strtotime($year . "-" . $month . "-01")) == $setDate) ? 'selected="selected"' : '');
+        // $result = '<optgroup label="' . $year . '">';
+        // $c = 1;
+        // for ($coll; $i = 0; $i++) {
+        //     //for ($i = 0; $i <= $coll; $i++) {
+        //     if (!$allYears && $c > $count) {
+        //         break;
+        //     }
+        //     if ($month > 11) {
+        //         $month = 1;
+        //         $year--;
+        //         // $year++;
+        //         $result .= '</optgroup><optgroup label="' . $year . '">';
+        //     }
+        //     $value = date('Y-m', strtotime($year . "-" . $month . "-01"));
+        //     //$select = ((date('Y-m', strtotime($year."-".$month."-01"))==$_REQUEST['PROPERTY']['DATA'])?'selected="selected"':'');
+        //     $select = ((date('Y-m', strtotime($year . "-" . $month . "-01")) == $setDate) ? 'selected="selected"' : '');
 
-            $mounth = FormatDate("f", strtotime($year . "-" . $month . "-01"));
+        //     $mounth = FormatDate("f", strtotime($year . "-" . $month . "-01"));
 
-            $result .= '<option value="' . $value . '" ' . $select . '>' . $mounth . '</option>';
-            $month++;
-            $c++;
-        }
-        $result .= '</optgroup>';*/
+        //     $result .= '<option value="' . $value . '" ' . $select . '>' . $mounth . '</option>';
+        //     $month++;
+        //     $c++;
+        // }
+        // $result .= '</optgroup>';
 
         return $result;
     }
@@ -819,6 +973,10 @@ class LKClass
 
         $classHL = \HLWrap::init(self::$_HL_Related);
 
+        $getCounters = self::getCounters();
+
+        // gg($getCounters);
+
         // $filter = [];
         // if ($norma)
         //     $filter['UF_NORM'] = true;
@@ -834,6 +992,9 @@ class LKClass
         $result = [];
         while ($fields = $rsHLoad->fetch()) {
 
+            $lastRelated = '';
+            $prevRelated = '';
+
             $fields['PREV_METER'] = '';
             $fields['LAST_METER'] = '';
             $fields['METER'] = '';
@@ -844,10 +1005,10 @@ class LKClass
             if ($arLastRelated)
                 $lastRelated = array_slice($arLastRelated, 0, 1)[0]['METER'];    //  $lastRelated['METER']
 
-            if ($arPrevRelated) {
-
+            if ($arPrevRelated)
                 $prevRelated = array_slice($arPrevRelated, 0, 1)[0]['METER'];  //$prevRelated['METER']
-            }
+
+            $fields['COUNTER'] = $getCounters[$fields['UF_COUNTER']];
 
             if ($lastRelated && $prevRelated) {
                 $fields['LAST_METER'] = $lastRelated;

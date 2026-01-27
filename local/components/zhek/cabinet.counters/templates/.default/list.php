@@ -95,14 +95,16 @@ if ($arResult['ACCESS']):
 
                                                     if ($lastMeter)
                                                         $userSend = true;
-
-                                                    // gg($item);
+                                                    // gg($item['UF_MAIN']);
                                                     ?>
                                                     <div class="row card border-end-0 rounded-0 rounded-start counter-item mb-1" id="counter<?= $item['ID'] ?>">
                                                         <div class="card-body ps-2 pe-1 py-0">
                                                             <div class="row gx-2 align-items-stretch">
                                                                 <div class="col-<?= !$arResult['SEND_ADMIN'] ? '3 ps-1' : '5 small'
-                                                                                ?> py-3 d-flex align-items-center"><?= $arResult['ADMIN'] ? '<small class="pe-1">#' . $item['ID'] . '</small>' : ''; ?>
+                                                                                ?> py-3 d-flex align-items-center">
+                                                                    <?= $arResult['ADMIN'] ? '<span class="pe-1"><span class="badge position-relative text-bg-secondary">#' .
+                                                                        ($item['RELATED'] ? '<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">' . $item['UF_COUNTER'] . '</span>' : $item['ID']) .
+                                                                        '</span></span>' : ''; ?>
                                                                     <?= ($item['UF_NUMBER'] ? '<span class="text-nowrap">' . $item['UF_NUMBER'] . '</span> - <i class="small">' . $item['UF_NAME'] . '</i>' : $item['UF_NAME']) ?>
                                                                     <? if ($item['MAIN_RELATED']): ?>
                                                                         <span role="button" class="ps-1 text-danger"
@@ -111,7 +113,9 @@ if ($arResult['ACCESS']):
                                                                             <i class="bi bi-link-45deg fs-5"></i></span>
                                                                     <? endif; ?>
                                                                 </div>
-                                                                <div class="col-<?= !$arResult['SEND_ADMIN'] ? '2' : '1' ?> py-3 d-flex align-items-center justify-content-center"><?= $item['SERVICE'] ?></div>
+                                                                <div class="col-<?= !$arResult['SEND_ADMIN'] ? '2' : '1' ?> py-3 d-flex align-items-center justify-content-center type">
+                                                                    <?= !$item['RELATED'] ? $item['SERVICE'] : $item['COUNTER']['TYPE']['XL'] ?>
+                                                                </div>
                                                                 <div class="col py-3 d-flex align-items-center justify-content-center current_use"><?= !$item['RELATED'] ? $prevMeterFormat : ($item['PREV_METER'] ?: 0) ?></div>
                                                                 <div class="col py-3 d-flex align-items-center justify-content-center"><?= !$item['RELATED'] ? $raznostFormat : ($item['DIFF_METER'] ?: 0) ?></div>
                                                                 <div class="col py-3 d-flex align-items-center justify-content-center">

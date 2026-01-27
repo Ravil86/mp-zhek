@@ -105,7 +105,11 @@ $arSite = $rsSites->Fetch();
         SITE_TEMPLATE_PATH . '/lib/jquery.themepunch.tools.min.js',    //rs-plugin
         SITE_TEMPLATE_PATH . '/lib/jquery.themepunch.revolution.min.js',    //rs-plugin
         // SITE_TEMPLATE_PATH . '/js/jquery.ba-bbq.min.js',
-        SITE_TEMPLATE_PATH . '/js/jquery-ui-1.12.1.custom.min.js',
+
+        SITE_TEMPLATE_PATH . '/js/jquery-ui-1.13.1.min.js',
+        SITE_TEMPLATE_PATH . '/js/datepicker-ru.js',
+        // SITE_TEMPLATE_PATH . '/js/jquery-ui-1.12.1.custom.min.js',
+
         SITE_TEMPLATE_PATH . '/js/jquery.ui.touch-punch.min.js',
         SITE_TEMPLATE_PATH . '/js/jquery.isotope.min.js',
         SITE_TEMPLATE_PATH . '/js/jquery.easing.1.3.min.js',
@@ -405,6 +409,26 @@ $arSite = $rsSites->Fetch();
                                 <? endif; ?>
                             </div>
                             <div class="col-12 col-md-9 <?= defined('LK') ? ' col-xxl' : '' ?>">
+                                <? $APPLICATION->IncludeComponent(
+                                    "bitrix:menu",
+                                    "tabs",
+                                    [
+                                        "ALLOW_MULTI_SELECT" => "N",
+                                        "CHILD_MENU_TYPE" => "left",
+                                        "COMPOSITE_FRAME_MODE" => "A",
+                                        "COMPOSITE_FRAME_TYPE" => "AUTO",
+                                        "DELAY" => "N",
+                                        "MAX_LEVEL" => "1",
+                                        "MENU_CACHE_GET_VARS" => [],
+                                        "MENU_CACHE_TIME" => "36000",
+                                        "MENU_CACHE_TYPE" => "N",
+                                        "MENU_CACHE_USE_GROUPS" => "N",
+                                        "ROOT_MENU_TYPE" => "center",
+                                        "USE_EXT" => "N",
+                                        "COMPONENT_TEMPLATE" => "blue_tabs"
+                                    ],
+                                    false
+                                ); ?>
                             <? endif ?>
                         <? endif ?>
                     <? endif ?>

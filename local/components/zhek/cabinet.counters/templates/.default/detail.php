@@ -108,7 +108,10 @@ if ($arResult['ACCESS']):
                             <div class="row gx-2 align-items-stretch align-items-center!">
                                 <div class="col-3<? //= !$arResult['SEND_ADMIN'] ? '3' : '2';
                                                     ?> py-3 d-flex align-items-center">
-                                    <?= $arResult['SEND_ADMIN'] ? '#' . ($item['RELATED'] ? $item['UF_COUNTER'] . '-' : '') . $item['ID'] : '' ?> <?= $item['UF_NUMBER']; ?>&nbsp;-&nbsp;<i class="small"><?= $item['UF_NAME'] ?></i>
+                                    <?= $arResult['SEND_ADMIN'] ? '<span class="col-2 position-relative badge text-bg-secondary me-3">#' .
+                                        ($item['RELATED'] ? $item['UF_COUNTER'] . '<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill! bg-primary">' . $item['ID'] . '<span class="visually-hidden"></span></span>' :  $item['ID']) . '
+                                    </span>' : '' ?>
+                                    <?= $item['UF_NUMBER']; ?>&nbsp;-&nbsp;<i class="small"><?= $item['UF_NAME'] ?></i>
                                     <? if ($item['MAIN_RELATED']): ?>
                                         <span role="button" class="ps-1 text-danger"
                                             data-bs-toggle="tooltip"

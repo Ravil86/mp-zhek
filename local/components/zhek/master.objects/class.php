@@ -208,7 +208,8 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 							//'NUMBER' => $relateCounter['UF_NUMBER'],
 							'DATE' => $relateCounter['UF_DATE'],
 							'CHECK' => $relateCounter['UF_CHECK'],
-							'TYPE' => '<div class="row gy-1">' . implode('', $relatetypes) . '</div>',
+							'TYPE' => '<div class="row gy-1">' . $relateCounter['TYPE']['LG'] . '</div>',
+							// 'TYPE' => '<div class="row gy-1">' . implode('', $relatetypes) . '</div>',
 
 						];
 

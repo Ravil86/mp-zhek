@@ -141,6 +141,8 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 		#
 		if ($this->arResult['VARIABLES']) {
 
+			$LKClass = new LKClass;
+
 			$CONTRACT_ID = $this->arResult['VARIABLES']['DETAIL_ID'];
 			$this->arResult['CONTRACT'] = $CONTRACT_ID;
 			// $request = \Bitrix\Main\Application::getInstance()->getContext()->getRequest();
@@ -155,17 +157,22 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 			$this->arResult['MONTH'] = $this->arResult['VARIABLES']['MONTH'];
 
 			if (!$this->arResult['YEAR'])
-				$this->arResult['YEAR'] = date('Y');
+				if (date('n') == 1 && date("d") <= $LKClass->getDataStart()) {
+					$this->arResult['YEAR'] = date('Y', strtotime('-1 year')); //в январе показываем предыдущий год
+				} else {
+					$this->arResult['YEAR'] = date('Y');
+				}
+
 
 			if (!$this->arResult['MONTH']) {
-				if (date("d") >= 25)
+				if (date("d") >= $LKClass->getDataStart())
+					// if (date("d") >= 25 || date('n') == 1)
 					$this->arResult['MONTH'] = date('m');
 				else
-					$this->arResult['MONTH'] = date('m', strtotime('-1 month'));
+					$this->arResult['MONTH'] = date('m', strtotime('-1 month')); //в январе показываем декабрь предыдущего года
 			}
 			// $this->arResult['MONTH'] = date('m');
 
-			// gg($this->arResult['YEAR']);
 			// gg($this->arResult['MONTH']);
 
 			$template = preg_replace('(#DETAIL_ID#)', $CONTRACT_ID, $template);

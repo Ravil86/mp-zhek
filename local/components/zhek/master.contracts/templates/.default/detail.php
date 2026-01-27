@@ -43,16 +43,25 @@ if ($arResult['ACCESS']): ?>
             return $a['DATE'] <=> $b['DATE'];
         }
 
-        if (date("n") > 2)
-            $dateStr = date('Y' . '-01-01');
-        else
-            $dateStr = date('Y-' . '11' . '-d', strtotime('-1 year'));  //Ноябрь прошлого года если сейчас январь месяц
+        $LKClass = new LKClass;
 
+        $dateStr =  date('Y-m-d', strtotime('-6 months'));
+        // if (date("n") > 2)
+        //     $dateStr = date('Y' . '-01-01');
+        // else
+        //     $dateStr = date('Y-' . '11' . '-d', strtotime('-1 year'));  //Ноябрь прошлого года если сейчас январь месяц
         // $dateStr = date('Y-m-d', strtotime('-3 months'));    //нельзя
 
-        $dateEnd = date('Y-m-' . '25');  //текущий месяц 25 число
+        if(date("n") == 1)
+            $dateEnd = date("Y-m-d", strtotime('+1 month'));  //текущий месяц 25 число
+        else
+            $dateEnd = date('Y-m-' . $LKClass->getDataStart());  //текущий месяц 25 число
+
         // $dateEnd = date('Y-m-d', strtotime('last day of last month'));  //последний день прошлого месяца
         // $dateEnd = date("Y-m-d", strtotime('-1 month')); //текущий день прошлого месяца
+
+        // gg($dateStr);
+        // gg($dateEnd);
 
         $begin = new DateTime($dateStr);
         $end = new DateTime($dateEnd);

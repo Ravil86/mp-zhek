@@ -57,6 +57,16 @@ class MasterReestr extends CBitrixComponent
 		// 	}
 		// 	return false;
 		// }
+		global $USER;
+
+		$getOption = CUserOptions::GetOption(
+			"cabinet",
+			"reestr",
+			false,
+			$USER->GetID()
+		);
+
+		$this->arResult['REESTR_SUBMIT'] = $getOption['submit'] == 'Y' ? true : false;
 
 		$arParams = $this->arParams;
 		$this->arResult['PAGE_SIZE'] = 20;
@@ -224,11 +234,9 @@ class MasterReestr extends CBitrixComponent
 				}
 			}
 		}
-		// dump($arrObjects);
 
-		$counterObjects = LKClass::getCounters($arrObjects);
-
-		// gg($counterObjects);
+		$counterObjects = LKClass::getCounters($arrObjects, true);
+		// $counterObjects = LKClass::getCounters($arrObjects);
 
 		// foreach ($orgContracts as $orgID => &$item) {	// записи по контрактам
 		foreach ($itemsCompany as $keyCompany => &$item) {		// записи по всем организации
@@ -270,10 +278,9 @@ class MasterReestr extends CBitrixComponent
 
 					$column['EDIT'] = '<a class="text-center" href="/master/counter/' . $object['ID'] . '" target="_blank"><i class="revicon-pencil-1"></i></a>';
 
-					//$counterObjects = LKClass::getCounters($object['ID']);
-
 					$column['COUNTER'] = [];
 					$countersObject = [];
+					$countersArray = [];
 					$arType = null;
 
 					foreach ($counterObjects[$object['ID']] as $key => $value) {
@@ -284,20 +291,29 @@ class MasterReestr extends CBitrixComponent
 
 								$arType = $arService[$type];
 								// gg($arType);
-								$servicesImage[] = '<img class="" src="' . $arType['ICON'] . '" width="15"/>';
+								$servicesImage[] = '<img class="" src="' . $arType['ICON'] . '" width="13"/>';
 							}
 							$iconType = implode('', $servicesImage);
 							unset($arType);
 						}
 
-						$countersObject[$value['ID']] = '<div class="d-flex align-items-center "><small class="p-0 bg-0 me-1">#' . $value['ID'] . '</small>' . (!$arResult['COUNTER_SHOW'] ? '<span class="col-3 p-0 bg-0">' . $iconType . '</span>' : '') . '<small class="ms-1 p-0 bg-0">' . ($value['UF_NUMBER'] ?: $value['UF_NAME']) . '</small></div>';
+						$counterShow = '<span class="col-3 p-0 bg-0">' . $iconType . '</span>';
+						$counterNumber = '<small class="ms-1 p-0 bg-0">' . ($value['UF_NUMBER'] ?: $value['UF_NAME']) . '</small>';
+
+						$countersObject[$value['ID']] = '<div class="d-flex align-items-center"><small class="p-0 bg-0 me-1">#' . $value['ID'] . '</small>' . (!$arResult['COUNTER_SHOW'] ? $counterShow : '') . $counterNumber . '</div>';
+
+						$countersArray[$value['ID']] = [
+							'INFO' => $value,
+							'ID' => '<small class="p-0 bg-0">#' . $value['ID'] . '</small>',
+							'TYPE' => $counterShow,
+							'NUMBER' => $counterNumber
+						];
 					}
 					$column['COUNTER'] = $countersObject;
 
-					$this->arResult['OBJECTS_COMPANY'][$object['ORG']]['OBJECTS'][$object['ID']]['COUNTER'] = $countersObject;	//добавляем ПУ к обьектам орг-ий
 
-
-					// gg($object);
+					$this->arResult['OBJECTS_COMPANY'][$object['ORG']]['OBJECTS'][$object['ID']]['COUNTER'] = $countersArray;
+					// $this->arResult['OBJECTS_COMPANY'][$object['ORG']]['OBJECTS'][$object['ID']]['COUNTER'] = $countersObject;	//добавляем ПУ к обьектам орг-ий
 
 					//последние показания
 					$metersLast = LKClass::meters($object['ID'], 1);
@@ -317,9 +333,9 @@ class MasterReestr extends CBitrixComponent
 					$metersAll = LKClass::meters($object['ID']);
 
 					if ($metersAll) {
-						foreach ($metersAll as $key => $meter) {
+						foreach ($metersAll as $key => $aMeter) {
 							// gg($meter);
-							$allObjMeters[$meter['OBJECT']][$meter['COUNTER']][] = $meter['METER'];
+							$allObjMeters[$aMeter['OBJECT']][$aMeter['COUNTER']][] = $aMeter['METER'];
 						}
 					}
 
@@ -348,7 +364,12 @@ class MasterReestr extends CBitrixComponent
 							$curentAllMeter = current($allMeters);
 						$column['METER_ALL'][$key] =  $curentAllMeter ?? '-';
 
-						$column['METER_RAZNOST'][$key] = $lastMeter && $curentAllMeter ? round($lastMeter - $curentAllMeter, 3) : '-';
+						$raznost = $lastMeter && $curentAllMeter ? round($lastMeter - $curentAllMeter, 3) : '-';
+						$column['METER_RAZNOST'][$key] = $raznost;
+
+						//показания по каждому объекту
+						$this->arResult['OBJECTS_COMPANY'][$object['ORG']]['PREV_METERS'][$aMeter['OBJECT']][$aMeter['COUNTER']] = $curentAllMeter ?? '-';
+						$this->arResult['OBJECTS_COMPANY'][$object['ORG']]['METER_RAZNOST'][$aMeter['OBJECT']][$aMeter['COUNTER']] = $raznost;
 
 						// $column['EDIT'][$key] = '<a href="/master/counter/' . $key . '" target="_blank">i</a><i class="bi bi-pencil"></i>';
 					}
@@ -448,31 +469,6 @@ class MasterReestr extends CBitrixComponent
 				$i++;
 		}
 
-		// gg($this->arResult['ROWS_COLUMNS']);
-
-		// foreach ($column['COUNTER'] as $keyCounter => &$counter) {
-
-		// 	// gg($counter);
-		// 	// gg($keyCounter);
-
-		// 	foreach ($column['METER_LAST'] as $meter) {
-		// 		// gg($meter);
-
-		// 		// if ($meter)
-		// 		// unset($column['COUNTER'][$keyCounter]);
-		// 		// unset($column['OBJECTS'][$keyObject]);
-		// 		// $item['OBJECTS']$keyObject
-		// 		// unset($object);
-
-		// 		//unset($item['OBJECTS'][$keyObject]);
-		// 	}
-		// }
-		// }
-
-
-		// }
-
-
 
 		// $rowColumns = ['ID', 'UF_NAME'/*, 'END'*/];
 		$i = 1;
@@ -519,15 +515,48 @@ class MasterReestr extends CBitrixComponent
 			// $this->arResult['GRID']['ROW_LAYOUT'][$key] = $columns;
 		}
 
-		// if ($arResult['COUNTER_SHOW']) {
-		// foreach ($this->arResult['GRID']['ROWS'] as $kRow => $row) {
+		$this->arResult['COUNTERS'] = LKClass::getCounters();
+		// gg($this->arResult['COUNTERS']);
 
-		// 	// gg($row['columns']['COUNTER']);
-		// 	if (empty($row['columns']['COUNTER'])) {
-		// 		unset($this->arResult['GRID']['ROWS'][$kRow]);
-		// 		unset($this->arResult['ROWS_COLUMNS'][$kRow]);
-		// 	}
-		// }
+		$this->arResult['RELATED'] = LKClass::getRelated();
+		// $this->arResult['RELATED_COUNTER'] = LKClass::getRelated(1);
+
+		// gg($this->arResult['RELATED'][63]);
+
+		// gg(LKClass::meters(false, 1, '', '', 318));
+
+
+		// Пробегаем массив и удаляем Орг-ии где внесли данные
+		foreach ($this->arResult['OBJECTS_COMPANY'] as $rKey => &$row) {
+			// gg($rKey);
+			// gg($row);
+			foreach ($row['OBJECTS'] as $key => &$object) {
+
+				// gg($object['ID']);
+				// gg($object['NAME']);
+				// gg($this->arResult['RELATED'][$object['ID']]);
+
+				$getRelatedObject = $this->arResult['RELATED'][$object['ID']];
+				if ($getRelatedObject)
+					$object['RELATED'] = $getRelatedObject;
+
+				// gg($object['RELATED']);
+
+				// gg($object['COUNTER']);
+				// gg($row['METERS'][$object['ID']]);
+
+				if ($row['METERS'][$object['ID']])
+					$diff = array_diff_key($object['COUNTER'], $row['METERS'][$object['ID']]);
+
+				if (!is_array($row['METERS'][$object['ID']]) || $diff)
+					$delArray[$rKey] = $row['ID'];
+			}
+		}
+		// $this->arResult[]
+		$this->arResult['SET_METER_COMPANY'] = $delArray;
+
+		// gg($this->arResult['OBJECTS_COMPANY']);
+		// gg(LKClass::getIconCounters());
 
 		//return $componentPage;
 		return $this->arResult;
@@ -580,10 +609,24 @@ class MasterReestr extends CBitrixComponent
 	{
 
 		$arRequest = $this->getRequest();
+		global $USER;
 
 		if ($this->isPost() && check_bitrix_sessid()) {
 
-			if ($arRequest["ADD_OBJECT"] == 'Y') {
+			// Bitrix\Main\Diag\Debug::dumpToFile(var_export($arRequest, 1), '$arRequest', 'test.log');
+
+
+			if ($arRequest["CABINET"] == 'Y') {
+
+				$setCouner = $arRequest['reestr'] == 'on' ? 'Y' : 'N';
+				CUserOptions::SetOption("cabinet", 'reestr', ['submit' => $setCouner], false, false);
+				// LKClass::addObject($arRequest["FIELDS"]);
+			}
+
+			LocalRedirect(Context::getCurrent()->getRequest()->getRequestUri());
+
+
+			/*if ($arRequest["ADD_OBJECT"] == 'Y') {
 				LKClass::addObject($arRequest["FIELDS"]);
 			} elseif ($arRequest["ADD_COUNTER"] == 'Y') {
 				LKClass::addCounter($arRequest["FIELDS"]);
@@ -601,17 +644,9 @@ class MasterReestr extends CBitrixComponent
 				}
 			}
 
-			// $fields = [
-			// 	'VOICE'         => $arFields['VOICE'],
-			// 	'TEAM_ID'       => $ID,
-			// ];
-			// HackApi::sendVoiceMentor($fields);
-
-
-			// }
 
 			if (!isset($arRequest["AJAX_CALL"]))
-				LocalRedirect(Context::getCurrent()->getRequest()->getRequestUri());
+				LocalRedirect(Context::getCurrent()->getRequest()->getRequestUri());*/
 		}
 	}
 

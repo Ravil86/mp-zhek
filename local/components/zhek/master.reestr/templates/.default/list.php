@@ -81,14 +81,15 @@ use Bitrix\Highloadblock as HL;
                             if ($layout['column'] == $col['id']):
                             ?>
                                 <? $valueTD = $row['columns'][$col['id']];
-                                // gg($layout);
                                 ?>
                                 <td scope="row" <?= $layout['rowspan'] ? 'rowspan="' . $layout['rowspan'] . '"' : '' ?>
                                     class="<?= $layout['column'] == 'UF_NAME' ? 'name' : '' ?><?= is_array($valueTD) ? 'p-0 border-bottom-0 align-baseline!' : '' ?><?= isset($col['colspan']) || $col['center'] ? ' text-center' : '' ?>">
                                     <? if (is_array($valueTD)): ?>
                                         <div class="table mb-0 d-flex flex-column gy-1 h-100">
                                             <? foreach ($valueTD as $key => $value): ?>
-                                                <div class="table-row w-100! px-2 border-bottom<?= $row['columns']['ALERT'][$key] && $arParams['CLEAR_DATA'] == 'Y' ? ' text-bg-danger' : '' ?>"><?= $value ?></div>
+                                                <div class="table-row w-100! px-2 border-bottom<?= $row['columns']['ALERT'][$key] && $arParams['CLEAR_DATA'] == 'Y' ? ' text-bg-danger bg-gradient bg-opacity-50 text-white' : '' ?>">
+                                                    <?= $value ?>
+                                                </div>
                                             <? endforeach ?>
                                         </div>
                                     <? else: ?>

@@ -35,4 +35,11 @@ $aMenuLinks = array(
 		array(),
 		'LKClass::isMaster()'
 	),
+	array(
+		"Настройки",
+		"/master/options/",
+		array(),
+		array(),
+		'LKClass::isMaster()'
+	),
 );

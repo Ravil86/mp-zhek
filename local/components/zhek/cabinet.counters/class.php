@@ -71,13 +71,15 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 		$arResult = $this->arResult;
 		// $arItems = [];
 
-		$serviceList = LKClass::getService();
+		$LKClass = new LKClass;
 
-		$myCompany = LKClass::myCompany();
+		$serviceList = $LKClass->getService();
 
-		$this->arResult['COMPANY'] = LKClass::getCompany();
+		$myCompany = $LKClass->myCompany();
 
-		$monthList = LKClass::getMonth();
+		$this->arResult['COMPANY'] = $LKClass->getCompany();
+
+		$monthList = $LKClass->getMonth();
 
 		$selfMonth = date("m");
 		// $selfMonth = date("m", strtotime('-1 month'));
@@ -88,38 +90,43 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 		$curDay = date("d");
 		// $curDay = 25;
 
+		// $cabinetOption = LKClass::getOption();
+
 		//Дата начала подачи
-		$dateStart = 25;
-		// $dateStart = 5;
+		$dateStart = $LKClass->getDataStart();
+		// $dateStart = $cabinetOption['date_start'] ?: 25;	//Дата начала подачи
 
 		//Дата окончания подачи
-
-		$dateEnd = date('t');	//конец месяца
-		// $dateEnd = 15;
+		$dateEnd = $LKClass->getDataEnd();
+		//$dateEnd = $cabinetOption['date_end'] ?: date('t');	//конец месяца
+		// $dateEnd = date('t');	//конец месяца
 
 		// Дата окончания редактирования модератором
-		// $editEnd = 5;
-		$editEnd = 10;
-		
+		$editEnd = $LKClass->getEditEnd();
+		// $editEnd = $cabinetOption['edit_end'] ?: 5;
+
+		// gg($dateStart);
+		// gg($dateEnd);
+		// gg($editEnd);
+
 		$arResult['DATE_ADMIN'] = false;
 
 		if ($dateStart <= $curDay && $curDay <= $dateEnd) {		//период подачи пользователем до конца месяца
 			$this->arResult['SAVE_MONTH'] = $monthList[$selfMonth];
 			$arResult['DATE_USER'] = true;
-			$arResult['DATE_ADMIN'] = true;//включена модерация во время ввода пользователями
+			$arResult['DATE_ADMIN'] = true; //включена модерация во время ввода пользователями
 		} elseif ($curDay == 1) {								//период подачи пользователем 1 числа
 			$this->arResult['SAVE_MONTH'] = $monthList[$prevMonth];
 			$arResult['DATE_USER'] = true;
-			$arResult['DATE_ADMIN'] = true;//включена модерация во время ввода пользователями
+			$arResult['DATE_ADMIN'] = true; //включена модерация во время ввода пользователями
 		} elseif ($curDay > 1 && $curDay <= $editEnd) {
 			$this->arResult['SAVE_MONTH'] = $monthList[$prevMonth];
 			$arResult['DATE_ADMIN'] = true;
 		} elseif ($curDay > $editEnd && $curDay < $dateStart) {
 			$this->arResult['SAVE_MONTH'] = $monthList[$selfMonth];
 		}
-		// gg($arResult);
 		$arResult['SAVE_MONTH'] = $this->arResult['SAVE_MONTH'];
-
+		// gg($arResult);
 		// if ($dateStart <= $day && $day <= $dateEnd)
 		// 	$arResult['DATE_USER'] = true;
 
@@ -128,6 +135,8 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 		$this->arResult['SEND_ADMIN'] = $arResult['DATE_ADMIN'] && $arResult['MODERATOR'] || $arResult['ADMIN'];
 		$this->arResult['SEND_FORM'] = $arResult['DATE_USER'] && !$arResult['MODERATOR'] ?? false;
+
+		// gg($this->arResult['SEND_FORM']);
 
 		if ($this->arResult['ADMIN'] || $this->arResult['MODERATOR'])
 			$arObjects = LKClass::getObjects();
@@ -167,12 +176,14 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 				$types = [];
 				foreach ($item['UF_TYPE'] as $value) {
 					$typeItem = $serviceList[$value];
-					$unit = $typeItem['UNIT'];
-					$types[] = '<img src="' . $typeItem['ICON'] . '" width="23" height="23" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '" data-bs-toggle="tooltip"
-							data-bs-title="' . $typeItem['NAME'] . '"/>';
+					$unit = $typeItem['UNIT'];	//TODO
+					// $types[] = '<img src="' . $typeItem['ICON'] . '" width="23" height="23" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '" data-bs-toggle="tooltip"
+					// 		data-bs-title="' . $typeItem['NAME'] . '"/>';
 				}
-				$item['UNIT'] = $unit;
-				$item['SERVICE'] = '<div>' . implode(' ', $types) . '</div>';
+				$item['UNIT'] = $unit;	//TODO
+
+				$item['SERVICE'] = '<div>' . $item['TYPE']['XL'] . '</div>';
+				//$item['SERVICE'] = '<div>' . implode(' ', $types) . '</div>';
 
 				$this->arResult['DETAIL']['LIST'][$item['ID']] = $item;
 			}
@@ -189,7 +200,8 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 				foreach ($arRelated as $key => $related) {
 
-					$relateCounter = $this->arResult['COUNTERS'][$related['UF_COUNTER']];
+					$relateCounter = $related['COUNTER'];	//NEW
+					/*$relateCounter = $this->arResult['COUNTERS'][$related['UF_COUNTER']];
 
 					$relatetypes = [];
 					foreach ($relateCounter['UF_TYPE'] as $value) {
@@ -197,7 +209,7 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 						$unit = $typeItem['UNIT'];
 						$relatetypes[] = '<img class="me-1" src="' . $typeItem['ICON'] . '" width="23" height="23" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '" data-bs-toggle="tooltip"
 							data-bs-title="' . $typeItem['NAME'] . '"/>';
-					}
+					}*/
 
 					$counter = $related;
 					// gg($relateCounter);
@@ -211,7 +223,9 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 							<i class="bi bi-link-45deg fs-5"></i></a></div>';
 					$counter['UF_DATE'] = $relateCounter['UF_DATE'];
 					$counter['UF_CHECK'] = $relateCounter['UF_CHECK'];
-					$counter['SERVICE'] = '<div class="d-flex">' . implode('', $relatetypes) . '</div>';
+
+					$counter['SERVICE'] = '<div class="d-flex">' . $relateCounter['TYPE']['XL'] . '</div>';
+					// $counter['SERVICE'] = '<div class="d-flex">' . implode('', $relatetypes) . '</div>';
 					$counter['UNIT'] = $unit;
 
 					if (!$related['UF_MAIN'])
@@ -280,8 +294,6 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 
 
-
-
 			// end DETAIL
 			//
 
@@ -324,16 +336,18 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 							$relateCounter = $this->arResult['COUNTERS'][$related['UF_COUNTER']];
 
+							// gg($relateCounter);
+
 							$relatetypes = [];
 							// gg($serviceList);
 							// gg($relateCounter['UF_TYPE']);
 							foreach ($relateCounter['UF_TYPE'] as $value) {
 								$typeItem = $serviceList[$value];
 								$unit = $typeItem['UNIT'];
-								$relatetypes[] = '<img class="me-1" src="' . $typeItem['ICON'] . '" width="22" height="22" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"
+								/*$relatetypes[] = '<img class="me-1" src="' . $typeItem['ICON'] . '" width="22" height="22" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"
 							data-bs-toggle="tooltip"
 							data-bs-title="' . $typeItem['NAME'] . '"
-							/>';
+							/>';*/
 							}
 							// gg($related);
 							$counter = $related;
@@ -349,6 +363,7 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 							<i class="bi bi-link-45deg fs-5"></i></a></div>';
 							$counter['UF_DATE'] = $relateCounter['UF_DATE'];
 							$counter['UF_CHECK'] = $relateCounter['UF_CHECK'];
+							// $counter['SERVICE'] = '<div class="d-flex">' . $relateCounter['TYPE']['LG'] . '</div>';
 							$counter['SERVICE'] = '<div class="d-flex">' . implode('', $relatetypes) . '</div>';
 							$counter['UNIT'] = $unit;
 
