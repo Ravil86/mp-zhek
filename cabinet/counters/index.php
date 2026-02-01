@@ -15,7 +15,7 @@ $APPLICATION->SetTitle("Показаний приборов учета");
 			'list' => '',
 			'detail' => '#DETAIL_ID#/',
 		],
-		'SEF_MODE' => 'Y',
+		'SEF_MODE' => 'N',
 		'GROUP_CODES' => [
 			'ORGANIZATION' => 'ORG',
 			'ADMINISTRATOR' => 'ADMIN',

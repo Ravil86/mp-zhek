@@ -71,6 +71,9 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 		$arResult = $this->arResult;
 		// $arItems = [];
 
+		// gg($this->arParams);
+		$arParams = $this->arParams;
+
 		$LKClass = new LKClass;
 
 		$serviceList = $LKClass->getService();
@@ -126,7 +129,7 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 			$this->arResult['SAVE_MONTH'] = $monthList[$selfMonth];
 		}
 		$arResult['SAVE_MONTH'] = $this->arResult['SAVE_MONTH'];
-		// gg($arResult);
+
 		// if ($dateStart <= $day && $day <= $dateEnd)
 		// 	$arResult['DATE_USER'] = true;
 
@@ -148,44 +151,168 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 		$this->arResult['COUNTER_OBJECTS'] = $arObjects;
 
 		$this->arResult['COUNTERS'] = LKClass::getCounters();
-		$this->arResult['RELATED'] = LKClass::getRelated();
+		$this->arResult['RELATED'] = LKClass::getRelated();	//тест off
 
 		if ($this->arResult['VARIABLES']) {
 
-			$objectID = $this->arResult['VARIABLES']['DETAIL_ID'];
 
-			$this->arResult['OBJECT_ID'] = $objectID;
+			if ($arParams['TYPE'] == 'list') {	//по организациям
 
-			// $this->arResult['DETAIL']['GRID'] =  'object_detail';
-			// $arResult['DETAIL']['GRID'] = $this->arResult['DETAIL']['GRID'];
+				$orgID = $this->arResult['VARIABLES']['DETAIL_ID'];
 
-			if (!array_key_exists($objectID, $arObjects))
-				$this->arResult['WRONG'] = true;
+				$this->arResult['DETAIL']['COMPANY_INFO'] = $this->arResult['COMPANY'][$orgID];
 
-			$this->arResult['DETAIL']['OBJECT'] = $arObjects[$objectID];
+				$this->arResult['DETAIL']['COMPANY_OBJECTS'] = LKClass::getObjects($orgID);
 
-			$countersObject  = LKClass::getCounters($objectID);
+				foreach ($this->arResult['DETAIL']['COMPANY_OBJECTS'] as $key => &$object) {
 
-			foreach ($countersObject as $key => &$item) {
+					$objectID = $object['ID'];
+					$object['LIST']  = LKClass::getCounters($objectID);
 
-				// gg($item);
+					foreach ($object['LIST'] as $key => &$item) {
 
-				if ($item['UF_ACTIVE'] !== null && !$item['UF_ACTIVE'])	//Отключаем неактивные
-					continue;
 
-				$types = [];
-				foreach ($item['UF_TYPE'] as $value) {
-					$typeItem = $serviceList[$value];
-					$unit = $typeItem['UNIT'];	//TODO
-					// $types[] = '<img src="' . $typeItem['ICON'] . '" width="23" height="23" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '" data-bs-toggle="tooltip"
-					// 		data-bs-title="' . $typeItem['NAME'] . '"/>';
+						// gg($item['UF_ACTIVE']);
+
+						if ($item['UF_ACTIVE'] !== null && !$item['UF_ACTIVE'])	//Отключаем неактивные
+							unset($object['LIST'][$key]);
+
+						$types = [];
+						foreach ($item['UF_TYPE'] as $value) {
+							$typeItem = $serviceList[$value];
+							$unit = $typeItem['UNIT'];
+							$types[] = '<img class="me-1" src="' . $typeItem['ICON'] . '" width="22" height="22" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '" data-bs-toggle="tooltip"
+							data-bs-title="' . $typeItem['NAME'] . '"/>';
+						}
+						$item['UNIT'] = $unit;
+						$item['SERVICE'] = '<div class="d-flex">' . implode(' ', $types) . '</div>';
+					}
+
+					$arRelated = $this->arResult['RELATED'][$objectID];
+
+					if ($arRelated/* && !$related['UF_MAIN']*/) {
+
+						if (is_array($arRelated)) {
+
+							foreach ($arRelated as $key => $related) {
+
+								$relateCounter = $this->arResult['COUNTERS'][$related['UF_COUNTER']];
+
+								// gg($relateCounter);
+
+								$relatetypes = [];
+								// gg($serviceList);
+								// gg($relateCounter['UF_TYPE']);
+								foreach ($relateCounter['UF_TYPE'] as $value) {
+									$typeItem = $serviceList[$value];
+									$unit = $typeItem['UNIT'];
+									/*$relatetypes[] = '<img class="me-1" src="' . $typeItem['ICON'] . '" width="22" height="22" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"
+							data-bs-toggle="tooltip"
+							data-bs-title="' . $typeItem['NAME'] . '"
+							/>';*/
+								}
+								// gg($related);
+								$counter = $related;
+
+								// if($related['UF_MAIN'])
+
+								$counter['RELATED'] = true;
+								// $counter['ID'] = $relateCounter['ID'];
+								$counter['UF_NUMBER'] =  $relateCounter['UF_NUMBER'];
+								$counter['UF_NAME'] = '<div class="d-flex align-items-center">' . $relateCounter['UF_NAME'] . '<a role="button" class="ps-1 text-danger"
+							data-bs-toggle="tooltip"
+							data-bs-title="Расчет потребления производится от процента занимаемой объема/площади - ' . $related['UF_PERCENT'] . '%">
+							<i class="bi bi-link-45deg fs-5"></i></a></div>';
+								$counter['UF_DATE'] = $relateCounter['UF_DATE'];
+								$counter['UF_CHECK'] = $relateCounter['UF_CHECK'];
+								// $counter['SERVICE'] = '<div class="d-flex">' . $relateCounter['TYPE']['LG'] . '</div>';
+								$counter['SERVICE'] = '<div class="d-flex">' . implode('', $relatetypes) . '</div>';
+								$counter['UNIT'] = $unit;
+
+								// $counter = [
+								// 	'RELATED' => true,
+								// 	'ID' => $relateCounter['ID'],
+								// 	'UF_NAME' => '<div class="d-flex align-items-center">' . $relateCounter['UF_NAME'] . '<a role="button" class="ps-1 text-danger"
+								// 		data-bs-toggle="tooltip"
+								// 		data-bs-title="Расчет потребления производится от процента занимаемой объема/площади - ' . $related['UF_PERCENT'] . '%">
+								// 		<i class="bi bi-link-45deg fs-5"></i></a></div>',
+								// 	'UF_NUMBER' =>  $relateCounter['UF_NUMBER'],
+								// 	'UF_DATE' => $relateCounter['UF_DATE'],
+								// 	'UF_CHECK' => $relateCounter['UF_CHECK'],
+								// 	'SERVICE' => '<div class="row gy-1">' . implode('', $relatetypes) . '</div>',
+								// ];
+								// gg($counter);
+
+								if (!$related['UF_MAIN'])
+									$object['LIST'][$related['ID']] = $counter;
+								else
+									$object['LIST'][$related['UF_COUNTER']]['MAIN_RELATED'] = $counter;
+								// $object['RELATED'][] = $counter;
+							}
+						}
+					}
+
+					// if ($related['UF_MAIN'])
+					// 	$object['LIST'][$related['UF_COUNTER']]['MAIN_RELATED'] = $counter;
+
+					$prevMeters = LKClass::meters($objectID);
+					$lastMeters = LKClass::meters($objectID, true);
+
+					$arPrevMeters = [];
+					$arLastMeters = [];
+
+					if ($prevMeters) {
+						foreach ($prevMeters as $value) {
+							$arPrevMeters[$value['COUNTER']][] = $value['METER'];
+						}
+					}
+
+					if ($lastMeters) {
+						foreach ($lastMeters as $key => $value) {
+							$arLastMeters[$value['COUNTER']] = $value['METER'];
+							$noteMeter[$value['COUNTER']] = $value['NOTE'];
+						}
+					}
+					$object['PREV_METERS'] = $arPrevMeters;
+					$object['LAST_METERS'] = $arLastMeters;
+					$object['NOTE_METERS'] = $noteMeter;
 				}
-				$item['UNIT'] = $unit;	//TODO
+			} else {
+				$objectID = $this->arResult['VARIABLES']['DETAIL_ID'];
 
-				$item['SERVICE'] = '<div>' . $item['TYPE']['XL'] . '</div>';
-				//$item['SERVICE'] = '<div>' . implode(' ', $types) . '</div>';
+				$this->arResult['OBJECT_ID'] = $objectID;
 
-				$this->arResult['DETAIL']['LIST'][$item['ID']] = $item;
+				// $this->arResult['DETAIL']['GRID'] =  'object_detail';
+				// $arResult['DETAIL']['GRID'] = $this->arResult['DETAIL']['GRID'];
+
+				if (!array_key_exists($objectID, $arObjects))
+					$this->arResult['WRONG'] = true;
+
+				$this->arResult['DETAIL']['OBJECT'] = $arObjects[$objectID];
+
+				$countersObject  = LKClass::getCounters($objectID);
+
+				foreach ($countersObject as $key => &$item) {
+
+					// gg($item);
+
+					if ($item['UF_ACTIVE'] !== null && !$item['UF_ACTIVE'])	//Отключаем неактивные
+						continue;
+
+					$types = [];
+					foreach ($item['UF_TYPE'] as $value) {
+						$typeItem = $serviceList[$value];
+						$unit = $typeItem['UNIT'];	//TODO
+						// $types[] = '<img src="' . $typeItem['ICON'] . '" width="23" height="23" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '" data-bs-toggle="tooltip"
+						// 		data-bs-title="' . $typeItem['NAME'] . '"/>';
+					}
+					$item['UNIT'] = $unit;	//TODO
+
+					$item['SERVICE'] = '<div>' . $item['TYPE']['XL'] . '</div>';
+					//$item['SERVICE'] = '<div>' . implode(' ', $types) . '</div>';
+
+					$this->arResult['DETAIL']['LIST'][$item['ID']] = $item;
+				}
 			}
 
 			// связанные счетчики
@@ -239,8 +366,8 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 			// показания
 			$prevMeters = LKClass::meters($objectID);
 			$lastMeters = LKClass::meters($objectID, true);
-			// dump($lastMeters);
-			// dump($prevMeters);
+			// gg($lastMeters);
+			// gg($prevMeters);
 
 			foreach ($prevMeters as $key => $value) {
 
@@ -299,167 +426,208 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 		} else { //LIST
 
-			$prevMeters = [];
-			$lastMeters = [];
+			if ($arParams['TYPE'] == '') {
 
-			foreach ($this->arResult['COUNTER_OBJECTS'] as $key => &$object) {
+				$prevMeters = [];
+				$lastMeters = [];
 
-				$objectID = $object['ID'];
-				$object['LIST']  = LKClass::getCounters($objectID);
+				foreach ($this->arResult['COUNTER_OBJECTS'] as $key => &$object) {
 
-				foreach ($object['LIST'] as $key => &$item) {
+					$objectID = $object['ID'];
+					$object['LIST']  = LKClass::getCounters($objectID);
+
+					foreach ($object['LIST'] as $key => &$item) {
 
 
-					// gg($item['UF_ACTIVE']);
+						// gg($item['UF_ACTIVE']);
 
-					if ($item['UF_ACTIVE'] !== null && !$item['UF_ACTIVE'])	//Отключаем неактивные
-						unset($object['LIST'][$key]);
+						if ($item['UF_ACTIVE'] !== null && !$item['UF_ACTIVE'])	//Отключаем неактивные
+							unset($object['LIST'][$key]);
 
-					$types = [];
-					foreach ($item['UF_TYPE'] as $value) {
-						$typeItem = $serviceList[$value];
-						$unit = $typeItem['UNIT'];
-						$types[] = '<img class="me-1" src="' . $typeItem['ICON'] . '" width="22" height="22" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '" data-bs-toggle="tooltip"
+						$types = [];
+						foreach ($item['UF_TYPE'] as $value) {
+							$typeItem = $serviceList[$value];
+							$unit = $typeItem['UNIT'];
+							$types[] = '<img class="me-1" src="' . $typeItem['ICON'] . '" width="22" height="22" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '" data-bs-toggle="tooltip"
 							data-bs-title="' . $typeItem['NAME'] . '"/>';
+						}
+						$item['UNIT'] = $unit;
+						$item['SERVICE'] = '<div class="d-flex">' . implode(' ', $types) . '</div>';
 					}
-					$item['UNIT'] = $unit;
-					$item['SERVICE'] = '<div class="d-flex">' . implode(' ', $types) . '</div>';
-				}
 
-				$arRelated = $this->arResult['RELATED'][$objectID];
+					$arRelated = $this->arResult['RELATED'][$objectID];
 
-				if ($arRelated/* && !$related['UF_MAIN']*/) {
+					if ($arRelated/* && !$related['UF_MAIN']*/) {
 
-					if (is_array($arRelated)) {
+						if (is_array($arRelated)) {
 
-						foreach ($arRelated as $key => $related) {
+							foreach ($arRelated as $key => $related) {
 
-							$relateCounter = $this->arResult['COUNTERS'][$related['UF_COUNTER']];
+								$relateCounter = $this->arResult['COUNTERS'][$related['UF_COUNTER']];
 
-							// gg($relateCounter);
+								// gg($relateCounter);
 
-							$relatetypes = [];
-							// gg($serviceList);
-							// gg($relateCounter['UF_TYPE']);
-							foreach ($relateCounter['UF_TYPE'] as $value) {
-								$typeItem = $serviceList[$value];
-								$unit = $typeItem['UNIT'];
-								/*$relatetypes[] = '<img class="me-1" src="' . $typeItem['ICON'] . '" width="22" height="22" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"
+								$relatetypes = [];
+								// gg($serviceList);
+								// gg($relateCounter['UF_TYPE']);
+								foreach ($relateCounter['UF_TYPE'] as $value) {
+									$typeItem = $serviceList[$value];
+									$unit = $typeItem['UNIT'];
+									/*$relatetypes[] = '<img class="me-1" src="' . $typeItem['ICON'] . '" width="22" height="22" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"
 							data-bs-toggle="tooltip"
 							data-bs-title="' . $typeItem['NAME'] . '"
 							/>';*/
-							}
-							// gg($related);
-							$counter = $related;
+								}
+								// gg($related);
+								$counter = $related;
 
-							// if($related['UF_MAIN'])
+								// if($related['UF_MAIN'])
 
-							$counter['RELATED'] = true;
-							// $counter['ID'] = $relateCounter['ID'];
-							$counter['UF_NUMBER'] =  $relateCounter['UF_NUMBER'];
-							$counter['UF_NAME'] = '<div class="d-flex align-items-center">' . $relateCounter['UF_NAME'] . '<a role="button" class="ps-1 text-danger"
+								$counter['RELATED'] = true;
+								// $counter['ID'] = $relateCounter['ID'];
+								$counter['UF_NUMBER'] =  $relateCounter['UF_NUMBER'];
+								$counter['UF_NAME'] = '<div class="d-flex align-items-center">' . $relateCounter['UF_NAME'] . '<a role="button" class="ps-1 text-danger"
 							data-bs-toggle="tooltip"
 							data-bs-title="Расчет потребления производится от процента занимаемой объема/площади - ' . $related['UF_PERCENT'] . '%">
 							<i class="bi bi-link-45deg fs-5"></i></a></div>';
-							$counter['UF_DATE'] = $relateCounter['UF_DATE'];
-							$counter['UF_CHECK'] = $relateCounter['UF_CHECK'];
-							// $counter['SERVICE'] = '<div class="d-flex">' . $relateCounter['TYPE']['LG'] . '</div>';
-							$counter['SERVICE'] = '<div class="d-flex">' . implode('', $relatetypes) . '</div>';
-							$counter['UNIT'] = $unit;
+								$counter['UF_DATE'] = $relateCounter['UF_DATE'];
+								$counter['UF_CHECK'] = $relateCounter['UF_CHECK'];
+								// $counter['SERVICE'] = '<div class="d-flex">' . $relateCounter['TYPE']['LG'] . '</div>';
+								$counter['SERVICE'] = '<div class="d-flex">' . implode('', $relatetypes) . '</div>';
+								$counter['UNIT'] = $unit;
 
-							// $counter = [
-							// 	'RELATED' => true,
-							// 	'ID' => $relateCounter['ID'],
-							// 	'UF_NAME' => '<div class="d-flex align-items-center">' . $relateCounter['UF_NAME'] . '<a role="button" class="ps-1 text-danger"
-							// 		data-bs-toggle="tooltip"
-							// 		data-bs-title="Расчет потребления производится от процента занимаемой объема/площади - ' . $related['UF_PERCENT'] . '%">
-							// 		<i class="bi bi-link-45deg fs-5"></i></a></div>',
-							// 	'UF_NUMBER' =>  $relateCounter['UF_NUMBER'],
-							// 	'UF_DATE' => $relateCounter['UF_DATE'],
-							// 	'UF_CHECK' => $relateCounter['UF_CHECK'],
-							// 	'SERVICE' => '<div class="row gy-1">' . implode('', $relatetypes) . '</div>',
-							// ];
-							// gg($counter);
+								// $counter = [
+								// 	'RELATED' => true,
+								// 	'ID' => $relateCounter['ID'],
+								// 	'UF_NAME' => '<div class="d-flex align-items-center">' . $relateCounter['UF_NAME'] . '<a role="button" class="ps-1 text-danger"
+								// 		data-bs-toggle="tooltip"
+								// 		data-bs-title="Расчет потребления производится от процента занимаемой объема/площади - ' . $related['UF_PERCENT'] . '%">
+								// 		<i class="bi bi-link-45deg fs-5"></i></a></div>',
+								// 	'UF_NUMBER' =>  $relateCounter['UF_NUMBER'],
+								// 	'UF_DATE' => $relateCounter['UF_DATE'],
+								// 	'UF_CHECK' => $relateCounter['UF_CHECK'],
+								// 	'SERVICE' => '<div class="row gy-1">' . implode('', $relatetypes) . '</div>',
+								// ];
+								// gg($counter);
 
-							if (!$related['UF_MAIN'])
-								$object['LIST'][$related['ID']] = $counter;
-							else
-								$object['LIST'][$related['UF_COUNTER']]['MAIN_RELATED'] = $counter;
-							// $object['RELATED'][] = $counter;
+								if (!$related['UF_MAIN'])
+									$object['LIST'][$related['ID']] = $counter;
+								else
+									$object['LIST'][$related['UF_COUNTER']]['MAIN_RELATED'] = $counter;
+								// $object['RELATED'][] = $counter;
+							}
 						}
 					}
-				}
 
-				// if ($related['UF_MAIN'])
-				// 	$object['LIST'][$related['UF_COUNTER']]['MAIN_RELATED'] = $counter;
+					// if ($related['UF_MAIN'])
+					// 	$object['LIST'][$related['UF_COUNTER']]['MAIN_RELATED'] = $counter;
 
-				$prevMeters = LKClass::meters($objectID);
-				$lastMeters = LKClass::meters($objectID, true);
+					$prevMeters = LKClass::meters($objectID);
+					$lastMeters = LKClass::meters($objectID, true);
 
-				$arPrevMeters = [];
-				$arLastMeters = [];
+					$arPrevMeters = [];
+					$arLastMeters = [];
 
-				if ($prevMeters) {
-					foreach ($prevMeters as $value) {
-						$arPrevMeters[$value['COUNTER']][] = $value['METER'];
+					if ($prevMeters) {
+						foreach ($prevMeters as $value) {
+							$arPrevMeters[$value['COUNTER']][] = $value['METER'];
+						}
 					}
-				}
 
-				if ($lastMeters) {
-					foreach ($lastMeters as $key => $value) {
-						$arLastMeters[$value['COUNTER']] = $value['METER'];
-						$noteMeter[$value['COUNTER']] = $value['NOTE'];
+					if ($lastMeters) {
+						foreach ($lastMeters as $key => $value) {
+							$arLastMeters[$value['COUNTER']] = $value['METER'];
+							$noteMeter[$value['COUNTER']] = $value['NOTE'];
+						}
 					}
+					$object['PREV_METERS'] = $arPrevMeters;
+					$object['LAST_METERS'] = $arLastMeters;
+					$object['NOTE_METERS'] = $noteMeter;
 				}
-				$object['PREV_METERS'] = $arPrevMeters;
-				$object['LAST_METERS'] = $arLastMeters;
-				$object['NOTE_METERS'] = $noteMeter;
-			}
+			} else {
 
-			$this->arResult['GRID_ID'] = str_replace('.', '_', str_replace(':', '_', $this->GetName()));
+				$this->arResult['GRID_ID'] = str_replace('.', '_', str_replace(':', '_', $this->GetName())) . '_' . $arParams['TYPE'];
 
-			$arResult['GRID_ID'] = $this->arResult['GRID_ID'];
+				$arResult['GRID_ID'] = $this->arResult['GRID_ID'];
 
-			//инициализируем объект с настройками пользователя для нашего грида
-			$grid_options = new CGridOptions($this->arResult["GRID_ID"]);
-
-			//размер страницы в постраничке (передаем умолчания)
-			$nav_params = $grid_options->GetNavParams(array("nPageSize" => 10));
-			// $nav_params = $grid_options->GetNavParams();
-
-			$nav = new Bitrix\Main\UI\PageNavigation($this->arResult["GRID_ID"]);
-			$nav->allowAllRecords(true)
-				->setPageSize($nav_params['nPageSize'])
-				->initFromUri();
-
-			if ($nav->allRecordsShown())
-				$nav_params = false;
-			else
-				$nav_params['iNumPage'] = $nav->getCurrentPage();
+				//инициализируем объект с настройками пользователя для нашего грида
+				$grid_options = new CGridOptions($this->arResult["GRID_ID"]);
+				$order = $grid_options->GetSorting(['sort' => ['UF_ORG' => 'desc'], 'vars' => ['by' => 'by', 'order' => 'order']]);
 
 
-			//какую сортировку сохранил пользователь (передаем то, что по умолчанию)
-			$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
-			$this->arResult['GRID']['COLUMNS'] = [
-				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 70],
-				['id' => 'NAME', 'name' => 'Наименование объекта', /*'sort' => 'NAME', */ 'default' => true],
-				['id' => 'ADDRESS', 'name' => 'Адрес объекта', /*'sort' => 'ADDRESS', */ 'default' => true, 'width' => 350],
-				//['id' => 'DOGOVOR', 'name' => 'Договор',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => true],
+				$filterOption = new Bitrix\Main\UI\Filter\Options($this->arResult["GRID_ID"]);
+				$filter = $filterOption->GetFilter();
+				// gg($filterData);
 
-				// ['id' => 'STATUS', 'name' => 'Статус', 'sort' => '', 'default' => true, 'width' => '200'],
-				['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => 130],
-			];
+				$nav = new Bitrix\Main\UI\PageNavigation($this->arResult["GRID_ID"]);
+				// gg($grid_options);
+				//размер страницы в постраничке (передаем умолчания)
+				$nav_params = $grid_options->GetNavParams(array("nPageSize" => 10));
 
-			foreach ($arObjects as $key => &$item) {
+				// $nav = new Bitrix\Main\UI\PageNavigation($this->arResult["GRID_ID"]);
+				// $nav->allowAllRecords(true)
+				// 	->setPageSize($nav_params['nPageSize'])
+				// 	->initFromUri();
 
-				// $item['COMPANY'] = $item['COMPANY']['NAME'];
+				// if ($nav->allRecordsShown())
+				// 	$nav_params = false;
+				// else
+				// 	$nav_params['iNumPage'] = $nav->getCurrentPage();
 
-				$status = '<a class="ui-btn ui-btn-primary-dark" href="' . $item["ID"] . '/" target="_blank">Внести</a>';
-				$item["DETAIL"] = $status;
-
-				$this->arResult['GRID']['ROWS'][] = [
-					'data' => $item
+				//type list
+				$this->arResult['GRID']['list']['COLUMNS'] = [
+					['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
+					// ['id' => 'NAME', 'name' => 'Наименование объекта', /*'sort' => 'NAME', */ 'default' => true],
+					['id' => 'COMPANY', 'name' => 'Организация', 'sort' => 'UF_NAME', 'default' => true],
+					['id' => 'ADDRESS', 'name' => 'Адрес объекта', 'default' => true, 'width' => 250],
+					['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => 130],
 				];
+
+				// gg($this->arResult['COMPANY']);
+				$companyList = $LKClass->getCompany(null, $filter, $nav = [], $order['sort']);
+
+				foreach ($companyList as $key => $org) {
+
+					$data['COMPANY'] = $org['UF_NAME'];
+					$data['ADDRESS'] = $org['UF_ADDRESS'];
+					$data['ID'] = $org['ID'];
+
+					$data["DETAIL"] = '<a class="ui-btn ui-btn-primary-dark" href="' . $org["ID"] . '/" target="_blank">Внести</a>';
+
+					$this->arResult['GRID']['list']['ROWS'][] = [
+						'data' => $data
+					];
+				}
+
+
+				//type objects
+				//какую сортировку сохранил пользователь (передаем то, что по умолчанию)
+
+				$this->arResult['GRID']['objects']['COLUMNS'] = [
+					['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
+					['id' => 'NAME', 'name' => 'Наименование объекта', /*'sort' => 'NAME', */ 'default' => true],
+					['id' => 'COMPANY', 'name' => 'Организация', 'sort' => 'UF_ORG', 'default' => true],
+					['id' => 'ADDRESS', 'name' => 'Адрес объекта', /*'sort' => 'ADDRESS', */ 'default' => true, 'width' => 350],
+					//['id' => 'DOGOVOR', 'name' => 'Договор',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => true],
+
+					// ['id' => 'STATUS', 'name' => 'Статус', 'sort' => '', 'default' => true, 'width' => '200'],
+					['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => 130],
+				];
+				// gg($grid_options);
+				// gg($order);
+				$ObjectsList = LKClass::getObjects(null, $order['sort']);
+				// gg($this->arResult['COMPANY']);
+				foreach ($ObjectsList as $key => &$item) {
+					// gg($item);
+					$item['COMPANY'] = '#' . $item['ORG'] . ' ' . ($this->arResult['COMPANY'][$item['ORG']]['UF_SHORT_NAME'] ?: $this->arResult['COMPANY'][$item['ORG']]['UF_NAME']);
+					// gg($this->arResult['COMPANY'][$item['ORG']]);
+					$status = '<a class="ui-btn ui-btn-primary-dark" href="' . $item["ID"] . '/" target="_blank">Внести</a>';
+					$item["DETAIL"] = $status;
+
+					$this->arResult['GRID']['objects']['ROWS'][] = [
+						'data' => $item
+					];
+				}
 			}
 		}
 
@@ -469,6 +637,9 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 	public function sendMeterAction()
 	{
 		$request = Application::getInstance()->getContext()->getRequest();
+
+		global $USER;
+		$userID = $USER->GetID();
 
 		// return $request['METER'];
 		$log = [
@@ -482,7 +653,7 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 		foreach ($request['METER'] as $kCounter => $meter) {
 			if ($meter)
-				LKClass::saveMeter($request['OBJECT'], $request['MONTH'], $kCounter, $meter, $request['NOTE'][$kCounter]);
+				LKClass::saveMeter($request['OBJECT'], $request['MONTH'], $kCounter, $meter, $userID, $request['NOTE'][$kCounter]);
 		}
 
 		return true;

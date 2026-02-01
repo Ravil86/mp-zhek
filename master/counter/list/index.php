@@ -8,14 +8,15 @@ $APPLICATION->SetTitle("Показаний приборов учета");
 ?>
 <? $APPLICATION->IncludeComponent(
 	"zhek:cabinet.counters",
-	".default",
+	"list",
 	[
-		'SEF_FOLDER' => '/master/counter/',
+		'SEF_FOLDER' => '/master/counter/list/',
 		'SEF_URL_TEMPLATES' => [
 			'list' => '',
 			'detail' => '#DETAIL_ID#/',
 		],
-		'SEF_MODE' => 'N',
+		'SEF_MODE' => 'Y',
+		'TYPE' => 'list',
 		'GROUP_CODES' => [
 			'ADMINISTRATOR' => 'MASTER',
 			'ORGANIZATION' => 'ORG',

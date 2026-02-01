@@ -1,0 +1,55 @@
+.main-ui-filter-search {
+	border-color: #c8d1d6 !important;
+
+}
+
+.main-grid .main-grid-cell-content {
+	margin: 15px 7px 10px 5px;
+	font-size: 0.95rem;
+	font-weight: 500;
+}
+
+.main-grid-row .main-grid-cell i {
+	margin-right: 2px;
+}
+
+.main-grid-cell .main-grid-cell-content a:hover {
+	text-decoration: none;
+}
+
+.main-grid .main-grid-cell-head-container {
+	padding: 10px 5px 5px;
+}
+
+
+.main-grid .main-grid-cell-head-container .main-grid-head-title {
+	font-weight: bold;
+	font-size: 1rem;
+}
+
+.ui-ctl-xs{
+	--ui-field-size: 16px;
+}
+.ui-ctl-md{
+	--ui-field-size: 38px;
+}
+
+.ui-ctl-textarea{
+ width: 100%;
+}
+.ui-ctl-textarea.ui-ctl-xs{
+  /* width: 180px; */
+}
+
+.ui-ctl-xs textarea{
+font-size: .75em;
+}
+
+.form-control{
+min-width: 100px;
+/* max-width: 150px; */
+}
+
+.related{
+	padding: .575rem .75rem;
+}

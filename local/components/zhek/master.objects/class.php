@@ -158,13 +158,13 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 
 			$this->arResult['DETAIL']['COLUMNS'] = [
 				['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
-				['id' => 'NAME', 'name' => 'Наименование ПУ', 'default' => true, 'width' => 230, 'editable' => true, /*'align' => 'right'*/],
+				['id' => 'NAME', 'name' => 'Наименование ПУ', 'default' => true, 'width' => 200, 'editable' => true, /*'align' => 'right'*/],
 				['id' => 'ACTIVE', 'name' => 'Активность', 'default' => true, 'width' => 100, "editable" => ['TYPE' => 'CHECKBOX']],
-				['id' => 'NUMBER', 'name' => 'Номер ПУ', 'default' => true, 'width' => 210, 'editable' => true],
-				['id' => 'DATE', 'name' => 'Дата установки ПУ', 'default' => true, 'width' => 180, "editable" => ['TYPE' => 'CUSTOM']],
+				['id' => 'NUMBER', 'name' => 'Номер ПУ', 'default' => true, 'width' => 200, 'editable' => true],
+				['id' => 'DATE', 'name' => 'Дата установки ПУ', 'default' => true, 'width' => 150, "editable" => ['TYPE' => 'CUSTOM']],
 				['id' => 'TYPE', 'name' => 'Тип ПУ', 'default' => true, 'width' => 200, "editable" => ['TYPE' => 'MULTISELECT', 'items' => $serviceItems]],
 				['id' => 'CHECK', 'name' => 'Дата поверки ПУ', 'default' => true, 'width' => 160, "editable" => ['TYPE' => 'CUSTOM']],
-				// ['id' => 'UF_CHECK', 'name' => 'Дата очередной поверки', 'default' => true, "editable" => ['TYPE' => 'DATE']],
+				['id' => 'MODEL', 'name' => 'Модель счетчика', 'default' => true, 'width' => 100, "editable" => true],
 				// ['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => '130'],
 			];
 
@@ -190,12 +190,12 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 
 
 						$relateCounter = $this->arResult['COUNTERS'][$related['UF_COUNTER']];
-
-						$relatetypes = [];
-						foreach ($relateCounter['UF_TYPE'] as $value) {
-							$typeItem = $serviceList[$value];
-							$relatetypes[] = '<div class="d-flex align-items-center"><img class="mb-1@" src="' . $typeItem['ICON'] . '" width="20" height="20" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'] . '</span></div>';
-						}
+						// gg($relateCounter['TYPE']);
+						// $relatetypes = [];
+						// foreach ($relateCounter['UF_TYPE'] as $value) {
+						// 	$typeItem = $serviceList[$value];
+						// 	$relatetypes[] = '<div class="d-flex align-items-center"><img class="mb-1@" src="' . $typeItem['ICON'] . '" width="20" height="20" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'] . '</span></div>';
+						// }
 
 						$counter = [
 							'ID' =>    $relateCounter['ID'] . '-' . $related['ID'],
@@ -208,7 +208,7 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 							//'NUMBER' => $relateCounter['UF_NUMBER'],
 							'DATE' => $relateCounter['UF_DATE'],
 							'CHECK' => $relateCounter['UF_CHECK'],
-							'TYPE' => '<div class="row gy-1">' . $relateCounter['TYPE']['LG'] . '</div>',
+							'TYPE' => '<div class="row! gy-1">' . $relateCounter['TYPE']['LG'] . '</div>',
 							// 'TYPE' => '<div class="row gy-1">' . implode('', $relatetypes) . '</div>',
 
 						];
@@ -242,14 +242,17 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 					$column['NAME'] = $counter['UF_NAME'];
 					$column['NUMBER'] = $counter['UF_NUMBER'];
 
-					foreach ($counter['UF_TYPE'] as $value) {
+					// $relateCounter = $this->arResult['COUNTERS'];
+					// gg($relateCounter);
+					$column['TYPE'] = $counter['TYPE']['LG'];
+					// foreach ($counter['UF_TYPE'] as $value) {
+					// 	$typeItem = $serviceList[$value];
+					// 	$types[] = '<div class="d-flex align-items-center"><img class="mb-1@" src="' . $typeItem['ICON'] . '" width="20" height="20" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'] . '</span></div>';
+					// 	// $types[] = '<img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/>';
+					// 	// $editTypes[] = $value;
+					// }
+					// $column['TYPE'] = '<div class="row gy-1">' . implode('', $types) . '</div>';
 
-						$typeItem = $serviceList[$value];
-						$types[] = '<div class="d-flex align-items-center"><img class="mb-1@" src="' . $typeItem['ICON'] . '" width="20" height="20" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/><span class="ps-1">' . $typeItem['NAME'] . '</span></div>';
-						// $types[] = '<img src="' . $typeItem['ICON'] . '" width="25" height="25" alt="' . $typeItem['NAME'] . '" title="' . $typeItem['NAME'] . '"/>';
-						// $editTypes[] = $value;
-					}
-					$column['TYPE'] = '<div class="row gy-1">' . implode('', $types) . '</div>';
 					$data = $column;
 
 					$data['TYPE'] = array_values($counter['UF_TYPE']);
@@ -262,6 +265,8 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 					$column['CHECK'] = $counter['UF_CHECK'] ?: '';
 
 					$column['ACTIVE'] = $counter['UF_ACTIVE'] == null || $counter['UF_ACTIVE']  ? 'да' : 'нет';	//Активность
+					// gg($counter);
+					$column['MODEL'] = $data['MODEL'] = $counter['UF_MODEL'] ?: '';
 
 					$data['ACTIVE'] = $counter['UF_ACTIVE'] || $counter['UF_ACTIVE'] == null ? 'Y' : 'N';
 

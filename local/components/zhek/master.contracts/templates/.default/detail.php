@@ -140,23 +140,28 @@ if ($arResult['ACCESS']): ?>
                                                     <th>Предыдущие показания ПУ</th>
                                                     <th>Текущие показания ПУ</th>
                                                     <th>Потребленный объем (разница)</th>';
-                    if ($provider["ID"] == 2) {
-                        echo '<th>Потери</th>';
-                    }
+                    if ($provider["ID"] == 2)
+                        echo '<th>Потери/Инфо</th>';
+                    else
+                        echo '<th>Инфо</th>';
+
                     echo '</tr>
                                             </thead>
                                             <tbody> ';
                     $i = 1;
-
+                    // gg($arResult['RELATED_LIST']);
                     foreach ($arResult["SERVICE"][$provider["ID"]]["OBJECTS"] as $key => $object) {
 
                         $objID = $object['INFO'] ? $object['INFO']['ID'] : $key;
 
                         if ($object["COUNTER"] && is_array($object["COUNTER"])) {
-
+                            $relateIn = false;
                             foreach ($object["COUNTER"] as $counter) {
 
                                 $counterID = $counter["ID"];
+
+                                if (array_key_exists($counterID, $arResult['RELATED_LIST']))
+                                    $relateIn = true;
 
                                 //Не выводим отключенные ПУ
                                 // gg($counter['UF_ACTIVE']);
@@ -202,15 +207,17 @@ if ($arResult['ACCESS']): ?>
                                     <td>' . ($prevMeters ?? ' - ') . '</td>
                                     <td>' . ($lastMeters ?? ' - ') . '</td>
                                     <td> ';
-                                if ($provider["ID"] == 2) {
-                                    echo $potreb ?? ($normativ ? '<i class="small">норма</i> ' . $normativ : '-');
-                                } else {
-                                    echo $potreb ?? " - ";
-                                }
+
+                                if ($relateIn)
+                                    $potreb = $arResult["RELATED_LIST"][$counterID]['METER'];
+
+                                echo $potreb ?? ($provider["ID"] == 2 && $normativ ? '<i class="small">норма</i> ' . $normativ : '-');
+
                                 echo '</td>';
-                                if ($provider["ID"] == 2) {
-                                    echo '<td class="potery">' . $losses  . '</td>';
-                                }
+
+                                //if ($provider["ID"] == 2) {
+                                echo '<td class="potery">' . ($provider["ID"] == 2 ? $losses : '')  . ($relateIn ? $arResult["RELATED_LIST"][$counterID]['RELATED_INFO'] : '') . '</td>';
+                                //}
                                 echo '</tr>';
                                 $i++;
                             }
@@ -219,10 +226,14 @@ if ($arResult['ACCESS']): ?>
 
                     foreach ($arResult["RELATED"][$provider["ID"]] as $relate) {
 
+                        if ($relate['UF_MAIN'])
+                            continue;
+
                         $counterInfo = $relate['COUNTER'];
                         $objectInfo = $arResult['OBJECTS'][$relate['UF_OBJECT']];
 
                         $relateLosses = $arResult["LOSSES"][$relate['UF_OBJECT']][$arResult["MONTH_CODE"][$month]];
+
 
                         // СВЯЗАННЫЕ ПУ счетчики
                         echo '<tr class="text-center" data-object="' . $relate['UF_OBJECT'] . '" data-counter="' . $relate['UF_COUNTER'] . '">
@@ -231,17 +242,14 @@ if ($arResult['ACCESS']): ?>
                         <td class="text-start">' . $objectInfo['ADDRESS'] . '</td>
                         <td>' . $provider["NAME"] . '</td>
                         <td>' . $counterInfo['UF_CHECK']->toString() . '</td>
-                        <td><div class="d-flex align-items-center">' . $counterInfo['UF_NUMBER'] . '
-                        <a role="button" class="ps-1 text-danger"
-                            data-bs-toggle="tooltip" data-bs-title="Расчет потребления производится от процента занимаемой объема/площади - ' . $relate['UF_PERCENT'] . '%">
-							<i class="bi bi-link-45deg fs-5"></i></a></div></td>
+                        <td><div class="d-flex align-items-center">' . $counterInfo['UF_NUMBER'] . '</div></td>
                         <td>' . $provider['UNIT'] . '</td>
                         <td>' . ($useDate ? $relate['PREV_METER'] : '') . '</td>
                         <td>' . ($useDate ? $relate['LAST_METER'] : '') . '</td>
-                        <td>' . ($useDate ? $relate['METER'] : '') /*. ' (' . $relate['UF_PERCENT']  . '%)'*/ . '</td>';
-                        if ($provider["ID"] == 2) {
-                            echo '<td>' . $relateLosses . '</td>';
-                        }
+                        <td class="text-center">' . ($useDate ? $relate['METER'] : '') /*. ' (' . $relate['UF_PERCENT']  . '%)'*/  . '</td>';
+                        // if ($provider["ID"] == 2) {
+                        echo '<td>' . ($provider["ID"] == 2 ? $relateLosses : '') . ($relate['RELATED_INFO'] ?: '') . '</td>';
+                        //}
                         '</tr>';
                         $i++;
                     }

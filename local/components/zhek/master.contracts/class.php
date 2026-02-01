@@ -299,6 +299,7 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 			$arCounters = LKClass::getCounters();
 
 			$this->arResult['RELATED'] = [];
+			$this->arResult['RELATED_LIST'] = [];
 			foreach ($arRelatedCounter as $key => &$item) {
 
 				$counterID = $item['UF_COUNTER'];
@@ -307,10 +308,19 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 				$relateCounterInfo = $arCounters[$counterID];
 				$item['COUNTER'] = $relateCounterInfo;
 
+				$item['RELATED_INFO'] = '<a role="button" class="ps-0 text-danger"
+                            data-bs-toggle="tooltip" data-bs-title="Расчет потребления производится от процента занимаемой объема/площади - ' . $item['UF_PERCENT'] . '%">
+							<i class="bi bi-link-45deg fs-5"></i></a>';
+
 				if (is_array($relateCounterInfo['UF_TYPE']))
 					foreach ($relateCounterInfo['UF_TYPE'] as $relateType) {
 
+						// gg($item['UF_COUNTER']);
+
 						$this->arResult['RELATED'][$relateType][$item['UF_OBJECT']] = $item;
+
+						$this->arResult['RELATED_LIST'][$item['UF_COUNTER']] = $item;
+
 						// if (in_array($relateType, $this->arResult['SERVICE'])) {
 						// 	$this->arResult['SERVICE'][$relateType]['RELATE'][$item['UF_OBJECT']][] = $item;
 						// }

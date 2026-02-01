@@ -216,8 +216,8 @@ class MasterRelated extends CBitrixComponent implements Controllerable
 		// 	['id' => 'UF_ACTIVE', 'name' => 'Активность', 'type' => 'list', 'items' => [1 => 'да', 0 => 'нет'], 'default' => true],
 		// ];
 
-		$filterOption = new Bitrix\Main\UI\Filter\Options("filter_" . $this->arResult["GRID_ID"]);
-		$filter = $filterOption->GetFilter();
+		// $filterOption = new Bitrix\Main\UI\Filter\Options("filter_" . $this->arResult["GRID_ID"]);
+		// $filter = $filterOption->GetFilter();
 
 
 		$itemsRelated = LKClass::getRelated(1);

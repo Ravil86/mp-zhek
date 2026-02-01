@@ -127,6 +127,7 @@ class LKClass
 
         $filter = [];
 
+        // gg($last);
         // gg($year);
 
         $codeMonth = null;
@@ -171,6 +172,8 @@ class LKClass
             // $currentDay = 25; //тест
 
             if ($last) {
+                // gg(self::$date_start);
+                // gg($currentDay);
                 if ($currentDay >= self::$date_start) {
                     // if ($currentDay >= 25)
                     if (date('n') == 1) {
@@ -181,21 +184,33 @@ class LKClass
                 } else {
                     $filter['>=' . 'UF_MONTH'] = date('n', strtotime("-1 month"));
                 }
-            } else {
-                if ($currentDay >= self::$date_start)
-                    // if ($currentDay >= 25)
-                    $filter['<=' . 'UF_MONTH'] = date('n', strtotime("-1 month"));
-                else
-                    $filter['<' . 'UF_MONTH'] = date('n', strtotime("-1 month"));
 
-                // для января 2026 берем только 2025, в остальных случаях выводим только текущего года
                 if (date('n') == 1)
                     $filter['=' . 'UF_YEAR'] = date('Y', strtotime("-1 year"));
                 else
                     $filter['=' . 'UF_YEAR'] = date('Y');
-            }
 
-            // var_export($filter);
+                // gg($filter);
+
+            } else {
+                // gg(date('n'));
+                if ($currentDay >= self::$date_start)
+                    // if ($currentDay >= 25)
+                    $filter['<=' . 'UF_MONTH'] = date('n', strtotime("-1 month"));
+                elseif (date('n') == 2 && $currentDay < self::$date_start)
+                    $filter['<=' . 'UF_MONTH'] = 12;
+                else
+                    $filter['<' . 'UF_MONTH'] = date('n', strtotime("-1 month"));
+
+                // для января 2026 берем только 2025, в остальных случаях выводим только текущего года
+                if (date('n') == 1 || date('n') == 2 && $currentDay < self::$date_start)
+                    $filter['=' . 'UF_YEAR'] = date('Y', strtotime("-1 year"));
+                else
+                    $filter['=' . 'UF_YEAR'] = date('Y');
+
+                // gg($filter);
+            }
+            // gg($filter);
 
             /*if ($last)
                 $filter[">=" . "UF_DATE"] = new DateTime(date('01.m.Y') . " 00:00:00");
@@ -232,7 +247,7 @@ class LKClass
         return $result;
     }
 
-    public static function saveMeter($objectID, $month, $counter, $meter, $note = '')
+    public static function saveMeter($objectID, $month, $counter, $meter, $userID, $note = '')
     {
 
         $classHL = \HLWrap::init(self::$_HL_Meter);
@@ -251,6 +266,7 @@ class LKClass
             'UF_OBJECT' => $objectID,
             'UF_COUNTER' => $counter,
             'UF_NOTE' => $note,
+            'UF_USER' => $userID,
             'UF_YEAR' => date('Y'),   //Год для января, предыдущие январь встают на первое место
         ];
 
@@ -370,7 +386,7 @@ class LKClass
 
     public static function getCompany($userID = null, $filter = [], $nav = [], $order = [])
     {
-
+        // $order = [];
         $classCompany = \HLWrap::init(self::$_HL_Company);
 
         if ($userID) {
@@ -424,10 +440,13 @@ class LKClass
 
     public static function getObjects($orgID = null, $sort = 'UF_ORG')
     {
-
+        // $sort = [];
         // $curentUser = self::curentUserFields();
         $classHL = \HLWrap::init(self::$_HL_Objects);
-        $order = [$sort => 'ASC'];
+        if (is_array($sort))
+            $order = $sort;
+        else
+            $order = [$sort => 'ASC'];
 
         $filter = [];
         if ($orgID)
@@ -518,13 +537,13 @@ class LKClass
             // 							data-bs-title="' . $typeItem['NAME'] . '"/>
             $servicesImage[$type['ID']] = [
                 'SM' => '<img class="me-1" src="' . $type['ICON'] . '" width="13" alt="' . $type['NAME'] . '" title="' . $type['NAME'] . '" data-bs-toggle="tooltip"
-							data-bs-title="' . $type['NAME'] . '"/>',
+							data-bs-title="' . $type['NAME'] . '" data-bs-original-title="' . $type['NAME'] . '"/>',
                 'MD' => '<img class="me-1" src="' . $type['ICON'] . '" width="18" alt="' . $type['NAME'] . '" title="' . $type['NAME'] . '" data-bs-toggle="tooltip"
-							data-bs-title="' . $type['NAME'] . '"/>',
+							data-bs-title="' . $type['NAME'] . '" data-bs-original-title="' . $type['NAME'] . '"/>',
                 'LG' => '<img class="me-1" src="' . $type['ICON'] . '" width="20" alt="' . $type['NAME'] . '" title="' . $type['NAME'] . '" data-bs-toggle="tooltip"
-							data-bs-title="' . $type['NAME'] . '"/>',
+							data-bs-title="' . $type['NAME'] . '" data-bs-original-title="' . $type['NAME'] . '"/>',
                 'XL' => '<img class="me-1" src="' . $type['ICON'] . '" width="23" alt="' . $type['NAME'] . '" title="' . $type['NAME'] . '" data-bs-toggle="tooltip"
-							data-bs-title="' . $type['NAME'] . '"/>'
+							data-bs-title="' . $type['NAME'] . '" data-bs-original-title="' . $type['NAME'] . '"/>'
             ];
         }
         // $iconType = implode('', $servicesImage);
