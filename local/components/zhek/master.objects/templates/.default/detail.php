@@ -524,6 +524,7 @@ if ($arResult['ACCESS']): ?>
 
 <script>
     (function() {
+
         let list = document.querySelectorAll('.counter-modal');
         var listArray = [...list];
 
@@ -568,10 +569,11 @@ if ($arResult['ACCESS']): ?>
                     });
 
 
-                    var id = objectsModal.getAttribute('data-id')
-                    var form = objectsModal.querySelector('form')
+                    // var id = objectsModal.getAttribute('data-id')
+                    // var form = objectsModal.querySelector('form')
 
-                    form.addEventListener('submit', function(event) {
+                    //console.log('form', form);
+                    /*form.addEventListener('submit', function(event) {
 
                         //event.preventDefault()
 
@@ -587,13 +589,15 @@ if ($arResult['ACCESS']): ?>
                             //
                         }
                         form.classList.add('was-validated')
-                    }, false)
+                    }, false)*/
 
                 })
             }
 
         })
 
+
+        //ADD OBJECT
         // var forms = document.querySelectorAll('.objects_add')
         // Array.prototype.slice.call(forms)
         //     .forEach(function(form) {
@@ -608,6 +612,8 @@ if ($arResult['ACCESS']): ?>
         //             form.classList.add('was-validated')
         //         }, false)
         //     })
+
+
         $(".editObject").click(function() {
 
             var $this = $(this)

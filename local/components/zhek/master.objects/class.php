@@ -383,7 +383,7 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 
 			#LIST
 
-			$result = \Bitrix\Main\UserGroupTable::getList(array(
+			/*$result = \Bitrix\Main\UserGroupTable::getList(array(
 				'order' => array('USER.LAST_LOGIN' => 'DESC'),
 				'filter' => array(
 					// 'USER.ACTIVE' => 'Y',
@@ -407,7 +407,7 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 
 				$userList[$user['ID']] = $user;
 				$userItems[$user['ID']] = $user['SHORT_NAME'];
-			}
+			}*/
 
 			$grid_options = new CGridOptions($this->arResult["GRID_ID"]);
 			$nav_params = $grid_options->GetNavParams(array("nPageSize" => $this->arResult['PAGE_SIZE']));
@@ -443,8 +443,8 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 				['id' => 'UF_ADDRESS', 'name' => 'Адрес организации', 'width' => 300, 'default' => true, 'editable' => ['TYPE' => 'TEXTAREA']],
 				['id' => 'UF_INN', 'name' => 'ИНН', 'sort' => 'UF_INN', 'default' => true, 'editable' => true],
 				// ['id' => 'DOGOVOR', 'name' => 'Текущий договор', 'default' => false],
-				['id' => 'UF_USER', 'name' => 'Оператор', 'default' => false, "editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]],
-				['id' => 'UF_TYPE', 'name' => 'Тип организации', 'default' => false, "editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]],
+				//['id' => 'UF_USER', 'name' => 'Оператор', 'default' => false, "editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]],
+				//['id' => 'UF_TYPE', 'name' => 'Тип организации', 'default' => false, "editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]],
 				['id' => 'DETAIL', 'name' => 'Объектов', 'default' => true],
 				['id' => 'LOSSES', 'name' => 'Потери', 'default' => true],
 				['id' => 'NORMATIV', 'name' => 'Норматив', 'default' => true],
@@ -487,10 +487,10 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 				$item['UF_ACTIVE'] = $item['UF_ACTIVE'] ? 'Y' : 'N';
 				// $item['UF_ACTIVE'] = $item['UF_ACTIVE'] == 'Y' ?: false;
 
-				if ($item['UF_USER_ID']) {
-					$orgUser = $userList[$item['UF_USER_ID']];
-					$item['UF_USER'] = '[' . $orgUser['ID'] . '] ' . $orgUser['SHORT_NAME'];
-				}
+				// if ($item['UF_USER_ID']) {
+				// 	$orgUser = $userList[$item['UF_USER_ID']];
+				// 	$item['UF_USER'] = '[' . $orgUser['ID'] . '] ' . $orgUser['SHORT_NAME'];
+				// }
 
 				if ($objectItems = $arObjects[$item['ID']])
 					$countObjects = count($objectItems);
@@ -653,7 +653,7 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 	{
 
 		$arRequest = $this->getRequest();
-
+		global $APPLICATION;
 		if ($this->isPost() && check_bitrix_sessid()) {
 
 			// dump($arRequest);
@@ -661,10 +661,13 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 
 			if ($arRequest["ADD_OBJECT"] == 'Y') {
 				LKClass::addObject($arRequest["FIELDS"]);
+				LocalRedirect($APPLICATION->GetCurDir());
 			} elseif ($arRequest["ADD_COUNTER"] == 'Y') {
 				LKClass::addCounter($arRequest["FIELDS"]);
+				LocalRedirect($APPLICATION->GetCurDir());
 			} elseif ($arRequest["ADD_COMPANY"] == 'Y') {
 				LKClass::addCompany($arRequest["FIELDS"]);
+				LocalRedirect($APPLICATION->GetCurDir());
 			} elseif ($arRequest["grid_id"] == 'zhek_master_objects') {
 
 				foreach ($arRequest["FIELDS"] as $companyID => $fields) {

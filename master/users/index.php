@@ -15,6 +15,7 @@ $APPLICATION->IncludeComponent(
 		// 	'list' => '',
 		// 	'detail' => '#DETAIL_ID#/',
 		// ],
+		'PAGE_SIZE' => 10,
 		'SEF_MODE' => 'N',
 		'GROUP_CODES' => [
 			'MODERATOR' => 'OPERATORS',

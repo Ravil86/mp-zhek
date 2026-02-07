@@ -34,10 +34,116 @@ class MasterUsers extends CBitrixComponent
 	private function run()
 	{
 
-		$this->arResult['PAGE_SIZE'] = 5;
-
 		$this->arResult['ACCESS'] = $this->checkAccess();
+		$LKClass = new LKClass;
+
 		$arItems = [];
+
+		$this->arResult['GRID_ID'] = str_replace('.', '_', str_replace(':', '_', $this->GetName()));
+		$arResult['GRID_ID'] = $this->arResult['GRID_ID'];
+
+		$this->arResult['GRID']['COUNT'] = count($LKClass->getCompany());
+
+		$result = \Bitrix\Main\UserGroupTable::getList(array(
+			'order' => array('USER.LAST_LOGIN' => 'DESC'),
+			'filter' => array(
+				// 'USER.ACTIVE' => 'Y',
+				'GROUP_ID' => [8, 1],
+			),
+			'select' => array(
+				'ID' => 'USER.ID',
+				'LOGIN' => 'USER.LOGIN',
+				// 'PERSONAL_GENDER' => 'USER.PERSONAL_GENDER',
+				'NAME' => 'USER.NAME',
+				'LAST_NAME' => 'USER.LAST_NAME',
+				// 'PERSONAL_CITY' => 'USER.PERSONAL_CITY',
+				'UF_COMPANY' => 'USER.UF_COMPANY',
+				'UF_PASSWORD' => 'USER.UF_PASSWORD'
+			),
+		));
+
+		while ($user = $result->fetch()) {
+
+			$user['SHORT_NAME'] = ($user['LAST_NAME'] ? $user['LAST_NAME'] . ' ' : '') . $user['NAME'];
+			$userList[$user['ID']] = $user;
+			$userItems[$user['ID']] = $user['SHORT_NAME'];
+		}
+
+		$grid_options = new CGridOptions($this->arResult["GRID_ID"]);
+		$nav_params = $grid_options->GetNavParams(array("nPageSize" => $this->arParams['PAGE_SIZE']));
+		$nav = new Bitrix\Main\UI\PageNavigation($this->arResult["GRID_ID"]);
+
+		$order = $grid_options->GetSorting(['sort' => ['UF_ACTIVE' => 'desc', 'ID' => 'desc'], 'vars' => ['by' => 'by', 'order' => 'order']]);
+
+		$nav->allowAllRecords(true)
+			->setPageSize($nav_params['nPageSize'])
+			->initFromUri();
+
+		if ($nav->allRecordsShown())
+			$nav_params = false;
+		else
+			$nav_params['iNumPage'] = $nav->getCurrentPage();
+
+		$navParams = [
+			'offset' => $nav->getOffset(),
+			'limit' => $nav->getLimit(),
+		];
+
+		$filterOption = new Bitrix\Main\UI\Filter\Options("filter_" . $this->arResult["GRID_ID"]);
+		$filter = $filterOption->GetFilter();
+		$arItems = $LKClass->getCompany(null, $filter, $navParams, $order['sort']);
+
+		foreach ($arItems as $key => &$item) {
+			$countObjects = 0;
+
+			$column = $item;
+
+			if ($item['UF_NAME'])
+				$column['UF_NAME'] = $item['UF_NAME'];
+			// $column['UF_NAME'] = '<a class="ui-link fs-6' . (!$item['UF_ACTIVE'] ? ' ui-link-secondary opacity-75' : '') . '" href="' . $item["ID"] . '/">' . $item['UF_NAME'] . '</a>';
+
+			$column['UF_ACTIVE'] = $item['UF_ACTIVE'] ? 'да' : 'нет';
+			$item['UF_ACTIVE'] = $item['UF_ACTIVE'] ? 'Y' : 'N';
+			// $item['UF_ACTIVE'] = $item['UF_ACTIVE'] == 'Y' ?: false;
+
+			if ($item['UF_USER_ID']) {
+				$orgUser = $userList[$item['UF_USER_ID']];
+				// gg($orgUser);
+				$item['OPERATOR'] = '[' . $orgUser['ID'] . '] ' . $orgUser['SHORT_NAME'];
+				// $item['UF_USER'] = '[' . $orgUser['ID'] . '] ' . $orgUser['SHORT_NAME'];
+			} else {
+				$item['OPERATOR'] = '<a class="ui-link fs-6' . (!$item['UF_ACTIVE'] ? ' ui-link-secondary opacity-75' : '') . '" 
+										data-bs-toggle="modal" data-bs-target="#addUser">
+										добавить</a>';
+			}
+
+			$column["COPY_INFO"] = $item['UF_USER_ID'] ? '[' . $orgUser['LOGIN'] . ' / *****] <a class="ui-link fs-6' . (!$item['UF_ACTIVE'] ? ' ui-link-secondary opacity-75' : '') . '" 
+						href="' . $item["ID"] . '/"><i class="revicon-export pe-0"></i></a>' : '';
+
+
+			//$item["DETAIL"] = $status;
+
+
+			$this->arResult['GRID']['ROWS'][] = [
+				'data' => $item,			//для редактирования
+				'columns'	=> $column		//отображение
+			];
+		}
+
+		$this->arResult['GRID']['COLUMNS'] = [
+			['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
+			['id' => 'UF_NAME', 'name' => 'Наименование организации', 'sort' => 'UF_NAME', 'default' => true, 'width' => 500,  'editable' => false],
+			['id' => 'UF_ACTIVE', 'name' => 'Активность', 'sort' => 'UF_ACTIVE', 'default' => true, 'width' => 105,  'editable' => false],
+			['id' => 'OPERATOR', 'name' => 'Оператор', 'default' => true, "editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]],
+			['id' => 'COPY_INFO', 'name' => 'Скопировать инфу', 'default' => true],
+			['id' => 'CHANGE_PASSWD', 'name' => 'Сменить пароль', 'default' => false],
+			//['id' => 'UF_TYPE', 'name' => 'Тип организации', 'default' => false, "editable" => ['TYPE' => 'DROPDOWN', 'items' => $userItems]],
+			// ['id' => 'DETAIL', 'name' => 'Объектов', 'default' => true],
+		];
+
+		// gg($this->arResult);
+
+		return $this->arResult;
 
 		/*$this->arResult['GRID_ID'] = str_replace('.', '_', str_replace(':', '_', $this->GetName()));
 		$arResult['GRID_ID'] = $this->arResult['GRID_ID'];
@@ -108,10 +214,7 @@ class MasterUsers extends CBitrixComponent
 				'data' => $item
 			];
 		}
-
-
-		//return $componentPage;
-		return $this->arResult;*/
+*/
 	}
 
 

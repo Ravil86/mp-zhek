@@ -544,89 +544,103 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 					$object['LAST_METERS'] = $arLastMeters;
 					$object['NOTE_METERS'] = $noteMeter;
 				}
-			} else {
-
+			} else{
+			
 				$this->arResult['GRID_ID'] = str_replace('.', '_', str_replace(':', '_', $this->GetName())) . '_' . $arParams['TYPE'];
-
 				$arResult['GRID_ID'] = $this->arResult['GRID_ID'];
 
-				//инициализируем объект с настройками пользователя для нашего грида
-				$grid_options = new CGridOptions($this->arResult["GRID_ID"]);
-				$order = $grid_options->GetSorting(['sort' => ['UF_ORG' => 'desc'], 'vars' => ['by' => 'by', 'order' => 'order']]);
+				// gg($arResult['GRID_ID']);
+
+				if($arParams['TYPE'] == 'list'){
+				
+					
+					//инициализируем объект с настройками пользователя для нашего грида
+					$grid_option = new CGridOptions($this->arResult["GRID_ID"]);
+					$order = $grid_option->GetSorting(['sort' => ['UF_NAME' => 'ASC'], 'vars' => ['by' => 'by', 'order' => 'order']]);
 
 
-				$filterOption = new Bitrix\Main\UI\Filter\Options($this->arResult["GRID_ID"]);
-				$filter = $filterOption->GetFilter();
-				// gg($filterData);
+					$filterOption = new Bitrix\Main\UI\Filter\Options($this->arResult["GRID_ID"]);
+					$filter = $filterOption->GetFilter();
+					// gg($filterData);
 
-				$nav = new Bitrix\Main\UI\PageNavigation($this->arResult["GRID_ID"]);
-				// gg($grid_options);
-				//размер страницы в постраничке (передаем умолчания)
-				$nav_params = $grid_options->GetNavParams(array("nPageSize" => 10));
+					// $nav = new Bitrix\Main\UI\PageNavigation($this->arResult["GRID_ID"]);
+					// // gg($grid_options);
+					// //размер страницы в постраничке (передаем умолчания)
+					// $nav_params = $grid_options->GetNavParams(array("nPageSize" => 10));
 
-				// $nav = new Bitrix\Main\UI\PageNavigation($this->arResult["GRID_ID"]);
-				// $nav->allowAllRecords(true)
-				// 	->setPageSize($nav_params['nPageSize'])
-				// 	->initFromUri();
+					// $nav = new Bitrix\Main\UI\PageNavigation($this->arResult["GRID_ID"]);
+					// $nav->allowAllRecords(true)
+					// 	->setPageSize($nav_params['nPageSize'])
+					// 	->initFromUri();
 
-				// if ($nav->allRecordsShown())
-				// 	$nav_params = false;
-				// else
-				// 	$nav_params['iNumPage'] = $nav->getCurrentPage();
+					// if ($nav->allRecordsShown())
+					// 	$nav_params = false;
+					// else
+					// 	$nav_params['iNumPage'] = $nav->getCurrentPage();
 
-				//type list
-				$this->arResult['GRID']['list']['COLUMNS'] = [
-					['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
-					// ['id' => 'NAME', 'name' => 'Наименование объекта', /*'sort' => 'NAME', */ 'default' => true],
-					['id' => 'COMPANY', 'name' => 'Организация', 'sort' => 'UF_NAME', 'default' => true],
-					['id' => 'ADDRESS', 'name' => 'Адрес объекта', 'default' => true, 'width' => 250],
-					['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => 130],
-				];
-
-				// gg($this->arResult['COMPANY']);
-				$companyList = $LKClass->getCompany(null, $filter, $nav = [], $order['sort']);
-
-				foreach ($companyList as $key => $org) {
-
-					$data['COMPANY'] = $org['UF_NAME'];
-					$data['ADDRESS'] = $org['UF_ADDRESS'];
-					$data['ID'] = $org['ID'];
-
-					$data["DETAIL"] = '<a class="ui-btn ui-btn-primary-dark" href="' . $org["ID"] . '/" target="_blank">Внести</a>';
-
-					$this->arResult['GRID']['list']['ROWS'][] = [
-						'data' => $data
+					//type list
+					$this->arResult['GRID'][$arParams['TYPE']]['COLUMNS'] = [
+						['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
+						// ['id' => 'NAME', 'name' => 'Наименование объекта', /*'sort' => 'NAME', */ 'default' => true],
+						['id' => 'COMPANY', 'name' => 'Организация', 'sort' => 'UF_NAME', 'default' => true],
+						['id' => 'ADDRESS', 'name' => 'Адрес объекта', 'default' => true, 'width' => 250],
+						['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => 130],
 					];
+
+					// gg($this->arResult['COMPANY']);
+					// gg($orderList['sort']);
+					// gg($arParams['TYPE']);
+					// $companyList = $LKClass->getCompany(null, $filter, [], []);
+					$companyList = $LKClass->getCompany(null, $filter, [], $order['sort']);
+
+					foreach ($companyList as $key => $org) {
+
+						$data['COMPANY'] = $org['UF_NAME'];
+						$data['ADDRESS'] = $org['UF_ADDRESS'];
+						$data['ID'] = $org['ID'];
+
+						$data["DETAIL"] = '<a class="ui-btn ui-btn-primary-dark" href="' . $org["ID"] . '/" target="_blank">Внести</a>';
+
+						$this->arResult['GRID']['list']['ROWS'][] = [
+							'data' => $data
+						];
+					}
 				}
+				elseif($arParams['TYPE'] == 'objects'){
 
+					//type objects
+					//какую сортировку сохранил пользователь (передаем то, что по умолчанию)
 
-				//type objects
-				//какую сортировку сохранил пользователь (передаем то, что по умолчанию)
+					$grid_option = new CGridOptions($this->arResult["GRID_ID"]);
+					$order = $grid_option->GetSorting(['sort' => ['UF_ORG' => 'desc'], 'vars' => ['by' => 'by', 'order' => 'order']]);
 
-				$this->arResult['GRID']['objects']['COLUMNS'] = [
-					['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
-					['id' => 'NAME', 'name' => 'Наименование объекта', /*'sort' => 'NAME', */ 'default' => true],
-					['id' => 'COMPANY', 'name' => 'Организация', 'sort' => 'UF_ORG', 'default' => true],
-					['id' => 'ADDRESS', 'name' => 'Адрес объекта', /*'sort' => 'ADDRESS', */ 'default' => true, 'width' => 350],
-					//['id' => 'DOGOVOR', 'name' => 'Договор',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => true],
+					// gg($orderObject);
 
-					// ['id' => 'STATUS', 'name' => 'Статус', 'sort' => '', 'default' => true, 'width' => '200'],
-					['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => 130],
-				];
-				// gg($grid_options);
-				// gg($order);
-				$ObjectsList = LKClass::getObjects(null, $order['sort']);
-				// gg($this->arResult['COMPANY']);
-				foreach ($ObjectsList as $key => &$item) {
-					// gg($item);
-					$item['COMPANY'] = '#' . $item['ORG'] . ' ' . ($this->arResult['COMPANY'][$item['ORG']]['UF_SHORT_NAME'] ?: $this->arResult['COMPANY'][$item['ORG']]['UF_NAME']);
-					// gg($this->arResult['COMPANY'][$item['ORG']]);
-					$status = '<a class="ui-btn ui-btn-primary-dark" href="' . $item["ID"] . '/" target="_blank">Внести</a>';
-					$item["DETAIL"] = $status;
+					$this->arResult['GRID'][$arParams['TYPE']]['COLUMNS'] = [
+						['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
+						['id' => 'NAME', 'name' => 'Наименование объекта', /*'sort' => 'NAME', */ 'default' => true],
+						['id' => 'COMPANY', 'name' => 'Организация', 'sort' => 'UF_ORG', 'default' => true],
+						['id' => 'ADDRESS', 'name' => 'Адрес объекта', /*'sort' => 'ADDRESS', */ 'default' => true, 'width' => 350],
+						//['id' => 'DOGOVOR', 'name' => 'Договор',/* 'sort' => 'TIMESTAMP_X',*/ 'default' => true],
 
-					$this->arResult['GRID']['objects']['ROWS'][] = [
-						'data' => $item
+						// ['id' => 'STATUS', 'name' => 'Статус', 'sort' => '', 'default' => true, 'width' => '200'],
+						['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => 130],
 					];
+					// gg($grid_options);
+					// gg($order);
+					$ObjectsList = LKClass::getObjects(null, $order['sort']);
+					// gg($this->arResult['COMPANY']);
+					foreach ($ObjectsList as $key => &$item) {
+						// gg($item);
+						$item['COMPANY'] = '#' . $item['ORG'] . ' ' . ($this->arResult['COMPANY'][$item['ORG']]['UF_SHORT_NAME'] ?: $this->arResult['COMPANY'][$item['ORG']]['UF_NAME']);
+						// gg($this->arResult['COMPANY'][$item['ORG']]);
+						$status = '<a class="ui-btn ui-btn-primary-dark" href="' . $item["ID"] . '/" target="_blank">Внести</a>';
+						$item["DETAIL"] = $status;
+
+						$this->arResult['GRID']['objects']['ROWS'][] = [
+							'data' => $item
+						];
+					}
 				}
 			}
 		}

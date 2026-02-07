@@ -54,11 +54,13 @@ use Bitrix\Highloadblock as HL;
                                 <div class="col-auto"></div>
                                 <div class="col ms-2! me-auto">
                                     <div class="fw-bold!">#<?= $row['ID']; ?> <?= $row['UF_NAME']; ?></div>
-                                    <div class="mt-2">
+                                    <div class="mt-2 d-flex justify-content-between pe-3 small">
                                         <a class="text-primary text-center small"
                                             href="/master/contracts/<?= $row["CONTRACT"]["ID"] ?>/" target="_blank">
                                             <i class="revicon-doc"></i><span><?= $row["CONTRACT"]["NUMBER"] ?></span></a>
+                                             <a class="text-center small" href="/master/counter/list/<?= $row['ID'] ?>" target="_blank"><i class="revicon-pencil-1 pe-0"></i>показания</a>
                                     </div>
+                                   
                                 </div>
                             </div>
                         </div>
@@ -151,7 +153,7 @@ use Bitrix\Highloadblock as HL;
                                                     #<?= $object['ID']; ?> <?= $object['NAME']; ?>
                                                 </div>
                                                 <div class="col-auto">
-                                                    <a class="text-center" href="/master/counter/<?= $object['ID'] ?>" target="_blank"><i class="revicon-pencil-1"></i></a>
+                                                    <a class="text-center" href="/master/counter/objects/<?= $object['ID'] ?>" target="_blank"><i class="revicon-pencil-1"></i></a>
                                                 </div>
                                             </div>
 
