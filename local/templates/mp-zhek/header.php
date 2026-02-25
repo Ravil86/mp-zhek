@@ -151,6 +151,9 @@ $arSite = $rsSites->Fetch();
         // '//cdn.jsdelivr.net/npm/select2/dist/js/select2.full.min.js',
         '//cdn.jsdelivr.net/npm/select2/dist/js/select2.min.js',
 
+        //clipboard
+        SITE_TEMPLATE_PATH . '/js/clipboard.min.js',
+
     );
 
     foreach ($arJs as $key => $js) {

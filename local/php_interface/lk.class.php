@@ -35,9 +35,9 @@ class LKClass
 
     protected ErrorCollection $errorCollection;
 
-    private static $date_start = '25';
+    private static $date_start = 25;
     private static $date_end;
-    private static $edit_end = '15';
+    private static $edit_end = 15;
 
     // protected $date_start;
 
@@ -82,8 +82,8 @@ class LKClass
             false
         );
         // gg($optionList);
-        self::$date_start = $optionList['date_start'] ?? self::$date_start;
-        self::$date_end = $optionList['date_end'] ?? date('t');
+        self::$date_start = $optionList['date_start'] ? (int)$optionList['date_start'] : self::$date_start;
+        self::$date_end = $optionList['date_end'] ? (int)$optionList['date_end'] : date('t');
         // self::$date_end = $optionList['date_end'] ?? self::$date_end;
 
 
@@ -127,7 +127,8 @@ class LKClass
 
         $filter = [];
 
-        // gg($last);
+        // gg('last_' . $last);
+        // gg('month_' . $month);
         // gg($year);
 
         $codeMonth = null;
@@ -151,6 +152,7 @@ class LKClass
                 $filter['=' . 'UF_MONTH'] = $codeMonth;
             } else {
 
+                //фильтр по месяцу
                 if ($codeMonth == 1) {
                     $filter['<=' . 'UF_MONTH'] = 12;
                 } else {
@@ -168,42 +170,70 @@ class LKClass
             // var_export($filter);
         } else {
 
-            $currentDay = date('j');
-            // $currentDay = 25; //тест
+            $currentDay = (int)date('j');
+            // $currentDay = 15; //тест
 
+            $curentMonth = (int)date('n');
+            // $curentMonth = 1;   //тест
+
+            // dump(self::$date_start);
+            // dump($currentDay);
+            // dump($curentMonth);
+
+            //последние показания
             if ($last) {
-                // gg(self::$date_start);
-                // gg($currentDay);
-                if ($currentDay >= self::$date_start) {
-                    // if ($currentDay >= 25)
-                    if (date('n') == 1) {
-                        $filter['=' . 'UF_MONTH'] = date('n');
+
+                //фильтр по месяцу
+                if ($curentMonth == 1) {
+
+                    if ($currentDay >= self::$date_start) {
+                        $filter['=' . 'UF_MONTH'] = $curentMonth;       //точные показания текущего месяца
                     } else {
-                        $filter['>' . 'UF_MONTH'] = date('n', strtotime("-1 month"));
+                        $filter['=' . 'UF_MONTH'] = 12;         //точные показания декабрь прошлого года
                     }
                 } else {
-                    $filter['>=' . 'UF_MONTH'] = date('n', strtotime("-1 month"));
+                    if ($currentDay >= self::$date_start) {
+                        $filter['>' . 'UF_MONTH'] = date('n', strtotime("-1 month"));
+                    } else {
+                        $filter['>=' . 'UF_MONTH'] = date('n', strtotime("-1 month"));
+                    }
                 }
 
-                if (date('n') == 1)
-                    $filter['=' . 'UF_YEAR'] = date('Y', strtotime("-1 year"));
-                else
+                //фильтр по году
+                if ($curentMonth == 1) {
+                    if ($currentDay >= self::$date_start)
+                        $filter['=' . 'UF_YEAR'] = date('Y');
+                    else
+                        $filter['=' . 'UF_YEAR'] = date('Y', strtotime("-1 year"));
+                } else
                     $filter['=' . 'UF_YEAR'] = date('Y');
 
                 // gg($filter);
 
             } else {
-                // gg(date('n'));
-                if ($currentDay >= self::$date_start)
-                    // if ($currentDay >= 25)
+                //предыдущие показания
+
+                if ($curentMonth == 1) {
+                    $filter['<=' . 'UF_MONTH'] = 12;        //только предыдущий год
+                } elseif ($curentMonth == 2) {
+                    $filter['<' . 'UF_MONTH'] = $curentMonth;   //должен быть только январь
+                } else {
+                    if ($currentDay >= self::$date_start) {
+                        $filter['<=' . 'UF_MONTH'] = date('n', strtotime("-1 month"));
+                    } else {
+                        $filter['<' . 'UF_MONTH'] = date('n', strtotime("-1 month"));
+                    }
+                }
+
+                /*if ($currentDay >= self::$date_start)
                     $filter['<=' . 'UF_MONTH'] = date('n', strtotime("-1 month"));
-                elseif (date('n') == 2 && $currentDay < self::$date_start)
+                elseif ($curentMonth == 2 && $currentDay < self::$date_start)
                     $filter['<=' . 'UF_MONTH'] = 12;
                 else
-                    $filter['<' . 'UF_MONTH'] = date('n', strtotime("-1 month"));
+                    $filter['<' . 'UF_MONTH'] = date('n', strtotime("-1 month"));*/
 
                 // для января 2026 берем только 2025, в остальных случаях выводим только текущего года
-                if (date('n') == 1 || date('n') == 2 && $currentDay < self::$date_start)
+                if ($curentMonth == 1 && $currentDay < self::$date_start)
                     $filter['=' . 'UF_YEAR'] = date('Y', strtotime("-1 year"));
                 else
                     $filter['=' . 'UF_YEAR'] = date('Y');

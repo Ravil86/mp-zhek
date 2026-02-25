@@ -53,6 +53,7 @@ class MasterUsers extends CBitrixComponent
 			'select' => array(
 				'ID' => 'USER.ID',
 				'LOGIN' => 'USER.LOGIN',
+				'EMAIL' => 'USER.EMAIL',
 				// 'PERSONAL_GENDER' => 'USER.PERSONAL_GENDER',
 				'NAME' => 'USER.NAME',
 				'LAST_NAME' => 'USER.LAST_NAME',
@@ -109,7 +110,10 @@ class MasterUsers extends CBitrixComponent
 			if ($item['UF_USER_ID']) {
 				$orgUser = $userList[$item['UF_USER_ID']];
 				// gg($orgUser);
-				$item['OPERATOR'] = '[' . $orgUser['ID'] . '] ' . $orgUser['SHORT_NAME'];
+				$item['OPERATOR'] = '<div class="row align-items-center! gx-1">
+										<div class="col-auto mt-1">[' . $orgUser['ID'] . ']</div>
+										<div class="col"><span class="fw-semibold">' . $orgUser['SHORT_NAME'] . '</span><div>' . $orgUser['EMAIL'] . '</div></div>
+										</div>';
 				// $item['UF_USER'] = '[' . $orgUser['ID'] . '] ' . $orgUser['SHORT_NAME'];
 			} else {
 				$item['OPERATOR'] = '<a class="ui-link fs-6' . (!$item['UF_ACTIVE'] ? ' ui-link-secondary opacity-75' : '') . '" 
@@ -117,9 +121,14 @@ class MasterUsers extends CBitrixComponent
 										добавить</a>';
 			}
 
-			$column["COPY_INFO"] = $item['UF_USER_ID'] ? '[' . $orgUser['LOGIN'] . ' / *****] <a class="ui-link fs-6' . (!$item['UF_ACTIVE'] ? ' ui-link-secondary opacity-75' : '') . '" 
-						href="' . $item["ID"] . '/"><i class="revicon-export pe-0"></i></a>' : '';
-
+			$column["COPY_INFO"] = $item['UF_USER_ID'] ? '[' . $orgUser['LOGIN'] . ' / *****] 
+			<button onclick="changeTooltipText(event)" type="button"
+          class="btn clipboard_text icon-link! color-grey py-0"
+data-clipboard-text="' . $orgUser['SHORT_NAME'] . '
+' . $orgUser['EMAIL'] . '
+логин: ' . $orgUser['LOGIN'] . '
+пароль: ' . $orgUser['UF_PASSWORD'] . '"><i class="revicon-export pe-0" data-bs-toggle="tooltip"
+            data-bs-title="Скопировать доступы"></i></button>' : '';
 
 			//$item["DETAIL"] = $status;
 

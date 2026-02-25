@@ -257,7 +257,7 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 					$prevMeters = LKClass::meters($objectID);
 					$lastMeters = LKClass::meters($objectID, true);
-
+					// dump($prevMeters);
 					$arPrevMeters = [];
 					$arLastMeters = [];
 
@@ -544,16 +544,16 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 					$object['LAST_METERS'] = $arLastMeters;
 					$object['NOTE_METERS'] = $noteMeter;
 				}
-			} else{
-			
+			} else {
+
 				$this->arResult['GRID_ID'] = str_replace('.', '_', str_replace(':', '_', $this->GetName())) . '_' . $arParams['TYPE'];
 				$arResult['GRID_ID'] = $this->arResult['GRID_ID'];
 
 				// gg($arResult['GRID_ID']);
 
-				if($arParams['TYPE'] == 'list'){
-				
-					
+				if ($arParams['TYPE'] == 'list') {
+
+
 					//инициализируем объект с настройками пользователя для нашего грида
 					$grid_option = new CGridOptions($this->arResult["GRID_ID"]);
 					$order = $grid_option->GetSorting(['sort' => ['UF_NAME' => 'ASC'], 'vars' => ['by' => 'by', 'order' => 'order']]);
@@ -605,8 +605,7 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 							'data' => $data
 						];
 					}
-				}
-				elseif($arParams['TYPE'] == 'objects'){
+				} elseif ($arParams['TYPE'] == 'objects') {
 
 					//type objects
 					//какую сортировку сохранил пользователь (передаем то, что по умолчанию)
