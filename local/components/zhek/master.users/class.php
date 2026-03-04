@@ -42,10 +42,15 @@ class MasterUsers extends CBitrixComponent
 		$this->arResult['GRID_ID'] = str_replace('.', '_', str_replace(':', '_', $this->GetName()));
 		$arResult['GRID_ID'] = $this->arResult['GRID_ID'];
 
-		$this->arResult['GRID']['COUNT'] = count($LKClass->getCompany());
+		$allCompany = $LKClass->getCompany();
+		//$this->arResult['ALL_COMPANY'] = $allCompany;
+		$this->arResult['GRID']['COUNT'] = count($allCompany);
 
 		$result = \Bitrix\Main\UserGroupTable::getList(array(
-			'order' => array('USER.LAST_LOGIN' => 'DESC'),
+			'order' => array(
+				'USER.NAME' => 'ASC'
+				// 'USER.LAST_LOGIN' => 'DESC'
+			),
 			'filter' => array(
 				// 'USER.ACTIVE' => 'Y',
 				'GROUP_ID' => [8, 1],
@@ -66,9 +71,24 @@ class MasterUsers extends CBitrixComponent
 		while ($user = $result->fetch()) {
 
 			$user['SHORT_NAME'] = ($user['LAST_NAME'] ? $user['LAST_NAME'] . ' ' : '') . $user['NAME'];
+			$user['ORG_ID'] = '';
 			$userList[$user['ID']] = $user;
 			$userItems[$user['ID']] = $user['SHORT_NAME'];
 		}
+
+		$this->arResult['USERS'] = $userList;
+
+		foreach ($allCompany as $key => $org) {
+			if ($org['UF_USER_ID'])
+				$this->arResult['USERS'][$org['UF_USER_ID']]['ORG_ID'] = $org['ID'];
+		}
+
+		function my_sort($a, $b)
+		{
+			// if (isset($a['ORG_ID']) == isset($b['ORG_ID'])) return 0;
+			return ($a['ORG_ID'] < $b['ORG_ID']) ? -1 : 1;
+		}
+		usort($this->arResult['USERS'], "my_sort");
 
 		$grid_options = new CGridOptions($this->arResult["GRID_ID"]);
 		$nav_params = $grid_options->GetNavParams(array("nPageSize" => $this->arParams['PAGE_SIZE']));
@@ -95,7 +115,7 @@ class MasterUsers extends CBitrixComponent
 		$arItems = $LKClass->getCompany(null, $filter, $navParams, $order['sort']);
 
 		foreach ($arItems as $key => &$item) {
-			$countObjects = 0;
+			// $countObjects = 0;
 
 			$column = $item;
 
@@ -108,8 +128,8 @@ class MasterUsers extends CBitrixComponent
 			// $item['UF_ACTIVE'] = $item['UF_ACTIVE'] == 'Y' ?: false;
 
 			if ($item['UF_USER_ID']) {
+
 				$orgUser = $userList[$item['UF_USER_ID']];
-				// gg($orgUser);
 				$item['OPERATOR'] = '<div class="row align-items-center! gx-1">
 										<div class="col-auto mt-1">[' . $orgUser['ID'] . ']</div>
 										<div class="col"><span class="fw-semibold">' . $orgUser['SHORT_NAME'] . '</span><div>' . $orgUser['EMAIL'] . '</div></div>
@@ -118,7 +138,10 @@ class MasterUsers extends CBitrixComponent
 			} else {
 				$item['OPERATOR'] = '<a class="ui-link fs-6' . (!$item['UF_ACTIVE'] ? ' ui-link-secondary opacity-75' : '') . '" 
 										data-bs-toggle="modal" data-bs-target="#addUser">
-										добавить</a>';
+										добавить</a>' .
+					'<a class="ui-link fs-6' . (!$item['UF_ACTIVE'] ? ' ui-link-secondary opacity-75' : '') . '" 
+										data-bs-toggle="modal" data-bs-target="#selectUser">
+										выбрать</a>';
 			}
 
 			$column["COPY_INFO"] = $item['UF_USER_ID'] ? '[' . $orgUser['LOGIN'] . ' / *****] 
@@ -132,13 +155,12 @@ data-clipboard-text="' . $orgUser['SHORT_NAME'] . '
 
 			//$item["DETAIL"] = $status;
 
-
 			$this->arResult['GRID']['ROWS'][] = [
 				'data' => $item,			//для редактирования
 				'columns'	=> $column		//отображение
 			];
 		}
-
+		// dump($this->arResult['USERS']);
 		$this->arResult['GRID']['COLUMNS'] = [
 			['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
 			['id' => 'UF_NAME', 'name' => 'Наименование организации', 'sort' => 'UF_NAME', 'default' => true, 'width' => 500,  'editable' => false],
@@ -150,80 +172,7 @@ data-clipboard-text="' . $orgUser['SHORT_NAME'] . '
 			// ['id' => 'DETAIL', 'name' => 'Объектов', 'default' => true],
 		];
 
-		// gg($this->arResult);
-
 		return $this->arResult;
-
-		/*$this->arResult['GRID_ID'] = str_replace('.', '_', str_replace(':', '_', $this->GetName()));
-		$arResult['GRID_ID'] = $this->arResult['GRID_ID'];
-
-		$serviceList = LKClass::getService();
-		$this->arResult['SERVICE_LIST'] = $serviceList;
-
-		$arItems = LKClass::getCompany();
-
-		if (is_array($arItems))
-			$this->arResult['GRID']['COUNT'] = count($arItems);
-
-		// if ($myCompany)
-		$getObjects = LKClass::getObjects();
-		foreach ($getObjects as $key => $value) {
-			$arObjects[$value['ORG']][] = $value;
-		}
-
-
-
-		$grid_options = new CGridOptions($this->arResult["GRID_ID"]);
-		$nav_params = $grid_options->GetNavParams(array("nPageSize" => $this->arResult['PAGE_SIZE']));
-		$nav = new Bitrix\Main\UI\PageNavigation($this->arResult["GRID_ID"]);
-		$nav->allowAllRecords(true)
-			->setPageSize($nav_params['nPageSize'])
-			->initFromUri();
-
-		if ($nav->allRecordsShown())
-			$nav_params = false;
-		else
-			$nav_params['iNumPage'] = $nav->getCurrentPage();
-
-		//какую сортировку сохранил пользователь (передаем то, что по умолчанию)
-		$arSort = $grid_options->GetSorting(array("sort" => array("timestamp_x" => "desc"), "vars" => array("by" => "by", "order" => "order")));
-		$this->arResult['GRID']['COLUMNS'] = [
-			['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => false, 'width' => 70],
-			['id' => 'UF_NAME', 'name' => 'Организация',  'default' => true, 'editable' => true],
-			['id' => 'UF_ADDRESS', 'name' => 'Адрес организации',  'default' => true, 'width' => 300, 'editable' => true],
-			['id' => 'UF_INN', 'name' => 'ИНН', 'default' => true, 'width' => 200, 'editable' => true],
-			['id' => 'USER', 'name' => 'Пользователь', 'default' => true],
-			['id' => 'DETAIL', 'name' => '', 'default' => true],
-		];
-
-		$filterOption = new Bitrix\Main\UI\Filter\Options("filter_" . $this->arResult["GRID_ID"]);
-		$filter = $filterOption->GetFilter();
-
-		$navParams = [
-			'offset' => $nav->getOffset(),
-			'limit' => $nav->getLimit(),
-		];
-
-		$itemsCompany = LKClass::getCompany([], $filter, $navParams);
-
-		foreach ($itemsCompany as $key => &$item) {
-			$countObjects = 0;
-
-			if ($arObjects[$item['ID']])
-				$countObjects = count($arObjects[$item['ID']]);
-
-			// $item['COMPANY'] = $item['COMPANY']['NAME'];
-
-			$status = '<a class="d-flex!" href="' . $item["ID"] . '/">';
-			$status .= '<div class="ui-btn ui-btn-secondary px-3 py-1 text-center opacity-75">Объектов <i class="ui-btn-counter ms-2">' . $countObjects . '</i></div>';
-			$status .= '</a>';
-			$item["DETAIL"] = $status;
-
-			$this->arResult['GRID']['ROWS'][] = [
-				'data' => $item
-			];
-		}
-*/
 	}
 
 
@@ -278,8 +227,33 @@ data-clipboard-text="' . $orgUser['SHORT_NAME'] . '
 
 			// dump($arRequest);
 
-			// if ($arRequest["ADD_OBJECT"] == 'Y') {
-			// 	LKClass::addObject($arRequest["FIELDS"]);
+			if ($arRequest["ADD_USER"] == 'Y') {
+
+				$EMAIL = $arRequest["EMAIL"];
+				$LOGIN = preg_replace('/\+(.)*@/', '@', $EMAIL);
+				$PASS = randString(10);
+
+				$user = new CUser;
+				$fields = [
+					"NAME"      => $arRequest["NAME"],
+					"LOGIN"     => $LOGIN,
+					"ACTIVE"    => "Y",
+					"PASSWORD"  => $PASS,
+					"CONFIRM_PASSWORD" => $PASS,
+					"UF_PASSWORD" => $PASS,
+					"EMAIL"     => $EMAIL,
+					"GROUP_ID" => [3, 4, 8],
+				];
+
+				$userId = $user->Add($fields);
+				if (intval($userId) > 0) {
+					Bitrix\Main\Diag\Debug::dumpToFile($userId, 'Пользователь успешно добавлен', 'test.log');
+					// echo "Пользователь успешно добавлен, ID: " . $userId;
+				} else {
+					Bitrix\Main\Diag\Debug::dumpToFile($user->LAST_ERROR, 'шибка при добавлении Пользователя', 'test.log');
+					// echo "Ошибка при добавлении: " . $user->LAST_ERROR;
+				}
+			}
 			// } elseif ($arRequest["ADD_COUNTER"] == 'Y') {
 			// 	LKClass::addCounter($arRequest["FIELDS"]);
 			// } elseif ($arRequest["ADD_COMPANY"] == 'Y') {
