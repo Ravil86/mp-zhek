@@ -81,13 +81,67 @@ class LKClass
             'send',
             false
         );
-        // gg($optionList);
+
         self::$date_start = $optionList['date_start'] ? (int)$optionList['date_start'] : self::$date_start;
-        self::$date_end = $optionList['date_end'] ? (int)$optionList['date_end'] : date('t');
+
+        // dump($optionList['date_end']);
+        self::$date_end = $optionList['date_end'] ?: null;
         // self::$date_end = $optionList['date_end'] ?? self::$date_end;
 
-
         return $optionList;
+    }
+
+    public static function currentMonth()
+    {
+
+        $monthList = self::getMonth();
+
+        $selfMonth = date("m");
+        // $selfMonth = date("m", strtotime('-1 month'));
+        $prevMonth = date("m", strtotime('-1 month'));
+
+        //Текущая дата
+        $curDay = date("d");
+        // $curDay = 25;
+
+        //Дата начала подачи
+        $dateStart = self::$date_start;
+        // $dateStart = $cabinetOption['date_start'] ?: 25;	//Дата начала подачи
+
+        //Дата окончания подачи
+        // $dateEnd = self::$date_end;
+        $dateEnd = self::$date_end ?: date('t');    //конец месяца
+
+        // $dateEnd = date('t');	//конец месяца
+
+        // dump($dateEnd);
+
+        // Дата окончания редактирования модератором
+        $editEnd = self::$edit_end;
+
+        $arResult['DATE_ADMIN'] = false;
+
+        if ($dateStart <= $curDay && $curDay <= $dateEnd) {        //период подачи пользователем до конца месяца
+
+            $result['SAVE_MONTH'] = $monthList[$selfMonth];
+            $result['DATE_USER'] = true;
+            $result['DATE_ADMIN'] = true; //включена модерация во время ввода пользователями
+        } elseif ($curDay == 1) {                                //период подачи пользователем 1 числа
+            $result['SAVE_MONTH'] = $monthList[$prevMonth];
+            $result['DATE_USER'] = true;
+            $result['DATE_ADMIN'] = true; //включена модерация во время ввода пользователями
+        } elseif ($curDay > 1 && $curDay <= $editEnd) {
+            // gg($dateEnd);
+            if ($curDay < $dateEnd && $dateStart > $dateEnd)  //Продление подачи
+                $result['DATE_USER'] = true;
+
+            $result['SAVE_MONTH'] = $monthList[$prevMonth];
+            $result['DATE_ADMIN'] = true;
+        } elseif ($curDay > $editEnd && $curDay < $dateStart) {
+            $result['SAVE_MONTH'] = $monthList[$selfMonth];
+        }
+
+        return $result;
     }
 
 
@@ -443,6 +497,8 @@ class LKClass
             'select' => array('*'),
             'order' => $order
         ];
+
+        // gg($params);
 
         if ($nav) {
             $params['limit'] = $nav['limit'];

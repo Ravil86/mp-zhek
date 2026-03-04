@@ -82,7 +82,20 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 		$this->arResult['COMPANY'] = $LKClass->getCompany();
 
-		$monthList = $LKClass->getMonth();
+		
+		$getUserMonth = $LKClass->currentMonth();
+
+		$this->arResult['SAVE_MONTH'] = $getUserMonth['SAVE_MONTH'];
+		$arResult['SAVE_MONTH'] = $this->arResult['SAVE_MONTH'];
+
+		$arResult['DATE_USER'] = $getUserMonth['DATE_USER'];
+		$arResult['DATE_ADMIN'] = $getUserMonth['DATE_ADMIN'];
+
+		// dump($arResult['DATE_USER']);
+		// dump($arResult['SAVE_MONTH']);
+		// dump($arResult['DATE_ADMIN']);
+
+		/*$monthList = $LKClass->getMonth();
 
 		$selfMonth = date("m");
 		// $selfMonth = date("m", strtotime('-1 month'));
@@ -108,10 +121,6 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 		$editEnd = $LKClass->getEditEnd();
 		// $editEnd = $cabinetOption['edit_end'] ?: 5;
 
-		// gg($dateStart);
-		// gg($dateEnd);
-		// gg($editEnd);
-
 		$arResult['DATE_ADMIN'] = false;
 
 		if ($dateStart <= $curDay && $curDay <= $dateEnd) {		//период подачи пользователем до конца месяца
@@ -128,7 +137,8 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 		} elseif ($curDay > $editEnd && $curDay < $dateStart) {
 			$this->arResult['SAVE_MONTH'] = $monthList[$selfMonth];
 		}
-		$arResult['SAVE_MONTH'] = $this->arResult['SAVE_MONTH'];
+		
+		$arResult['SAVE_MONTH'] = $this->arResult['SAVE_MONTH'];*/
 
 		// if ($dateStart <= $day && $day <= $dateEnd)
 		// 	$arResult['DATE_USER'] = true;
@@ -370,7 +380,7 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 			// gg($prevMeters);
 
 			foreach ($prevMeters as $key => $value) {
-
+// gg($value['MONTH']);
 				$arPrevMeters[$value['COUNTER']][] = $value['METER'];
 				// $arPrevMeters[$value['COUNTER']] = [
 				// 	'VALUE' => $value['METER'],
@@ -381,6 +391,7 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 			// dump($lastMeters);
 			foreach ($lastMeters as $key => $value) {
+//  gg($value['DATE']);
 				$arLastMeters[$value['COUNTER']] = $value['METER'];
 
 				$noteMeter[$value['COUNTER']] = $value['NOTE'];
@@ -390,7 +401,8 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 				// 	'COUNTER' => $value['COUNTER']
 				// ];
 			}
-			// dump($arLastMeters);
+
+			// gg($arLastMeters);
 
 			$this->arResult['DETAIL']['PREV_METERS'] = $arPrevMeters;
 			$this->arResult['DETAIL']['LAST_METERS'] = $arLastMeters;

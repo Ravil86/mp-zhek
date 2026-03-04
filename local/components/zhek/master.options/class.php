@@ -52,12 +52,15 @@ class MasterUsers extends CBitrixComponent implements Controllerable
 
 
 		$saveStart = new DateTime($data['start'], 'd.m.Y');
-		$saveEnd = new DateTime($data['end'], 'd.m.Y');
+		if ($data['clear'])
+			$saveEnd = null;
+		else
+			$saveEnd = new DateTime($data['end'], 'd.m.Y');
 
 		$category = "cabinet";
 		$name = "send";
 
-		$value = array("date_start" => $saveStart->format('d'), "date_end" => $saveEnd->format('d'), 'edit_end' => '25');
+		$value = array("date_start" => $saveStart->format('d'), "date_end" => ($saveEnd ? $saveEnd->format('d') : ''), 'edit_end' => '25');
 
 		// return  $value;
 		CUserOptions::SetOption($category, $name, $value, true);
@@ -85,9 +88,13 @@ class MasterUsers extends CBitrixComponent implements Controllerable
 
 		$this->arResult['DATA_START'] = $LKClass->getDataStart() . '.' . date('m.Y');
 
-		$this->arResult['DATA_END'] = $LKClass->getDataEnd() . '.' . ($LKClass->getDataEnd() < $LKClass->getDataStart() ? date("m", strtotime('+1 month')) : date('m')) . '.' . date('Y');
-		// $this->arResult['DATA_END'] = $LKClass->getDataEnd() . '.' . date('m.Y');
 
+		// $this->arResult['DATA_END'] = $LKClass->getDataEnd() . '.' . ($LKClass->getDataEnd() < $LKClass->getDataStart() ? date("m", strtotime('+1 month')) : date('m')) . '.' . date('Y');
+
+		if ($LKClass->getDataEnd())
+			$this->arResult['DATA_END'] = $LKClass->getDataEnd() . '.' . date('m.Y');
+
+		// dump($this->arResult['DATA_END']);
 		$this->arResult['EDIT_START'] = $LKClass->getEditEnd() . '.' . ($LKClass->getEditEnd() < date('d') ? date("m", strtotime('+1 month')) : date('m')) . '.' . date('Y');
 
 		$this->arResult['EDIT_END'] = $LKClass->getEditEnd() + 1 . '.' . date('m.Y');

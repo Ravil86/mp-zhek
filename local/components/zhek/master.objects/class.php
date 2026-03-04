@@ -657,7 +657,7 @@ class MasterObjects extends CBitrixComponent implements Controllerable
 		if ($this->isPost() && check_bitrix_sessid()) {
 
 			// dump($arRequest);
-			Bitrix\Main\Diag\Debug::dumpToFile(var_export($arRequest, 1), '$arRequest', 'test.log');
+			// Bitrix\Main\Diag\Debug::dumpToFile(var_export($arRequest, 1), '$arRequest', 'test.log');
 
 			if ($arRequest["ADD_OBJECT"] == 'Y') {
 				LKClass::addObject($arRequest["FIELDS"]);

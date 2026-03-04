@@ -1042,9 +1042,15 @@ body .transparent-header-container {
 .header-icons-container a::before {
   font-size: 16px;
   color: #303030;
-  transition: color 0.2s ease 0s, opacity 0.2s ease 0s;
-  -webkit-transition: color 0.2s ease 0s, opacity 0.2s ease 0s;
-  -moz-transition: color 0.2s ease 0s, opacity 0.2s ease 0s;
+  transition:
+    color 0.2s ease 0s,
+    opacity 0.2s ease 0s;
+  -webkit-transition:
+    color 0.2s ease 0s,
+    opacity 0.2s ease 0s;
+  -moz-transition:
+    color 0.2s ease 0s,
+    opacity 0.2s ease 0s;
 }
 
 .header-icons-container a:hover::before {
@@ -1159,9 +1165,15 @@ span.cart-items-number-arrow {
 }
 
 .transparent-header-container #cm-sticky-clone {
-  -webkit-transition: background 0.3s ease 0s, -webkit-box-shadow 0.3s ease 0s;
-  -moz-transition: background 0.3s ease 0s, -moz-box-shadow 0.3s ease 0s;
-  transition: background 0.3s ease 0s, box-shadow 0.3s ease 0s;
+  -webkit-transition:
+    background 0.3s ease 0s,
+    -webkit-box-shadow 0.3s ease 0s;
+  -moz-transition:
+    background 0.3s ease 0s,
+    -moz-box-shadow 0.3s ease 0s;
+  transition:
+    background 0.3s ease 0s,
+    box-shadow 0.3s ease 0s;
 }
 
 .header-container.sticky.transition {
@@ -1225,17 +1237,29 @@ span.cart-items-number-arrow {
   .header-container.sticky.disable-transition#cm-sticky-clone
   .header-icons-container
   a::before {
-  -webkit-transition: color 0.2s ease 0s, opacity 0.2s ease 0s;
-  -moz-transition: color 0.2s ease 0s, opacity 0.2s ease 0s;
-  transition: color 0.2s ease 0s, opacity 0.2s ease 0s;
+  -webkit-transition:
+    color 0.2s ease 0s,
+    opacity 0.2s ease 0s;
+  -moz-transition:
+    color 0.2s ease 0s,
+    opacity 0.2s ease 0s;
+  transition:
+    color 0.2s ease 0s,
+    opacity 0.2s ease 0s;
 }
 
 .transparent-header-container
   .header-container.sticky#cm-sticky-clone
   span.cart-items-number {
-  -webkit-transition: color 0.3s ease 0s, background 0.3s ease 0s;
-  -moz-transition: color 0.3s ease 0s, background 0.3s ease 0s;
-  transition: color 0.3s ease 0s, background 0.3s ease 0s;
+  -webkit-transition:
+    color 0.3s ease 0s,
+    background 0.3s ease 0s;
+  -moz-transition:
+    color 0.3s ease 0s,
+    background 0.3s ease 0s;
+  transition:
+    color 0.3s ease 0s,
+    background 0.3s ease 0s;
 }
 
 .transparent-header-container
@@ -2959,9 +2983,15 @@ ol.features-list li p {
   border-radius: 50%;
   -moz-border-radius: 50%;
   -webkit-border-radius: 50%;
-  transition: background 0.2s ease 0s, border 0.2s ease 0s;
-  -webkit-transition: background 0.2s ease 0s, border 0.2s ease 0s;
-  -moz-transition: background 0.2s ease 0s, border 0.2s ease 0s;
+  transition:
+    background 0.2s ease 0s,
+    border 0.2s ease 0s;
+  -webkit-transition:
+    background 0.2s ease 0s,
+    border 0.2s ease 0s;
+  -moz-transition:
+    background 0.2s ease 0s,
+    border 0.2s ease 0s;
 }
 
 .slider-control.left {
@@ -3521,9 +3551,15 @@ span.number.sign {
   line-height: 24px;
   color: #303030;
   margin-top: 10px;
-  -webkit-transition: color 0.2s ease 0s, background 0.2s ease 0s;
-  -moz-transition: color 0.2s ease 0s, background 0.2s ease 0s;
-  transition: color 0.2s ease 0s, background 0.2s ease 0s;
+  -webkit-transition:
+    color 0.2s ease 0s,
+    background 0.2s ease 0s;
+  -moz-transition:
+    color 0.2s ease 0s,
+    background 0.2s ease 0s;
+  transition:
+    color 0.2s ease 0s,
+    background 0.2s ease 0s;
 }
 
 .categories li:first-child a {
@@ -3579,9 +3615,15 @@ span.number.sign {
   font-size: 13px;
   padding: 10px 12px 12px;
   text-align: left;
-  -webkit-transition: color 0.2s ease 0s, background 0.2s ease 0s;
-  -moz-transition: color 0.2s ease 0s, background 0.2s ease 0s;
-  transition: color 0.2s ease 0s, background 0.2s ease 0s;
+  -webkit-transition:
+    color 0.2s ease 0s,
+    background 0.2s ease 0s;
+  -moz-transition:
+    color 0.2s ease 0s,
+    background 0.2s ease 0s;
+  transition:
+    color 0.2s ease 0s,
+    background 0.2s ease 0s;
 }
 
 .taxonomies a:hover {
@@ -3625,9 +3667,15 @@ span.number.sign {
   line-height: 24px;
   color: #303030;
   margin-top: 10px;
-  -webkit-transition: color 0.2s ease 0s, background 0.2s ease 0s;
-  -moz-transition: color 0.2s ease 0s, background 0.2s ease 0s;
-  transition: color 0.2s ease 0s, background 0.2s ease 0s;
+  -webkit-transition:
+    color 0.2s ease 0s,
+    background 0.2s ease 0s;
+  -moz-transition:
+    color 0.2s ease 0s,
+    background 0.2s ease 0s;
+  transition:
+    color 0.2s ease 0s,
+    background 0.2s ease 0s;
 }
 
 .buttons li:first-child a {
@@ -3653,9 +3701,15 @@ span.number.sign {
   transform: scaleY(-1);
   -ms-filter: fliph;
   filter: fliph;
-  -webkit-transition: color 0.2s ease 0s, background 0.2s ease 0s;
-  -moz-transition: color 0.2s ease 0s, background 0.2s ease 0s;
-  transition: color 0.2s ease 0s, background 0.2s ease 0s;
+  -webkit-transition:
+    color 0.2s ease 0s,
+    background 0.2s ease 0s;
+  -moz-transition:
+    color 0.2s ease 0s,
+    background 0.2s ease 0s;
+  transition:
+    color 0.2s ease 0s,
+    background 0.2s ease 0s;
 }
 
 .buttons li:hover a,
@@ -4000,9 +4054,15 @@ button.owl-next {
   border-radius: 50%;
   -moz-border-radius: 50%;
   -webkit-border-radius: 50%;
-  -webkit-transition: color 0.2s ease 0s, background 0.2s ease 0s;
-  -moz-transition: color 0.2s ease 0s, background 0.2s ease 0s;
-  transition: color 0.2s ease 0s, background 0.2s ease 0s;
+  -webkit-transition:
+    color 0.2s ease 0s,
+    background 0.2s ease 0s;
+  -moz-transition:
+    color 0.2s ease 0s,
+    background 0.2s ease 0s;
+  transition:
+    color 0.2s ease 0s,
+    background 0.2s ease 0s;
   box-sizing: content-box;
 }
 
@@ -4353,11 +4413,18 @@ li.template-tick-2::before {
 
 .social-icons a::before {
   color: #c0c0c0;
-  -webkit-transition: color 0.2s ease 0s, background 0.2s ease 0s,
+  -webkit-transition:
+    color 0.2s ease 0s,
+    background 0.2s ease 0s,
     opacity 0.2s ease 0s;
-  -moz-transition: color 0.2s ease 0s, background 0.2s ease 0s,
+  -moz-transition:
+    color 0.2s ease 0s,
+    background 0.2s ease 0s,
     opacity 0.2s ease 0s;
-  transition: color 0.2s ease 0s, background 0.2s ease 0s, opacity 0.2s ease 0s;
+  transition:
+    color 0.2s ease 0s,
+    background 0.2s ease 0s,
+    opacity 0.2s ease 0s;
 }
 
 .social-icons a:hover::before {
@@ -5057,7 +5124,7 @@ body .cost-calculator-box input.big {
 
 .ui-datepicker-calendar th,
 .ui-datepicker-calendar td {
-  padding: 12px;
+  padding: 11px;
   font-size: 13px;
 }
 
@@ -5424,9 +5491,15 @@ div.pp_default .pp_close:hover {
   border-radius: 50%;
   -moz-border-radius: 50%;
   -webkit-border-radius: 50%;
-  transition: background 0.2s ease 0s, border 0.2s ease 0s;
-  -webkit-transition: background 0.2s ease 0s, border 0.2s ease 0s;
-  -moz-transition: background 0.2s ease 0s, border 0.2s ease 0s;
+  transition:
+    background 0.2s ease 0s,
+    border 0.2s ease 0s;
+  -webkit-transition:
+    background 0.2s ease 0s,
+    border 0.2s ease 0s;
+  -moz-transition:
+    background 0.2s ease 0s,
+    border 0.2s ease 0s;
   background: none;
   box-sizing: content-box;
 }
