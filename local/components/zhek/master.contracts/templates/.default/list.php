@@ -116,7 +116,7 @@ $lastYear = date('Y', strtotime('-1 year'));
                 ['NAME' => '50', 'VALUE' => '50'],
                 ['NAME' => '100', 'VALUE' => '100']
             ],
-            'AJAX_OPTION_JUMP' => 'Y',
+            'AJAX_OPTION_JUMP' => 'N',  //скролл к верху
             'SHOW_ROW_CHECKBOXES' => $arResult['ADMIN'] || $arResult['MODERATOR'] ?: false,
             'SHOW_CHECK_ALL_CHECKBOXES' => false,
             'SHOW_ROW_ACTIONS_MENU' => true,

@@ -396,12 +396,15 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 				$userFilter['USER_ID'] = $USER->GetID();
 			}
 
+			// dump($filterData);
+
 			// if (isset($filterData["DATE_MODIFY_from"])) {
 			// 	$userFilter["DATE_MODIFY_FROM"] = $filterData["DATE_MODIFY_from"];
 			// 	$userFilter["DATE_MODIFY_TO"] = $filterData["DATE_MODIFY_to"];
 			// }
 
-			// if (isset($filterData["FIND"])) {
+
+
 			// 	if (isset($filterData["NAME"]))
 			// 		$userFilter["NAME"] = "%" . $filterData["NAME"] . "%";
 			// 	else
@@ -416,17 +419,23 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 			}
 			asort($filterOrgList);
 
-			if (isset($filterData["CONTRACT_ID"]))
-				$userFilter["ID"] = $filterData["CONTRACT_ID"];
+			if (isset($filterData["FIND"]) && '' !== $filterData["FIND"]) {
+				$userFilter["FIND"] = $filterData["FIND"];
+				// $filterCompany = $this->getResult(false, [], [], $filterOrg);
+			} else {
 
-			if (isset($filterData["COMPANY"]))
-				$userFilter["UF_COMPANY"] = $filterData["COMPANY"];
+				if (isset($filterData["CONTRACT_ID"]))
+					$userFilter["ID"] = $filterData["CONTRACT_ID"];
 
-			if (isset($filterData["DATE_CREATE_from"])) {
-				$userFilter[">=UF_DATE"] = $filterData["DATE_CREATE_from"];
-			}
-			if (isset($filterData["DATE_CREATE_to"])) {
-				$userFilter["<=UF_DATE"] = $filterData["DATE_CREATE_to"];
+				if (isset($filterData["COMPANY"]))
+					$userFilter["UF_COMPANY"] = $filterData["COMPANY"];
+
+				if (isset($filterData["DATE_CREATE_from"])) {
+					$userFilter[">=UF_DATE"] = $filterData["DATE_CREATE_from"];
+				}
+				if (isset($filterData["DATE_CREATE_to"])) {
+					$userFilter["<=UF_DATE"] = $filterData["DATE_CREATE_to"];
+				}
 			}
 
 			$arAllItems = $this->getResult(false, [], [], $userFilter);
@@ -602,8 +611,10 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 		$arCompany = [];
 
 		// $getContracts = LKClass::getContracts($arCompany['ID']);
+		$getCompany = $this->companyList;
 
 		// $filter = [];
+		$itemList = [];
 
 		if (isset($userFilter['USER_ID'])) {
 			$arCompany = LKClass::getCompany($userFilter['USER_ID']);
@@ -611,17 +622,18 @@ class MasterContracts extends CBitrixComponent implements Controllerable
 				unset($userFilter['USER_ID']);	// В HL контрактов нет фильтра по USER_ID
 			$itemList = LKClass::getContracts($arCompany['ID'], $userFilter, $arSort, $arNav);
 			// $itemList = $this->getContracts($arCompany['ID']);
+		} elseif (isset($userFilter['FIND'])) {
+
+			$filterCompany = LKClass::getCompany(null, $userFilter);		//ищем организацию по имени return [ID]
+			if ($filterCompany) {
+				$orgFilter['UF_COMPANY'] = array_keys($filterCompany);
+				$itemList = LKClass::getContracts(false, $orgFilter, $arSort);
+			}
 		} else {
-			$getCompany = $this->companyList;
 			$itemList = LKClass::getContracts(false, $userFilter, $arSort, $arNav);
 			// $getCompany = LKClass::getCompany();
 			// $itemList = $this->getContracts();
 		}
-
-		// $serviceList = LKClass::getService();
-
-
-		// $statusList = LKClass::getStatus();
 
 		foreach ($itemList as &$value) {
 
