@@ -137,27 +137,48 @@ class MasterUsers extends CBitrixComponent
 				// $item['UF_USER'] = '[' . $orgUser['ID'] . '] ' . $orgUser['SHORT_NAME'];
 			} else {
 				$item['OPERATOR'] = '<a class="ui-link fs-6' . (!$item['UF_ACTIVE'] ? ' ui-link-secondary opacity-75' : '') . '" 
-										data-bs-toggle="modal" data-bs-target="#addUser">
-										добавить</a>' .
+										data-bs-toggle="modal" data-bs-target="#addUser" onclick="setUser(' . $item['ID'] . ')">
+										добавить</a>' /*.
 					'<a class="ui-link fs-6' . (!$item['UF_ACTIVE'] ? ' ui-link-secondary opacity-75' : '') . '" 
 										data-bs-toggle="modal" data-bs-target="#selectUser">
-										выбрать</a>';
+										выбрать</a>'*/;
 			}
 
 			$column["COPY_INFO"] = $item['UF_USER_ID'] ? '[' . $orgUser['LOGIN'] . ' / *****] 
-			<button onclick="changeTooltipText(event)" type="button"
-          class="btn clipboard_text icon-link! color-grey py-0"
-data-clipboard-text="' . $orgUser['SHORT_NAME'] . '
+						<button onclick="changeTooltipText(event)" type="button"
+								class="btn clipboard_text icon-link! color-grey py-0"
+			data-clipboard-text="' .
+				$orgUser['SHORT_NAME'] . '
 ' . $orgUser['EMAIL'] . '
 логин: ' . $orgUser['LOGIN'] . '
 пароль: ' . $orgUser['UF_PASSWORD'] . '"><i class="revicon-export pe-0" data-bs-toggle="tooltip"
-            data-bs-title="Скопировать доступы"></i></button>' : '';
+						data-bs-title="Скопировать доступы"></i></button>' : '';
 
 			//$item["DETAIL"] = $status;
 
 			$this->arResult['GRID']['ROWS'][] = [
 				'data' => $item,			//для редактирования
-				'columns'	=> $column		//отображение
+				'columns'	=> $column,		//отображение
+				'actions' => [ //Действия над ними
+					[
+						'text'    => 'Сменить / выбрать',
+						'onclick' => 'selectUser(' . $item['ID'] . ')'
+					],
+					[
+						'text'    => 'Удалить',
+						'onclick' => 'if(confirm("Вы уверены, что хотите удалить данного пользователя?"))clearUser(' . $item['ID'] . ')'
+					]
+
+				],
+				'counters' => [
+					'COLUMN_ID' => [
+						'type' => \Bitrix\Main\Grid\Counter\Type::LEFT,
+						'value' => 2,
+						'color' => 'counter-color-css-class',
+						'size' => 'counter-size-css-class',
+						'class' => 'counter-custom-css-class',
+					],
+				],
 			];
 		}
 		// dump($this->arResult['USERS']);
@@ -230,8 +251,15 @@ data-clipboard-text="' . $orgUser['SHORT_NAME'] . '
 			if ($arRequest["ADD_USER"] == 'Y') {
 
 				$EMAIL = $arRequest["EMAIL"];
-				$LOGIN = preg_replace('/\+(.)*@/', '@', $EMAIL);
-				$PASS = randString(10);
+				$LOGIN = strstr($EMAIL, '@', true);
+				// $LOGIN = preg_replace('/\+(.)*@/', '@', $EMAIL);
+
+				$PASS = randString(8, array(
+					"abcdefghijklnmopqrstuvwxyz",
+					"ABCDEFGHIJKLNMOPQRSTUVWXYZ",
+					"0123456789",
+					"!@#\$%^&*()",
+				));
 
 				$user = new CUser;
 				$fields = [
@@ -248,16 +276,36 @@ data-clipboard-text="' . $orgUser['SHORT_NAME'] . '
 				$userId = $user->Add($fields);
 				if (intval($userId) > 0) {
 					Bitrix\Main\Diag\Debug::dumpToFile($userId, 'Пользователь успешно добавлен', 'test.log');
+
+					$fields = [
+						"UF_USER_ID" => $userId,
+					];
+					LKClass::saveCompany($arRequest["ORG_ID"], $fields);
+
 					// echo "Пользователь успешно добавлен, ID: " . $userId;
 				} else {
 					Bitrix\Main\Diag\Debug::dumpToFile($user->LAST_ERROR, 'шибка при добавлении Пользователя', 'test.log');
 					// echo "Ошибка при добавлении: " . $user->LAST_ERROR;
 				}
+			} elseif ($arRequest["SELECT_USER"] == 'Y') {
+
+				Bitrix\Main\Diag\Debug::dumpToFile($arRequest, 'Пользователь сменен', 'test.log');
+				$fields = [
+					"UF_USER_ID" => $arRequest["USER_ID"],
+				];
+				LKClass::saveCompany($arRequest["ORG_ID"], $fields);
+				// LKClass::addCounter($arRequest["FIELDS"]);
+
+			} elseif ($arRequest["CLEAR_USER"] == 'Y') {
+
+				$fields = [
+					"UF_USER_ID" => '',
+				];
+				LKClass::saveCompany($arRequest["ORG_ID"], $fields);
+				Bitrix\Main\Diag\Debug::dumpToFile($arRequest, 'Пользователь удален', 'test.log');
+
+				// 	LKClass::addCompany($arRequest["FIELDS"]);
 			}
-			// } elseif ($arRequest["ADD_COUNTER"] == 'Y') {
-			// 	LKClass::addCounter($arRequest["FIELDS"]);
-			// } elseif ($arRequest["ADD_COMPANY"] == 'Y') {
-			// 	LKClass::addCompany($arRequest["FIELDS"]);
 			// } elseif ($arRequest["grid_id"] == 'zhek_master_objects') {
 			// 	Bitrix\Main\Diag\Debug::dumpToFile(var_export($arRequest, 1), '$arRequest', 'test.log');
 			// 	foreach ($arRequest["FIELDS"] as $companyID => $fields) {

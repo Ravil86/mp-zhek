@@ -23,17 +23,17 @@ function gm_authFailure() {
 const tooltipTitleActive = "Информация скопирована";
 
 function changeTooltipText(event, href = "") {
-  // console.log(href);
-
   const tooltipTitleDefault = event.target.getAttribute("data-bs-title");
 
   const myTooltipInstance = bootstrap.Tooltip.getInstance(event.target);
-  //   event.target.setAttribute("data-bs-title", tooltipTitleActive);
-  myTooltipInstance.setContent({ ".tooltip-inner": tooltipTitleActive });
+  // console.log("myTooltipInstance", myTooltipInstance);
+  // myTooltipInstance.setContent({ ".tooltip-inner": tooltipTitleActive });
 
   setTimeout(() => {
     event.target.setAttribute("data-bs-title", tooltipTitleDefault);
-    myTooltipInstance.setContent({ ".tooltip-inner": tooltipTitleDefault });
+    // console.log("myTooltipInstance", myTooltipInstance);
+    // myTooltipInstance.setContent({ ".tooltip-inner": tooltipTitleDefault });
+
     if (href !== "") {
       window.location.href = href;
     }
@@ -1824,6 +1824,7 @@ $(document).ready(function () {
   setTimeout(animateElements, 1);
   $(window).scroll(animateElements);
 
-  const btnClipboard = document.querySelector(".clipboard_text");
-  if (btnClipboard) new ClipboardJS(".clipboard_text");
+  // const btnClipboard = document.querySelector(".clipboard_text");
+  // if (btnClipboard) new ClipboardJS(".clipboard_text");
+  new ClipboardJS(".clipboard_text");
 });

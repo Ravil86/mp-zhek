@@ -40,7 +40,7 @@ use Bitrix\Highloadblock as HL;
 
         $snippet = new Bitrix\Main\Grid\Panel\Snippet();
         $controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getEditButton();
-        $controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getRemoveButton();
+        // $controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getRemoveButton();
 
         $gridParams = [
             'GRID_ID' => $arResult['GRID_ID'],
@@ -61,8 +61,8 @@ use Bitrix\Highloadblock as HL;
                 ['NAME' => '50', 'VALUE' => '50'],
                 ['NAME' => '100', 'VALUE' => '100']
             ],
-            'SHOW_CHECK_ALL_CHECKBOXES' => false,
-            'SHOW_ROW_ACTIONS_MENU' => false,
+            'SHOW_CHECK_ALL_CHECKBOXES' => true,
+            'SHOW_ROW_ACTIONS_MENU' => true,
             'SHOW_GRID_SETTINGS_MENU' => true,
             'SHOW_NAVIGATION_PANEL' => true,
             'SHOW_PAGINATION' => true,
@@ -80,6 +80,7 @@ use Bitrix\Highloadblock as HL;
             'ACTION_PANEL' => $controlPanel,
         ];
         $APPLICATION->IncludeComponent('bitrix:main.ui.grid', '', $gridParams);
+
         /*$grid_options = new CGridOptions($arResult["GRID_ID"]);
         $nav_params = $grid_options->GetNavParams(array("nPageSize" => $arResult['PAGE_SIZE']));
 
@@ -88,10 +89,6 @@ use Bitrix\Highloadblock as HL;
             ->setRecordCount($arResult['GRID']['COUNT']) //Для работы кнопки "показать все"
             ->setPageSize($nav_params['nPageSize'])
             ->initFromUri();
-
-        $snippet = new Bitrix\Main\Grid\Panel\Snippet();
-        $controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getEditButton();
-        $controlPanel['GROUPS'][0]['ITEMS'][] = $snippet->getRemoveButton();
 
         $gridParams = [
             'GRID_ID' => $arResult['GRID_ID'],
@@ -137,15 +134,15 @@ use Bitrix\Highloadblock as HL;
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <form method="post">
+                    <input class="ui-ctl-element" type="hidden" name="ADD_USER" value="Y">
+                    <input id="org_id" type="hidden" name="ORG_ID" value="">
+                    <?= bitrix_sessid_post() ?>
                     <div class="modal-header">
                         <h4 class="modal-title">Добавить пользователя</h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <input class="ui-ctl-element" type="hidden" name="ADD_USER" value="Y">
-                        <?= bitrix_sessid_post() ?>
                         <div class="row gx-2">
-
                         </div>
                         <div class="row gx-2 mt-3">
                             <div class="col-12 col-md">
@@ -178,17 +175,28 @@ use Bitrix\Highloadblock as HL;
         </div>
     </div>
 
-    <div class="modal fade" id="selectUser" tabindex="-1" aria-labelledby="selectModalLabel" aria-hidden="true">
+    <div class="selectUser modal fade" id="selectUser" tabindex="-1" aria-labelledby="selectModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <form method="post">
+
+                    <input type="hidden" name="SELECT_USER" value="Y">
+                    <?= bitrix_sessid_post() ?>
+                    <input id="org_id" type="hidden" name="ORG_ID" value="">
+
                     <div class="modal-header">
                         <h4 class="modal-title">Выбрать пользователя</h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <input class="ui-ctl-element" type="hidden" name="SELECT_USER" value="Y">
-                        <?= bitrix_sessid_post() ?>
+                        <select style="width: 100%" class="select2" name="USER_ID" id="">
+                            <?php
+                            foreach ($arResult['USERS'] as $key => $value) {
+                                echo '<option value="' . $value['ID'] . '"' . ($value['ORG_ID'] ? ' disabled="disabled"' : '') . '>#' . $value['ID'] . ' - ' . $value["SHORT_NAME"] . '</option>';
+                            }
+                            ?>
+                        </select>
+                        <?/*
                         <div class="ui-ctl ui-ctl-after-icon ui-ctl-dropdown ui-ctl-w75 w-75!">
                             <div class="ui-ctl-after ui-ctl-icon-angle"></div>
                             <select class="ui-ctl-element">
@@ -199,6 +207,7 @@ use Bitrix\Highloadblock as HL;
                                 ?>
                             </select>
                         </div>
+                        */ ?>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="ui-btn ui-btn-success">Сохранить</button>
@@ -209,7 +218,11 @@ use Bitrix\Highloadblock as HL;
 
         </div>
     </div>
-    <? gg($arResult['USERS']); ?>
+    <? // gg($arResult['USERS']); 
+    ?>
+    <script>
+        window.bitrixSessid = '<?= bitrix_sessid() ?>';
+    </script>
 <? else: ?>
     <font class="errortext">нет доступа</font>
 <? endif; ?>

@@ -1,4 +1,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/gh/linways/table-to-excel@v1.0.4/dist/tableToExcel.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <?
 
 use Bitrix\Main\Application,
@@ -102,8 +104,25 @@ if ($arResult['ACCESS']): ?>
             foreach ($arResult['DETAIL']['PROVIDER'] as $k => $provider) {
 
                 echo '<div class="reestr card me-2 border-' . $provider["COLOR"] . ' ' . ($k + 1 < $count ? " pageBreak mb-3" : "") . '" id="ref' . $provider["ID"] . '">
-                    <div class="card-body">
-                        <div class="row gx-2 align-items-center mb-2">
+                   <div class="card-body">';
+
+                echo '<table class="table table-borderless">
+                   <tr class="row! gx-2 align-items-center mb-2">
+                   <td class="col-3 col-xxl-2 pt-2 pb-1" colspan="2">Заказчик:</td>
+                   <td class="col-9 text-center pt-2 pb-1 border-bottom" colspan="8" style="text-align:center">' . $arResult["COMPANY"]["NAME"] . ', ' . $arResult["COMPANY"]["INN"] . '</td>
+                   </tr>
+                   <tr>
+                   <td class="col-3 col-xxl-2 pt-3 pb-1" colspan="2">Юридический адрес:</td>
+                   <td class="col-9 text-center pt-3 pb-1 border-bottom" colspan="8" style="text-align:center">' . $arResult["COMPANY"]["ADDRESS"] . '</td>
+                   </tr>
+                   <tr class="pt-2">
+                    <td class="col-3 col-xxl-2 pt-3 pb-1" colspan="2">Номер и дата договора:</td>
+                   <td colspan="8" style="text-align:center" class="col-9 text-center pt-3 pb-1 border-bottom text-' . $provider["COLOR"] . '">МК №' . $arResult["DETAIL"]["NUMBER"] . '/' . $provider["LITERA"] . '-' . $arResult["DETAIL"]["YEAR"] . ' от ' . $arResult["DETAIL"]["DATE"] . ' г.
+                            </td>
+                   </tr>
+                   </table>';
+
+                /* echo '<div class="row gx-2 align-items-center mb-2">
                             <div class="col-3 col-xxl-2 pt-2 pb-1">Заказчик:</div>
                             <div class="col-9 text-center pt-2 pb-1 border-bottom">
                                 ' . $arResult["COMPANY"]["NAME"] . ', ' . $arResult["COMPANY"]["INN"] . '
@@ -118,10 +137,20 @@ if ($arResult['ACCESS']): ?>
                             <div class="col-3 col-xxl-2 pt-2 pb-1">Номер и дата договора:</div>
                             <div class="col-9 text-center pt-2 pb-1 border-bottom text-' . $provider["COLOR"] . '">МК №' . $arResult["DETAIL"]["NUMBER"] . '/' . $provider["LITERA"] . '-' . $arResult["DETAIL"]["YEAR"] . ' от ' . $arResult["DETAIL"]["DATE"] . ' г.
                             </div>
-                        </div>
-                        <div class="card! mt-4 mb-1">
-                            <div class="card-body!">
-                                <div class="h5 text-center">СПРАВКА №' . /*$provider["LITERA"] . '-' . $arResult["DETAIL"]["ID"] . '/' .*/ $number . ' ' . ToLower($monthYear) . 'г </div>';
+                        </div>';*/
+
+                echo ' <div class="card! mt-4 mb-1">
+                            <div class="card-body!">';
+
+                echo '<table class="table table-borderless">
+                            <tr>
+                            <td colspan="10" class="h5 text-center" style="text-align:center">СПРАВКА №' . $number . ' ' . ToLower($monthYear) . 'г </td>
+                            </tr>
+                            </table>';
+
+
+
+                //echo ' <div class="h5 text-center">СПРАВКА №' . $number . ' ' . ToLower($monthYear) . 'г </div>';
 
                 if ($arResult["SERVICE"][$provider["ID"]]["OBJECTS"]) {
                     echo '<div class="' . ($response ? 'table-responsive' : '') . '">
@@ -129,17 +158,25 @@ if ($arResult['ACCESS']): ?>
                                             <thead class="small">
                                                 <tr class="text-center">
                                                     <th width="40">№<br>п/п</th>
-                                                    <th>Наименование объекта</th>
-                                                    <!-- <th>ID</th> -->
-                                                    <th width="220">Адрес</th>
+                                                    <th>Наименование <br>
+                                                    объекта</th>
+                                                    <th>Адрес</th>
                                                     <th>Вид услуги</th>
-                                                    <!-- <th>ID</th> -->
-                                                    <th>Дата очередной поверки ПУ</th>
+                                                    <th>
+                                                    Дата <br>
+                                                    очередной <br>
+                                                    поверки ПУ</th>
                                                     <th>Номер ПУ</th>
                                                     <th>Ед. изм.</th>
-                                                    <th>Предыдущие показания ПУ</th>
-                                                    <th>Текущие показания ПУ</th>
-                                                    <th>Потребленный объем (разница)</th>';
+                                                    <th>Предыдущие <br>
+                                                    показания 
+                                                    ПУ</th>
+                                                    <th>Текущие <br>
+                                                    показания <br>
+                                                    ПУ</th>
+                                                    <th>Потребленный <br>
+                                                    объем <br>
+                                                    (разница)</th>';
                     if ($provider["ID"] == 2)
                         echo '<th>Потери/Инфо</th>';
                     else
@@ -326,7 +363,11 @@ if ($arResult['ACCESS']): ?>
                 <? if ($useDate || $arResult['ADMIN'] || $arResult['MODERATOR']): ?>
                     <!-- <a class="ui-btn ui-btn-primary-dark" onclick="saveButton('<? //= $month
                                                                                     ?>')">Скачать справки</a> -->
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#renderPDF" onclick="saveButton('<?= $month ?>')">
+                    <button type="button"
+                        class="btn btn-primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#renderPDF"
+                        <?/*onclick="saveButton('<?= $month ?>')"*/ ?>>
                         Справки
                     </button>
                     <!-- Modal -->
@@ -335,7 +376,8 @@ if ($arResult['ACCESS']): ?>
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h1 class="modal-title fs-5" id="exampleModalLabel">Скачать справки</h1>
-                                    <a class="ui-btn ui-btn-primary-dark ms-4" onclick="saveButton('<?= $month ?>')">Скачать</a>
+                                    <a class="ui-btn ui-btn-primary-dark ms-4" onclick="saveButton('<?= $month ?>')">Скачать в PDF</a>
+                                    <a class="ui-btn ui-btn-primary-dark ms-4" onclick="createExcel('<?= $month ?>')">Скачать в Excel</a>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
@@ -386,13 +428,91 @@ if ($arResult['ACCESS']): ?>
 
 
 $url = $templateFolder . '/ajax.php';
+
 ?>
+
 <script>
+    var tableToExcel = (function() {
+        var uri = 'data:application/vnd.ms-excel;base64,',
+            template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><meta http-equiv="content-type" content="text/plain; charset=UTF-8"/></head><body><table>{table}</table></body></html>',
+            base64 = function(s) {
+                return window.btoa(unescape(encodeURIComponent(s)))
+            },
+            format = function(s, c) {
+                return s.replace(/{(\w+)}/g, function(m, p) {
+                    return c[p];
+                })
+            },
+            downloadURI = function(uri, name) {
+                var link = document.createElement("a");
+                link.download = name;
+                link.href = uri;
+                link.click();
+            }
+
+        return function(table, name, fileName) {
+            if (!table.nodeType) table = document.getElementById(table)
+            var ctx = {
+                worksheet: name || 'Worksheet',
+                table: table.innerHTML
+            }
+            var resuri = uri + base64(format(template, ctx))
+            downloadURI(resuri, fileName);
+        }
+    })();
+
+
+
+
+
+    // var tableToExcel = (function() {
+    //     var uri = 'data:application/vnd.ms-excel;base64,',
+    //         template = '{table}',
+    //         base64 = function(s) {
+    //             return window.btoa(unescape(encodeURIComponent(s)))
+    //         },
+    //         format = function(s, c) {
+    //             return s.replace(/{(\w+)}/g, function(m, p) {
+    //                 return c[p];
+    //             })
+    //         }
+    //     return function(table, name) {
+    //         if (!table.nodeType) table = document.getElementById(table)
+    //         var ctx = {
+    //             worksheet: name || 'Worksheet',
+    //             table: table.innerHTML
+    //         }
+    //         window.location.href = uri + base64(format(template, ctx))
+    //     }
+    // })()
+
+
+
+    function createExcel(month) {
+        var filename = '#' + <?= $arResult['COMPANY']['ID'] ?> + '_' + month + '_' + <?= $arResult['YEAR'] ?> + '_<?= $arResult['DETAIL']['UF_NUMBER'] ?>_<?= TruncateText($arResult['COMPANY']['NAME'], 55) ?>'
+
+
+        tableToExcel('reestr', 'Показания ' + month + '.<?= $arResult['YEAR'] ?>', filename + '.xls');
+
+        //не видит colspan
+        // $("#reestr").table2excel({
+        //     filename: filename + '.xls'
+        // });
+
+        // размеры колонок
+        // TableToExcel.convert(document.getElementById("reestr"), {
+        //     name: filename + '.xlsx',
+        //     sheet: {
+        //         name: "Sheet 1"
+        //     }
+        // });
+    }
+
     function saveButton(month) {
 
-        console.log('month', month);
+        // console.log('month', month);
 
-        var filename = '#' + <?= $arResult['COMPANY']['ID'] ?> + '_' + month + '_' + <?= $arResult['DETAIL']['YEAR'] ?> + '_<?= $arResult['DETAIL']['UF_NUMBER'] ?>_<?= TruncateText($arResult['COMPANY']['NAME'], 55) ?>.pdf'
+        var filename = '#' + <?= $arResult['COMPANY']['ID'] ?> + '_' + month + '_' + <?= $arResult['YEAR'] ?> + '_<?= $arResult['DETAIL']['UF_NUMBER'] ?>_<?= TruncateText($arResult['COMPANY']['NAME'], 55) ?>.pdf'
 
         element = document.getElementById('reestr');
         // var element = document.getElementById('ref' + event);
