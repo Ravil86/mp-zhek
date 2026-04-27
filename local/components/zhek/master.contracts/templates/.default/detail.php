@@ -47,12 +47,8 @@ if ($arResult['ACCESS']): ?>
 
         $LKClass = new LKClass;
 
-        $dateStr =  date('Y-m-d', strtotime('-6 months'));
-        // if (date("n") > 2)
-        //     $dateStr = date('Y' . '-01-01');
-        // else
-        //     $dateStr = date('Y-' . '11' . '-d', strtotime('-1 year'));  //Ноябрь прошлого года если сейчас январь месяц
-        // $dateStr = date('Y-m-d', strtotime('-3 months'));    //нельзя
+        $dateStr =  '2025-09-01';
+        //$dateStr =  date('Y-m-d', strtotime('-6 months'));
 
         if (date("n") == 1)
             $dateEnd = date("Y-m-d", strtotime('+1 month'));  //если январь
@@ -341,8 +337,7 @@ if ($arResult['ACCESS']): ?>
                 <div class="ui-ctl ui-ctl-after-icon ui-ctl-dropdown">
                     <div class="ui-ctl-after ui-ctl-icon-angle"></div>
                     <select class="ui-ctl-element" onchange="redirect(this)">
-                        <!-- <option value=""></option> -->
-                        <?= LKClass::setMonth($selectMonth, $begin, $end);
+                        <?= LKClass::selectMonth($selectMonth, $begin, $end);
                         ?>
                     </select>
                     <script>

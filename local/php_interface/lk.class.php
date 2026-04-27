@@ -977,75 +977,128 @@ class LKClass
 
     }*/
 
-    public static function setMonth($setDate = '', $begin, $end)
+    public static function selectMonth($setDate = '', \DateTime $begin, \DateTime $end)
     {
-        // $year = date("Y");
-        // $months = array('Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь');
+        $interval = new \DateInterval('P1M');
 
-        // $dateStr = date('Y-m-d', strtotime('-5 months'));
-        // $dateEnd = date('Y-m-d');
-        // $dateEnd = date('Y-m-d', strtotime('+1 months'));
+        // Гарантируем включение последнего месяца
+        $periods = new \DatePeriod($begin, $interval, $end->modify('first day of next month'));
 
-        // $end = (new DateTime($dateEnd));
-        // $begin = (new DateTime($dateStr));
+        // Получаем массив объектов DateTime и разворачиваем его (от новых к старым)
+        $items = array_reverse(iterator_to_array($periods));
 
-        $periods = new DatePeriod($begin, new \DateInterval('P1M'), $end);
-        $result = '';
+        // Дата отсечки: первый день месяца, который был 6 месяцев назад
+        $thresholdDate = (new \DateTime())->modify('-3 months')->modify('first day of this month');
 
-        foreach (array_reverse(iterator_to_array($periods)) as $period) {
+        $recentHtml = '';
+        $olderGroups = [];
 
-            $num = $period->format("m");
-            // $num = $period->format("n");
-            $year = $period->format('Y');
+        foreach ($items as $period) {
 
-            $month = FormatDate("m", strtotime($year . "-" . $num . "-01"));
-            $monthText = FormatDate("f", strtotime($year . "-" . $num . "-01"));
+            $option = self::renderOption($period, $setDate);
 
-            $select = ((date('m-Y', strtotime("01-" . $month . "-" . $year)) == $setDate) ? 'selected="selected"' : '');
-            // $select = ((date('Y-m', strtotime($year . "-" . $month . "-01")) == $setDate) ? 'selected="selected"' : '');
-            //$month = $months[$num - 1];
+            // Сравниваем объекты DateTime напрямую
+            if ($period >= $thresholdDate) {
+                // В свежий список
+                $recentHtml .=  $option;
+            } else {
+                $olderHtml .= $option;
 
-            $result .= "<option value='{$num}-{$year}' {$select}>{$monthText} {$year}</option>";
+                // В архив по годам
+                // $year = $period->format('Y');
+                //$olderGroups[$year][] = self::renderOption($period, $setDate);
+            }
         }
 
-        // $month = date("m", strtotime("+1 month"));
-        // // $month = date("m");
+        $result = $recentHtml;
 
-        // $count = 6; //кол-во месяцев в списке
-        // $coll = 12;
+        if (!empty($olderHtml)) {
+            // Визуальный разделитель (заблокированный пункт)
+            $result .= "<option disabled>──────────</option>";
 
-        // if ($allYears) {
-        //     $year--;
-        //     $coll = 24;
-        // }
+            // Все года в архив
+            $result .= "<optgroup label='Архив'>"; // Общий заголовок для всех старых дат
+            $result .= $olderHtml;
+            $result .= "</optgroup>";
+        }
 
-        // $result = '<optgroup label="' . $year . '">';
-        // $c = 1;
-        // for ($coll; $i = 0; $i++) {
-        //     //for ($i = 0; $i <= $coll; $i++) {
-        //     if (!$allYears && $c > $count) {
-        //         break;
+        // Если есть старые записи, добавляем разделитель и группы
+        // if (!empty($olderGroups)) {
+        //     // Визуальный разделитель (заблокированный пункт)
+        //     $result .= "<option disabled>──────────</option>";
+
+        //     // Добавляем архивные группы
+        //     foreach ($olderGroups as $year => $options) {
+        //         $result .= "<optgroup label='Архив {$year}'>";
+        //         $result .= implode('', $options);
+        //         $result .= "</optgroup>";
         //     }
-        //     if ($month > 11) {
-        //         $month = 1;
-        //         $year--;
-        //         // $year++;
-        //         $result .= '</optgroup><optgroup label="' . $year . '">';
-        //     }
-        //     $value = date('Y-m', strtotime($year . "-" . $month . "-01"));
-        //     //$select = ((date('Y-m', strtotime($year."-".$month."-01"))==$_REQUEST['PROPERTY']['DATA'])?'selected="selected"':'');
-        //     $select = ((date('Y-m', strtotime($year . "-" . $month . "-01")) == $setDate) ? 'selected="selected"' : '');
-
-        //     $mounth = FormatDate("f", strtotime($year . "-" . $month . "-01"));
-
-        //     $result .= '<option value="' . $value . '" ' . $select . '>' . $mounth . '</option>';
-        //     $month++;
-        //     $c++;
         // }
-        // $result .= '</optgroup>';
 
         return $result;
     }
+
+    // Вспомогательный метод для отрисовки <option>
+    private static function renderOption(\DateTime $period, $setDate)
+    {
+        $val = $period->format('m-Y');
+        $monthText = FormatDate("f", $period->getTimestamp());
+        $year = $period->format('Y');
+        $selected = ($val === $setDate) ? 'selected="selected"' : '';
+
+        return "<option value='{$val}' {$selected}>{$monthText} {$year}</option>";
+    }
+
+    // public static function setMonth($setDate = '', $begin, $end)
+    // {
+    // $year = date("Y");
+    // $months = array('Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь');
+
+    // $dateStr = date('Y-m-d', strtotime('-5 months'));
+    // $dateEnd = date('Y-m-d');
+    // $dateEnd = date('Y-m-d', strtotime('+1 months'));
+
+    // $end = (new DateTime($dateEnd));
+    // $begin = (new DateTime($dateStr));
+
+    // $month = date("m", strtotime("+1 month"));
+    // // $month = date("m");
+
+    // $count = 6; //кол-во месяцев в списке
+    // $coll = 12;
+
+    // if ($allYears) {
+    //     $year--;
+    //     $coll = 24;
+    // }
+
+    // $result = '<optgroup label="' . $year . '">';
+    // $c = 1;
+    // for ($coll; $i = 0; $i++) {
+    //     //for ($i = 0; $i <= $coll; $i++) {
+    //     if (!$allYears && $c > $count) {
+    //         break;
+    //     }
+    //     if ($month > 11) {
+    //         $month = 1;
+    //         $year--;
+    //         // $year++;
+    //         $result .= '</optgroup><optgroup label="' . $year . '">';
+    //     }
+    //     $value = date('Y-m', strtotime($year . "-" . $month . "-01"));
+    //     //$select = ((date('Y-m', strtotime($year."-".$month."-01"))==$_REQUEST['PROPERTY']['DATA'])?'selected="selected"':'');
+    //     $select = ((date('Y-m', strtotime($year . "-" . $month . "-01")) == $setDate) ? 'selected="selected"' : '');
+
+    //     $mounth = FormatDate("f", strtotime($year . "-" . $month . "-01"));
+
+    //     $result .= '<option value="' . $value . '" ' . $select . '>' . $mounth . '</option>';
+    //     $month++;
+    //     $c++;
+    // }
+    // $result .= '</optgroup>';
+
+    //     return $result;
+    // }
 
 
     /**
