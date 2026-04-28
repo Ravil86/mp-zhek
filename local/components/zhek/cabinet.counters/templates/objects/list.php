@@ -15,42 +15,36 @@ if ($arResult['ACCESS']):
         </div>
     <? else: ?>
         <?
-        $grid_options = new CGridOptions($arResult["GRID_ID"]);
+        // $grid_options = new CGridOptions($arResult["GRID_ID"]);
 
-        //размер страницы в постраничке (передаем умолчания)
-        $nav_params = $grid_options->GetNavParams();
+        // //размер страницы в постраничке (передаем умолчания)
+        // $nav_params = $grid_options->GetNavParams();
 
-        $curentYear = date('Y');
-        $lastYear = date('Y', strtotime('-1 year'));
+        // $curentYear = date('Y');
+        // $lastYear = date('Y', strtotime('-1 year'));
 
-        $nav = new Bitrix\Main\UI\PageNavigation($arResult["GRID_ID"]);
-        $nav->allowAllRecords(true)
-            ->setRecordCount($arResult['GRID']['COUNT']) //Для работы кнопки "показать все"
-            ->setPageSize($nav_params['nPageSize'])
-            ->initFromUri();
-
-        // $APPLICATION->IncludeComponent('bitrix:main.ui.filter', '', [
-        //     'FILTER_ID' => $arResult['GRID_ID'],
-        //     'GRID_ID' => $arResult['GRID_ID'],
-        //     'FILTER' => $arResult['GRID']['FILTER'],
-        //     'ENABLE_LIVE_SEARCH' => true,
-        //     'ENABLE_LABEL' => true,
-        // ]);
+        $APPLICATION->IncludeComponent('bitrix:main.ui.filter', '', [
+            'FILTER_ID' => $arResult['GRID_ID'],
+            'GRID_ID' => $arResult['GRID_ID'],
+            'FILTER' => $arResult['GRID'][$arParams['TYPE']]['FILTER'],
+            'ENABLE_LIVE_SEARCH' => false,
+            'ENABLE_LABEL' => true,
+        ]);
 
         $gridParams = [
             'GRID_ID' => $arResult['GRID_ID'],
             'COLUMNS' => $arResult['GRID'][$arParams['TYPE']]['COLUMNS'],
             'ROWS' => $arResult['GRID'][$arParams['TYPE']]['ROWS'],
             'FOOTER' => [
-                'TOTAL_ROWS_COUNT' => $arResult['GRID']['COUNT'],
+                'TOTAL_ROWS_COUNT' => $arResult['GRID'][$arParams['TYPE']]['COUNT'],
             ],
             'SHOW_ROW_CHECKBOXES' => false,
-            'NAV_OBJECT' => $nav,
+            'NAV_OBJECT' => $arResult['GRID'][$arParams['TYPE']]['NAV_OBJECT'],
             'AJAX_MODE' => 'Y',
             'AJAX_ID' => 'AJAX_' . $arResult['GRID_ID'],
             // 'AJAX_ID' => \CAjax::getComponentID('bitrix:main.ui.grid', '.default', ''),
             'PAGE_SIZES' => [
-                ['NAME' => "5", 'VALUE' => '5'],
+                // ['NAME' => "5", 'VALUE' => '5'],
                 ['NAME' => '10', 'VALUE' => '10'],
                 ['NAME' => '20', 'VALUE' => '20'],
                 ['NAME' => '50', 'VALUE' => '50'],

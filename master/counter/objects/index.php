@@ -17,6 +17,7 @@ $APPLICATION->SetTitle("Показаний приборов учета");
 		],
 		'SEF_MODE' => 'Y',
 		'TYPE' => 'objects',
+		'PAGE_SIZE' => 20,
 		'GROUP_CODES' => [
 			'ADMINISTRATOR' => 'MASTER',
 			'ORGANIZATION' => 'ORG',

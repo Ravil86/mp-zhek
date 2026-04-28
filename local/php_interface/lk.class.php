@@ -450,7 +450,6 @@ class LKClass
         }
     }
 
-
     public static function myCompany()
     {
         $result = null;
@@ -524,7 +523,7 @@ class LKClass
         return $result;
     }
 
-    public static function getObjects($orgID = null, $sort = 'UF_ORG')
+    public static function getObjects($orgID = null, $sort = 'UF_ORG', $nav = [], $filter = [])
     {
         // $sort = [];
         // $curentUser = self::curentUserFields();
@@ -534,15 +533,22 @@ class LKClass
         else
             $order = [$sort => 'ASC'];
 
-        $filter = [];
+        // $filter = [];
         if ($orgID)
             $filter = ['UF_ORG' => $orgID];
 
-        $rsHLoad = $classHL::getList([
+        $params =  [
             'select' => ['*'],
             'filter' => $filter,
             'order' => $order
-        ]);
+        ];
+
+        if ($nav) {
+            $params['limit'] = $nav['limit'];
+            $params['offset'] = $nav['offset'];
+        }
+
+        $rsHLoad = $classHL::getList($params);
 
         $result = [];
         while ($object = $rsHLoad->fetch()) {

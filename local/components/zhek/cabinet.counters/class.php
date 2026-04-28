@@ -82,7 +82,7 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 		$this->arResult['COMPANY'] = $LKClass->getCompany();
 
-		
+
 		$getUserMonth = $LKClass->currentMonth();
 
 		$this->arResult['SAVE_MONTH'] = $getUserMonth['SAVE_MONTH'];
@@ -91,15 +91,11 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 		$arResult['DATE_USER'] = $getUserMonth['DATE_USER'];
 		$arResult['DATE_ADMIN'] = $getUserMonth['DATE_ADMIN'];
 
-		// dump($arResult['DATE_USER']);
-		// dump($arResult['SAVE_MONTH']);
-		// dump($arResult['DATE_ADMIN']);
-
 		/*$monthList = $LKClass->getMonth();
 
 		$selfMonth = date("m");
 		// $selfMonth = date("m", strtotime('-1 month'));
-		// gg($selfMonth);
+		
 		$prevMonth = date("m", strtotime('-1 month'));
 
 		//Текущая дата
@@ -181,9 +177,6 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 					foreach ($object['LIST'] as $key => &$item) {
 
-
-						// gg($item['UF_ACTIVE']);
-
 						if ($item['UF_ACTIVE'] !== null && !$item['UF_ACTIVE'])	//Отключаем неактивные
 							unset($object['LIST'][$key]);
 
@@ -208,11 +201,8 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 								$relateCounter = $this->arResult['COUNTERS'][$related['UF_COUNTER']];
 
-								// gg($relateCounter);
-
 								$relatetypes = [];
-								// gg($serviceList);
-								// gg($relateCounter['UF_TYPE']);
+
 								foreach ($relateCounter['UF_TYPE'] as $value) {
 									$typeItem = $serviceList[$value];
 									$unit = $typeItem['UNIT'];
@@ -221,7 +211,6 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 							data-bs-title="' . $typeItem['NAME'] . '"
 							/>';*/
 								}
-								// gg($related);
 								$counter = $related;
 
 								// if($related['UF_MAIN'])
@@ -304,8 +293,6 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 				foreach ($countersObject as $key => &$item) {
 
-					// gg($item);
-
 					if ($item['UF_ACTIVE'] !== null && !$item['UF_ACTIVE'])	//Отключаем неактивные
 						continue;
 
@@ -326,13 +313,11 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 			}
 
 			// связанные счетчики
-
 			// if ($related['UF_MAIN'])
 			// 	$countersObject[$related['UF_COUNTER']]['MAIN_RELATED'] = $counter;
 
-
 			$arRelated = $this->arResult['RELATED'][$objectID];
-			// gg($related);
+
 			if (is_array($arRelated)) {
 
 				foreach ($arRelated as $key => $related) {
@@ -349,7 +334,6 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 					}*/
 
 					$counter = $related;
-					// gg($relateCounter);
 
 					$counter['RELATED'] = true;
 					// $counter['ID'] = $relateCounter['ID'];
@@ -376,11 +360,9 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 			// показания
 			$prevMeters = LKClass::meters($objectID);
 			$lastMeters = LKClass::meters($objectID, true);
-			// gg($lastMeters);
-			// gg($prevMeters);
 
 			foreach ($prevMeters as $key => $value) {
-// gg($value['MONTH']);
+				// gg($value['MONTH']);
 				$arPrevMeters[$value['COUNTER']][] = $value['METER'];
 				// $arPrevMeters[$value['COUNTER']] = [
 				// 	'VALUE' => $value['METER'],
@@ -391,7 +373,7 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 
 			// dump($lastMeters);
 			foreach ($lastMeters as $key => $value) {
-//  gg($value['DATE']);
+				//  gg($value['DATE']);
 				$arLastMeters[$value['COUNTER']] = $value['METER'];
 
 				$noteMeter[$value['COUNTER']] = $value['NOTE'];
@@ -558,37 +540,51 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 				}
 			} else {
 
+				// params TYPE not null / sef "counter/list/"
+
 				$this->arResult['GRID_ID'] = str_replace('.', '_', str_replace(':', '_', $this->GetName())) . '_' . $arParams['TYPE'];
 				$arResult['GRID_ID'] = $this->arResult['GRID_ID'];
 
-				// gg($arResult['GRID_ID']);
+				//инициализируем объект с настройками пользователя для нашего грида
+				$grid_options = new CGridOptions($this->arResult["GRID_ID"]);
+
+				//размер страницы в постраничке (передаем умолчания)
+				$nav_params = $grid_options->GetNavParams(array("nPageSize" => $arParams['PAGE_SIZE']));
+
 
 				if ($arParams['TYPE'] == 'list') {
 
+					// dump($navParams);
 
-					//инициализируем объект с настройками пользователя для нашего грида
-					$grid_option = new CGridOptions($this->arResult["GRID_ID"]);
-					$order = $grid_option->GetSorting(['sort' => ['UF_NAME' => 'ASC'], 'vars' => ['by' => 'by', 'order' => 'order']]);
-
+					$order = $grid_options->GetSorting(['sort' => ['UF_NAME' => 'ASC'], 'vars' => ['by' => 'by', 'order' => 'order']]);
 
 					$filterOption = new Bitrix\Main\UI\Filter\Options($this->arResult["GRID_ID"]);
 					$filter = $filterOption->GetFilter();
-					// gg($filterData);
 
-					// $nav = new Bitrix\Main\UI\PageNavigation($this->arResult["GRID_ID"]);
-					// // gg($grid_options);
-					// //размер страницы в постраничке (передаем умолчания)
-					// $nav_params = $grid_options->GetNavParams(array("nPageSize" => 10));
+					$companyALL = $LKClass->getCompany(null);
+					$countCompany = 0;
+					if ($companyALL)
+						$countCompany = count($companyALL);
 
-					// $nav = new Bitrix\Main\UI\PageNavigation($this->arResult["GRID_ID"]);
-					// $nav->allowAllRecords(true)
-					// 	->setPageSize($nav_params['nPageSize'])
-					// 	->initFromUri();
+					$this->arResult['GRID']['list']['COUNT'] = $countCompany;
 
-					// if ($nav->allRecordsShown())
-					// 	$nav_params = false;
-					// else
-					// 	$nav_params['iNumPage'] = $nav->getCurrentPage();
+					$nav = new Bitrix\Main\UI\PageNavigation($arResult["GRID_ID"]);
+					$nav->allowAllRecords(true)
+						->setRecordCount($countCompany) //Для работы кнопки "показать все"
+						->setPageSize($nav_params['nPageSize'])
+						->initFromUri();
+
+					if ($nav->allRecordsShown())
+						$nav_params = false;
+					else
+						$nav_params['iNumPage'] = $nav->getCurrentPage();
+
+					$navParams = [
+						'offset' => $nav->getOffset(),
+						'limit' => $nav->getLimit(),
+					];
+
+					$this->arResult['GRID']['list']['NAV_OBJECT'] = $nav;
 
 					//type list
 					$this->arResult['GRID'][$arParams['TYPE']]['COLUMNS'] = [
@@ -599,11 +595,23 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 						['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => 130],
 					];
 
-					// gg($this->arResult['COMPANY']);
-					// gg($orderList['sort']);
-					// gg($arParams['TYPE']);
+					if (!empty($filter))
+						$navParams = [];
+
 					// $companyList = $LKClass->getCompany(null, $filter, [], []);
-					$companyList = $LKClass->getCompany(null, $filter, [], $order['sort']);
+					$companyList = $LKClass->getCompany(null, $filter, $navParams, $order['sort']);
+
+					if (!empty($filter)) {
+
+						if ($companyALL)
+							$countCompany = count($companyList);
+
+						$this->arResult['GRID']['list']['COUNT'] = $countCompany;
+
+						$nav = new Bitrix\Main\UI\PageNavigation($arResult["GRID_ID"]);
+						$nav->setRecordCount($countCompany);
+						$this->arResult['GRID']['list']['NAV_OBJECT'] = $nav;
+					}
 
 					foreach ($companyList as $key => $org) {
 
@@ -617,15 +625,17 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 							'data' => $data
 						];
 					}
+
+					$this->arResult['GRID']['list']["FILTER"] = [
+						// ['id' => 'UF_ACTIVE', 'name' => 'Активность', 'type' => 'list', 'items' => [1 => 'да', 0 => 'нет'], 'default' => true],
+						['id' => 'id', 'name' => 'ID', 'default' => true],
+					];
+					// end
 				} elseif ($arParams['TYPE'] == 'objects') {
 
-					//type objects
+					//type objects / sef "counter/objects/"
 					//какую сортировку сохранил пользователь (передаем то, что по умолчанию)
-
-					$grid_option = new CGridOptions($this->arResult["GRID_ID"]);
-					$order = $grid_option->GetSorting(['sort' => ['UF_ORG' => 'desc'], 'vars' => ['by' => 'by', 'order' => 'order']]);
-
-					// gg($orderObject);
+					$order = $grid_options->GetSorting(['sort' => ['UF_ORG' => 'desc'], 'vars' => ['by' => 'by', 'order' => 'order']]);
 
 					$this->arResult['GRID'][$arParams['TYPE']]['COLUMNS'] = [
 						['id' => 'ID', 'name' => 'ID', 'sort' => 'ID', 'default' => true, 'width' => 70],
@@ -637,12 +647,63 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 						// ['id' => 'STATUS', 'name' => 'Статус', 'sort' => '', 'default' => true, 'width' => '200'],
 						['id' => 'DETAIL', 'name' => '', 'default' => true, 'width' => 130],
 					];
-					// gg($grid_options);
-					// gg($order);
-					$ObjectsList = LKClass::getObjects(null, $order['sort']);
-					// gg($this->arResult['COMPANY']);
+
+					$allObjectsList = LKClass::getObjects(null);
+					$countObjects = 0;
+					if ($allObjectsList)
+						$countObjects = count($allObjectsList);
+
+					$nav = new Bitrix\Main\UI\PageNavigation($arResult["GRID_ID"]);
+					$nav->allowAllRecords(true)
+						->setRecordCount($countObjects) //Для работы кнопки "показать все"
+						->setPageSize($nav_params['nPageSize'])
+						->initFromUri();
+
+					if ($nav->allRecordsShown())
+						$nav_params = false;
+					else
+						$nav_params['iNumPage'] = $nav->getCurrentPage();
+
+					$navParams = [
+						'offset' => $nav->getOffset(),
+						'limit' => $nav->getLimit(),
+					];
+
+					$this->arResult['GRID']['objects']['COUNT'] = $countObjects;
+					$this->arResult['GRID']['objects']['NAV_OBJECT'] = $nav;
+
+					$filterOption = new Bitrix\Main\UI\Filter\Options($this->arResult["GRID_ID"]);
+					$filter = $filterOption->GetFilter();
+
+					if (!empty($filter)) {
+						unset($filter['PRESET_ID']);
+						unset($filter['FILTER_ID']);
+						unset($filter['FILTER_APPLIED']);
+						if ($filter["FIND"]) {
+							$filter['UF_NAME'] = '%' . $filter['FIND'] . '%';
+						}
+						unset($filter['FIND']);
+						// $arFilter = $filter;
+						// else
+						// $arFilter['UF_ACTIVE'] = $filter['UF_ACTIVE'];
+
+						$navParams = [];
+					}
+
+					$ObjectsList = LKClass::getObjects(null, $order['sort'], $navParams, $filter);
+
+					if (!empty($filter)) {
+						if ($ObjectsList)
+							$countObjects = count($ObjectsList);
+						$this->arResult['GRID']['objects']['COUNT'] = $countObjects;
+
+						$nav = new Bitrix\Main\UI\PageNavigation($arResult["GRID_ID"]);
+						$nav->setRecordCount($countObjects);
+						$this->arResult['GRID']['objects']['NAV_OBJECT'] = $nav;
+					}
+
 					foreach ($ObjectsList as $key => &$item) {
-						// gg($item);
+
 						$item['COMPANY'] = '#' . $item['ORG'] . ' ' . ($this->arResult['COMPANY'][$item['ORG']]['UF_SHORT_NAME'] ?: $this->arResult['COMPANY'][$item['ORG']]['UF_NAME']);
 						// gg($this->arResult['COMPANY'][$item['ORG']]);
 						$status = '<a class="ui-btn ui-btn-primary-dark" href="' . $item["ID"] . '/" target="_blank">Внести</a>';
@@ -652,6 +713,11 @@ class CabinetCounters extends CBitrixComponent implements Controllerable
 							'data' => $item
 						];
 					}
+
+					$this->arResult['GRID']['objects']["FILTER"] = [
+						// ['id' => 'UF_ACTIVE', 'name' => 'Активность', 'type' => 'list', 'items' => [1 => 'да', 0 => 'нет'], 'default' => true],
+						['id' => 'id', 'name' => 'ID', 'default' => true],
+					];
 				}
 			}
 		}

@@ -83,6 +83,9 @@ class MasterReestr extends CBitrixComponent
 		$contracts = LKClass::getContracts();
 		$this->arResult['CONTRACTS'] = $contracts;
 
+		$arObjects = [];
+		$orgContracts = [];
+
 		foreach ($contracts as $contr) {
 
 			$types = [];
@@ -105,6 +108,7 @@ class MasterReestr extends CBitrixComponent
 		// $arItems = LKClass::getCompany();
 		// if (is_array($arItems))
 		// 	$this->arResult['GRID']['COUNT'] = count($arItems);
+
 
 		// if ($myCompany)
 		$getObjects = LKClass::getObjects();
@@ -153,6 +157,7 @@ class MasterReestr extends CBitrixComponent
 		$arResult['COUNTER_SHOW'] = $arParams['CLEAR_DATA'] == 'Y' ? true : false;
 		// $this->$arResult['COUNTER_SHOW'] = $arResult['COUNTER_SHOW'];
 
+		$filter = [];
 		if ($arParams['ALL_ORG'] != 'Y')
 			$filter['UF_ACTIVE'] = 1;
 
