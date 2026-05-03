@@ -157,22 +157,40 @@ if ($arResult['ACCESS']): ?>
                         <!-- <input type="hidden" name="FIELDS[UF_ORG]" value="<?= $arResult['DETAIL']['ORG']['ID']; ?>"> -->
                         <!-- <input type="hidden" name="FIELDS[UF_OBJECT]" value="<?= $related['ID']; ?>"> -->
                         <?= bitrix_sessid_post() ?>
-                        <div class="row gx-3 gy-2">
-                            <div class="col-12 col-md-5">
-                                <label for="">ПУ</label>
+                        <div class="row gx-3 gy-2 align-items-end">
+                            <div class="col-12 col-md-6">
+                                <label for="">
+                                    ПУ
+                                </label>
                                 <div class="ui-ctl-dropdown! ui-ctl! ui-ctl-after-icon! ui-ctl-w100">
                                     <!-- <div class="ui-ctl-after ui-ctl-icon-angle"></div> -->
                                     <? // gg($arResult['COUNTERS']);
                                     ?>
                                     <select id="counter" class="select2! selectpicker!" data-width="100%" data-style="ui-btn ui-btn-no-caps ui-btn-dropdown ui-btn-light-border" name="FIELDS[UF_COUNTER]" required>
                                         <? foreach ($arResult['COUNTERS'] as $key => $counter): ?>
-                                            <option value="<?= $key ?>" <?= $key == $related['ID'] ? 'selected' : '' ?>>#<?= $counter['ID'] ?> / <?= $counter['UF_NUMBER'] ?> - <?= $counter['UF_NAME'] ?></option>
+                                            <option value="<?= $key ?>"
+                                                <?= $key == $related['ID'] ? 'selected' : '' ?>
+                                                <?= $counter["UF_ACTIVE"] == 0 ? ' disabled="disabled"' : '' ?>>#<?= $counter['ID'] ?> / <?= $counter['UF_NUMBER'] ?> - <?= $counter['UF_NAME'] ?></option>
                                         <? endforeach ?>
                                     </select>
                                     <div class="invalid-feedback">Выберите Прибор учёта</div>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-7">
+                            <div class="col-12 col-md-4">
+                                <label>Процент занимаемого объема/площади, %</label>
+                                <div class="ui-ctl ui-ctl-after-icon ui-ctl-date! ui-ctl-w100">
+                                    <!-- <div class="ui-ctl-after ui-ctl-icon-calendar"></div> -->
+                                    <input type="number" class="ui-ctl-element form-control" name="FIELDS[UF_PERCENT]" value="" min="0.1" max="100" step="0.01" required>
+                                    <div class="invalid-feedback">укажите значение</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md! col-md-2 d-flex! mt-lg-4">
+                                <label class="ui-ctl ui-ctl-checkbox">
+                                    <input id="objectMain" type="checkbox" class="ui-ctl-element" name="FIELDS[UF_MAIN]" value="Y">
+                                    <div class="ui-ctl-label-text">Главный объект</div>
+                                </label>
+                            </div>
+                            <div class="col-12 col-md-10 col-md-7!">
                                 <label for="">Организация</label>
                                 <select id="orgList" class="select selectpicker!" data-width="100%" data-style="ui-btn ui-btn-no-caps ui-btn-dropdown ui-btn-light-border" name="FIELDS[UF_ORG]" required>
                                 </select>
@@ -181,23 +199,19 @@ if ($arResult['ACCESS']): ?>
                             <div class="col-12 col-md-7">
                                 <label>Объект</label>
                                 <select id="objectList" class="select select2! selectpicker!" data-width="100%" data-style="ui-btn ui-btn-no-caps ui-btn-dropdown ui-btn-light-border" name="FIELDS[UF_OBJECT]" required>
+                                    <? foreach ($arResult['ORG_OBJECTS_JSON'] as $key => $org): ?>
+                                        <optgroup label="<?= $org['text'] ?>">
+                                            <? foreach ($org['children'] as $key => $object): ?>
+                                                <option value="<?= $object['id'] ?>"
+                                                    <? //= $key == $related['ID'] ? 'selected' : '' 
+                                                    ?>><?= $object['text'] ?></option>
+                                            <? endforeach ?>
+                                        </optgroup>
+                                    <? endforeach ?>
                                 </select>
                                 <div class="invalid-feedback">выберите Объект</div>
                             </div>
-                            <div class="col-12 col-md-5">
-                                <label>Процент занимаемого объема/площади, %</label>
-                                <div class="ui-ctl ui-ctl-after-icon ui-ctl-date! ui-ctl-w100">
-                                    <!-- <div class="ui-ctl-after ui-ctl-icon-calendar"></div> -->
-                                    <input type="number" class="ui-ctl-element form-control" name="FIELDS[UF_PERCENT]" value="" min="0.1" max="100" step="0.01" required>
-                                    <div class="invalid-feedback">укажите значение</div>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md col-md-2! d-flex">
-                                <label class="ui-ctl ui-ctl-checkbox">
-                                    <input id="objectMain" type="checkbox" class="ui-ctl-element" name="FIELDS[UF_MAIN]" value="Y">
-                                    <div class="ui-ctl-label-text">Главный объект</div>
-                                </label>
-                            </div>
+
 
                         </div>
                     </div>
@@ -279,11 +293,17 @@ if ($arResult['ACCESS']): ?>
 
         <?
         $jsonOrg = \Bitrix\Main\Web\Json::encode($arResult['COMPANY_JSON']);
+        $jsonOrgObjects = \Bitrix\Main\Web\Json::encode($arResult['ORG_OBJECTS_JSON']);
         $jsonObjects = \Bitrix\Main\Web\Json::encode($arResult['OBJECTS_JSON']);
         ?>
-        const parent = <?= $jsonOrg ?>;
+        const orgs = <?= $jsonOrg ?>;
+        const org_objects = <?= $jsonOrgObjects ?>;
         const child = <?= $jsonObjects ?>;
-        // console.log('child', child);
+
+        // console.log('orgs', orgs);
+        console.log('org_objects', org_objects);
+        //console.log('child', child);
+
 
         listArray.forEach(element => {
             // console.log(element.id);
@@ -299,12 +319,12 @@ if ($arResult['ACCESS']): ?>
                         })
 
                     // const selected = parent[1]
-                    var selected = child[0]
+                    // var selected = child[0]
                     // console.log('selected', selected)
 
                     $('#objectList')
                         .select2({
-                            data: child,
+                            data: org_objects,
                             dropdownParent: $("#counterModal"),
                             minimumResultsForSearch: Infinity
                             // val: null,
@@ -312,7 +332,7 @@ if ($arResult['ACCESS']): ?>
 
                     $('#orgList')
                         .select2({
-                            data: parent,
+                            data: orgs,
                             dropdownParent: $("#counterModal"),
                             // minimumResultsForSearch: Infinity
                             // val: null
@@ -321,13 +341,10 @@ if ($arResult['ACCESS']): ?>
                         .trigger("change")
                         .on("change", (e) => {
 
-                            // console.log('selected', e.target.value)
-                            selected = child[e.target.value]
-                            // console.log('child', selected)
+                            selected = org_objects[e.target.value]
+                            // console.log('orgChild', selected)
 
-                            if (selected.children && selected.children.length > 0) {
-
-                                // $('#objectList').empty().trigger("change")
+                            if (selected && selected.children && selected.children.length > 0) {
 
                                 var newOption = new Option('', '', false, false);
                                 $('#objectList').empty().val(null).append(newOption).trigger('change');
@@ -336,19 +353,10 @@ if ($arResult['ACCESS']): ?>
                                     var newOption = new Option(value.text, value.id, false, false);
                                     $('#objectList').append(newOption).trigger('change');
                                 });
+                            } else {
+                                $('#objectList').empty()
                             }
 
-                            // var newOption = new Option(data.text, data.id, false, false);
-                            // $('#objectList').append(child[e.target.value]).trigger('change');
-                            // $('#objectList').select2({
-                            //     data: selected
-                            // }).trigger('change')
-
-                            // console.log('child', child[e.target.value].children.length);
-
-                            // $('#objectList').select2({
-                            //     data: child[e.target.value]
-                            // }).trigger("change")
                         });
 
                     // $("#orgList").on("select2:select", function(e) {

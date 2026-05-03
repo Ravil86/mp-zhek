@@ -86,7 +86,7 @@ class MasterRelated extends CBitrixComponent implements Controllerable
 
 		// $item['SERVICE'] = '<div>' . implode(' ', $types) . '</div>';
 
-		$getCompany = LKClass::getCompany();
+		$arCompany = LKClass::getCompany();
 
 		$getObjects = LKClass::getObjects(null, 'ID');
 		$this->arResult['OBJECTS'] = $getObjects;
@@ -94,16 +94,37 @@ class MasterRelated extends CBitrixComponent implements Controllerable
 		$getCounters = LKClass::getCounters();
 		$this->arResult['COUNTERS'] = $getCounters;
 
-		foreach ($getObjects as $object) {
+		$this->arResult['OBJECTS_JSON'][] = [
+			'id' => '',
+			'text' => 'выберите',
+		];
+
+		$this->arResult['ORG_OBJECTS_JSON'][] = [
+			'id' => '',
+			'text' => '',
+			'children' => [],
+		];
+
+		foreach ($getObjects as &$object) {
 
 			$arObjects[$object['ORG']][] = $object;		// по ключу организации
 			$orgObjectsIDs[$object['ORG']][$object['ID']] = $object['ID']; // по ключу организации и id объекта
 
+
+			$objectName = TruncateText($object['NAME'], 50);
+			$object['SHORT_NAME'] = $objectName;
+
 			$arCompany[$object['ORG']]['OBJECTS'][$object['ID']] = $object;
 
-			$valCompany = $getCompany[$object['ORG']];
+			$valCompany = $arCompany[$object['ORG']];
 
-			$this->arResult['OBJECTS_ITEMS'][$object['ID']] = '#' . $object['ID'] . ' ' . TruncateText($object['NAME'], 50) . ' / #' . $object['ORG'] . ' - ' . ($valCompany['UF_SHORT_NAME'] ?: TruncateText($valCompany['UF_NAME'], 50));
+
+			$this->arResult['OBJECTS_ITEMS'][$object['ID']] = '#' . $object['ID'] . ' ' . $objectName . ' / #' . $object['ORG'] . ' - ' . ($valCompany['UF_SHORT_NAME'] ?: TruncateText($valCompany['UF_NAME'], 50));
+
+			$this->arResult['OBJECTS_JSON'][$object['ID']] = [
+				'id' => $object['ID'],
+				'text' => $objectName,
+			];
 		}
 		$this->arResult['COMPANY'] = $arCompany;
 
@@ -112,16 +133,15 @@ class MasterRelated extends CBitrixComponent implements Controllerable
 			'text' => 'выберите',
 		];
 
-		foreach ($getCompany as $key => $org) {
+		foreach ($arCompany as $key => $org) {
 
-			// gg($org);
 			$objects = [];
 
 			foreach ($org['OBJECTS'] as $key => $object) {
 
 				$objects[] = [
 					'id' => (int)$object['ID'],
-					'text' => $object['NAME'],
+					'text' => '#' . $object['ID'] . '_' . $object['SHORT_NAME'],
 					// "disabled" => true
 				];
 
@@ -132,9 +152,9 @@ class MasterRelated extends CBitrixComponent implements Controllerable
 				// ];
 			}
 
-			$this->arResult['OBJECTS_JSON'][$org['ID']] = [
-				// 'id' => $org['ID'],
-				'text' => $org['UF_NAME'],
+			$this->arResult['ORG_OBJECTS_JSON'][$org['ID']] = [
+				'id' => $org['ID'],
+				'text' => htmlspecialcharsbx($org['UF_NAME']),
 				'children' => $objects,
 			];
 
@@ -145,42 +165,9 @@ class MasterRelated extends CBitrixComponent implements Controllerable
 
 			$this->arResult['COMPANY_ITEMS'][$org['ID']] = '#' . $org['ID'] . ' ' . TruncateText($org['UF_NAME'], 50);
 
-
 			//$this->arResult['OBJECTS_ITEMS'][$org['ID']]['ITEMS'][$object['ID']] = '#' . $object['ID'] . ' ' . $object['NAME'];
 		}
 
-		// gg($getCompany);
-		// gg($this->arResult['OBJECTS_JSON']);
-		// gg($this->arResult['COMPANY_JSON']);
-
-		// gg($arObjects);
-
-		#LIST
-		// $result = \Bitrix\Main\UserGroupTable::getList(array(
-		// 	'order' => array('USER.LAST_LOGIN' => 'DESC'),
-		// 	'filter' => array(
-		// 		// 'USER.ACTIVE' => 'Y',
-		// 		'GROUP_ID' => [8, 1],
-		// 	),
-		// 	'select' => array(
-		// 		'ID' => 'USER.ID',
-		// 		'LOGIN' => 'USER.LOGIN',
-		// 		// 'PERSONAL_GENDER' => 'USER.PERSONAL_GENDER',
-		// 		'NAME' => 'USER.NAME',
-		// 		'LAST_NAME' => 'USER.LAST_NAME',
-		// 		// 'PERSONAL_CITY' => 'USER.PERSONAL_CITY',
-		// 		'UF_COMPANY' => 'USER.UF_COMPANY',
-		// 		'UF_PASSWORD' => 'USER.UF_PASSWORD'
-		// 	),
-		// ));
-
-		// while ($user = $result->fetch()) {
-
-		// 	$user['SHORT_NAME'] = ($user['LAST_NAME'] ? $user['LAST_NAME'] . ' ' : '') . $user['NAME'];
-
-		// 	$userList[$user['ID']] = $user;
-		// 	$userItems[$user['ID']] = $user['SHORT_NAME'];
-		// }
 
 		$grid_options = new CGridOptions($this->arResult["GRID_ID"]);
 		$nav_params = $grid_options->GetNavParams(array("nPageSize" => $this->arResult['PAGE_SIZE']));
@@ -240,7 +227,7 @@ class MasterRelated extends CBitrixComponent implements Controllerable
 											<i class="bi bi-buildings"></i>
 											</a>';
 
-				$column['UF_ORG'] = '<small>#' . $value['UF_ORG'] . '</small> ' . $getCompany[$value['UF_ORG']]['UF_NAME'];
+				$column['UF_ORG'] = '<small>#' . $value['UF_ORG'] . '</small> ' . $arCompany[$value['UF_ORG']]['UF_NAME'];
 				$column['UF_MAIN'] = $value['UF_MAIN'] ? 'да' : '';
 				$column['UF_PERCENT'] = $value['UF_PERCENT'];
 
@@ -265,7 +252,9 @@ class MasterRelated extends CBitrixComponent implements Controllerable
 		}
 		// gg($this->arResult['ITEMS']);
 		//return $componentPage;
-		return $this->arResult;
+
+		$arResult = $this->arResult;
+		return $arResult;
 	}
 
 
